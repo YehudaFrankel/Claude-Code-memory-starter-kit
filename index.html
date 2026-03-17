@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Memory Starter Kit</title>
+<style>
+/* ─────────────────────────────────────────
+   Tokens
+───────────────────────────────────────── */
+:root {
+  --bg:        #0d1117;
+  --surface:   #161b22;
+  --border:    #21262d;
+  --border2:   #30363d;
+  --accent:    #8b5cf6;
+  --green:     #3fb950;
+  --amber:     #d29922;
+  --text:      #e6edf3;
+  --muted:     #8b949e;
+  --dim:       #484f58;
+  --font:      -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --mono:      'SF Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─────────────────────────────────────────
+   Nav
+───────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .85rem 2rem;
+  background: rgba(13,17,23,.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-family: var(--mono);
+  font-size: .9rem;
+  color: var(--text);
+  text-decoration: none;
+  display: flex; align-items: center; gap: .5rem;
+}
+.logo-mark {
+  display: inline-block;
+  width: 8px; height: 8px;
+  background: var(--accent);
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--accent);
+  animation: markPulse 3s ease-in-out infinite;
+}
+@keyframes markPulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: .4; }
+}
+
+.nav-right { display: flex; align-items: center; gap: 1.5rem; }
+.nav-link {
+  font-size: .85rem; color: var(--muted);
+  text-decoration: none; transition: color .15s;
+}
+.nav-link:hover { color: var(--text); }
+
+.gh-btn {
+  display: flex; align-items: center; gap: .4rem;
+  font-size: .8rem; color: var(--muted);
+  text-decoration: none;
+  border: 1px solid var(--border2);
+  border-radius: 6px; padding: .35rem .8rem;
+  transition: all .15s;
+}
+.gh-btn:hover { color: var(--text); border-color: var(--dim); background: var(--surface); }
+
+/* ─────────────────────────────────────────
+   Hero  —  intentionally NOT centered
+───────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  padding: 5rem 2rem 4rem;
+  max-width: 1100px; margin: 0 auto;
+}
+
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem; align-items: center;
+}
+
+.hero-text { }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-family: var(--mono);
+  font-size: .75rem; color: var(--green);
+  margin-bottom: 1.5rem; letter-spacing: .04em;
+}
+.eyebrow::before {
+  content: '▸';
+}
+
+h1 {
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -.025em;
+  margin-bottom: 1.25rem;
+}
+
+.h1-line2 {
+  display: block;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.hero-desc {
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+  max-width: 400px;
+}
+
+.hero-actions {
+  display: flex; gap: .75rem; flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .6rem 1.3rem;
+  border-radius: 7px;
+  font-size: .875rem; font-weight: 500;
+  text-decoration: none;
+  transition: all .15s;
+  border: none; cursor: pointer;
+  font-family: var(--font);
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 0 rgba(255,255,255,.1) inset;
+}
+.btn-primary:hover {
+  background: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139,92,246,.3);
+}
+.btn-ghost {
+  color: var(--muted);
+  border: 1px solid var(--border2);
+  background: var(--surface);
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--dim); }
+
+/* ─────────────────────────────────────────
+   Hero terminal  —  the real one
+───────────────────────────────────────── */
+.hero-term {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: .8rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.04) inset;
+}
+.term-bar {
+  padding: .7rem 1rem;
+  background: rgba(255,255,255,.03);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: .5rem;
+}
+.term-dot { width: 11px; height: 11px; border-radius: 50%; }
+.term-dot-r { background: #ff5f57; }
+.term-dot-y { background: #febc2e; }
+.term-dot-g { background: #28c840; }
+.term-title { margin-left: .3rem; font-size: .72rem; color: var(--dim); }
+
+.term-body { padding: 1.2rem 1rem; line-height: 1.9; }
+
+.t-line { display: block; }
+.t-prompt { color: var(--dim); }
+.t-user  { color: var(--text); }
+.t-ok    { color: var(--green); }
+.t-out   { color: var(--muted); padding-left: 1.2rem; display: block; }
+.t-out2  { color: var(--dim); padding-left: 1.2rem; display: block; }
+.t-gap   { display: block; height: .5rem; }
+.t-cmd   { color: #c9a0ff; }
+.t-cursor {
+  display: inline-block;
+  width: 7px; height: .85em;
+  background: var(--accent);
+  vertical-align: middle;
+  opacity: 1;
+  animation: cur .9s step-end infinite;
+  border-radius: 1px;
+}
+@keyframes cur { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ─────────────────────────────────────────
+   Stats  —  just text, no cards
+───────────────────────────────────────── */
+.stats {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.stats-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; padding: 2.5rem 2rem;
+  gap: 0;
+}
+.stat-item {
+  flex: 1; text-align: left;
+  padding-right: 2rem;
+  border-right: 1px solid var(--border);
+  margin-right: 2rem;
+}
+.stat-item:last-child {
+  border-right: none; margin-right: 0; padding-right: 0;
+}
+.s-num {
+  font-size: 2.2rem; font-weight: 800;
+  color: var(--text);
+  font-family: var(--mono);
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+.s-num span { color: var(--accent); }
+.s-label { font-size: .78rem; color: var(--muted); margin-top: .4rem; }
+
+/* ─────────────────────────────────────────
+   Shared section layout
+───────────────────────────────────────── */
+.section {
+  max-width: 1100px;
+  margin: 6rem auto;
+  padding: 0 2rem;
+}
+.section.narrow { max-width: 740px; }
+
+.section-tag {
+  font-family: var(--mono);
+  font-size: .72rem; color: var(--accent);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: .6rem;
+}
+.section-h {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: -.02em;
+  margin-bottom: .6rem;
+  line-height: 1.2;
+}
+.section-p { color: var(--muted); max-width: 500px; margin-bottom: 2.5rem; }
+
+/* ─────────────────────────────────────────
+   Install
+───────────────────────────────────────── */
+.install-wrap {
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.install-head {
+  padding: .7rem 1rem;
+  background: rgba(255,255,255,.02);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.install-dots { display: flex; gap: .4rem; }
+.install-dots .d { width: 11px; height: 11px; border-radius: 50%; }
+.d1 { background: #ff5f57; }
+.d2 { background: #febc2e; }
+.d3 { background: #28c840; }
+.install-label { font-size: .72rem; color: var(--dim); font-family: var(--mono); }
+.copy-btn {
+  font-family: var(--font);
+  font-size: .72rem; color: var(--muted);
+  background: none; border: 1px solid var(--border2);
+  border-radius: 5px; padding: .25rem .65rem;
+  cursor: pointer; transition: all .15s;
+}
+.copy-btn:hover { color: var(--text); border-color: var(--dim); }
+.copy-btn.ok { color: var(--green); border-color: var(--green); }
+
+.install-body {
+  padding: 1.3rem 1.2rem;
+  font-family: var(--mono); font-size: .8rem; line-height: 1.6;
+  color: var(--text);
+}
+.i-prompt { color: var(--dim); }
+.i-cmd { color: var(--text); }
+
+.install-footer {
+  padding: 1rem 1.2rem;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 2.5rem; flex-wrap: wrap;
+}
+.i-step {
+  display: flex; align-items: center; gap: .6rem;
+  font-size: .82rem; color: var(--muted);
+}
+.step-n {
+  font-family: var(--mono);
+  font-size: .68rem; color: var(--accent); font-weight: 700;
+  background: rgba(139,92,246,.1);
+  border: 1px solid rgba(139,92,246,.2);
+  border-radius: 4px; padding: .1rem .4rem;
+}
+.i-step code {
+  font-family: var(--mono); font-size: .75rem;
+  color: var(--amber); background: rgba(210,153,34,.08);
+  border-radius: 4px; padding: .1rem .4rem;
+}
+
+/* ─────────────────────────────────────────
+   Workflow diagram  —  horizontal steps
+───────────────────────────────────────── */
+.flow {
+  display: flex; align-items: center;
+  gap: 0; overflow-x: auto;
+  padding-bottom: .5rem;
+  margin-top: 2rem;
+}
+.flow-step {
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: .9rem 1.1rem;
+  min-width: 130px;
+}
+.flow-step-n {
+  font-family: var(--mono);
+  font-size: .65rem; color: var(--accent);
+  margin-bottom: .2rem; letter-spacing: .04em;
+}
+.flow-step-title {
+  font-size: .85rem; font-weight: 600; color: var(--text);
+  margin-bottom: .15rem;
+}
+.flow-step-cmd {
+  font-family: var(--mono);
+  font-size: .72rem; color: var(--muted);
+}
+.flow-arrow {
+  flex-shrink: 0;
+  color: var(--dim); font-size: .9rem;
+  padding: 0 .75rem;
+  position: relative;
+}
+.flow-arrow::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px; height: 1px;
+  background: linear-gradient(90deg, var(--dim), transparent);
+}
+
+/* ─────────────────────────────────────────
+   Feature list  —  not a grid of cards
+───────────────────────────────────────── */
+.feature-list { margin-top: 2rem; }
+.feature-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 2rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--border);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .4s ease, transform .4s ease;
+}
+.feature-row:first-child { border-top: 1px solid var(--border); }
+.feature-row.in { opacity: 1; transform: none; }
+.feat-label {
+  font-size: .85rem; font-weight: 600; color: var(--text);
+  padding-top: .15rem;
+  display: flex; align-items: flex-start; gap: .5rem;
+}
+.feat-icon { font-size: 1rem; flex-shrink: 0; margin-top: .05rem; }
+.feat-desc { font-size: .875rem; color: var(--muted); line-height: 1.7; }
+.feat-desc code {
+  font-family: var(--mono); font-size: .78rem;
+  color: var(--amber); background: rgba(210,153,34,.08);
+  border-radius: 4px; padding: .1rem .4rem;
+}
+
+/* ─────────────────────────────────────────
+   Commands  —  clean table
+───────────────────────────────────────── */
+.cmd-list { margin-top: 2rem; }
+.cmd-row {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.5rem;
+  padding: .8rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: .875rem;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity .35s ease, transform .35s ease;
+}
+.cmd-row:first-child { border-top: 1px solid var(--border); }
+.cmd-row.in { opacity: 1; transform: none; }
+.cmd-name {
+  font-family: var(--mono); font-size: .78rem;
+  color: #c9a0ff;
+  display: flex; align-items: flex-start;
+  padding-top: .1rem;
+}
+.cmd-desc-text { color: var(--muted); line-height: 1.55; }
+
+/* ─────────────────────────────────────────
+   How it works  —  numbered prose
+───────────────────────────────────────── */
+.how-list { margin-top: 2rem; }
+.how-row {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: 1.2rem;
+  padding: 1.4rem 0;
+  border-bottom: 1px solid var(--border);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .45s ease, transform .45s ease;
+}
+.how-row:first-child { border-top: 1px solid var(--border); }
+.how-row.in { opacity: 1; transform: none; }
+.how-n {
+  font-family: var(--mono);
+  font-size: .75rem; color: var(--dim);
+  padding-top: .25rem;
+  font-weight: 600;
+}
+.how-title {
+  font-size: .95rem; font-weight: 600; color: var(--text);
+  margin-bottom: .35rem;
+}
+.how-body { font-size: .875rem; color: var(--muted); line-height: 1.7; }
+.how-body code {
+  font-family: var(--mono); font-size: .78rem;
+  color: var(--amber); background: rgba(210,153,34,.08);
+  border-radius: 4px; padding: .1rem .4rem;
+}
+
+/* ─────────────────────────────────────────
+   File tree  —  actual IDE look
+───────────────────────────────────────── */
+.tree-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 10px; overflow: hidden;
+  margin-top: 2rem;
+}
+.tree-head {
+  padding: .7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: .5rem;
+  background: rgba(255,255,255,.02);
+}
+.tree-head .term-dot { }
+.tree-head-name {
+  font-family: var(--mono);
+  font-size: .72rem; color: var(--dim); margin-left: .4rem;
+}
+.tree-body {
+  padding: 1rem 1.2rem;
+  font-family: var(--mono); font-size: .78rem;
+  line-height: 1.95;
+}
+.tl { display: block; white-space: nowrap; }
+.tl-dir { color: var(--accent); }
+.tl-file { color: var(--text); }
+.tl-comment { color: var(--dim); }
+.tl-new { color: var(--green); }
+
+/* ─────────────────────────────────────────
+   Quote
+───────────────────────────────────────── */
+.pull-quote {
+  border-left: 2px solid var(--accent);
+  padding-left: 1.5rem;
+  margin: 0;
+}
+.pull-quote p {
+  font-size: 1.15rem; line-height: 1.75;
+  color: var(--muted);
+  font-style: italic;
+}
+.pull-quote p strong { color: var(--text); font-style: normal; }
+.pull-quote cite {
+  display: block; margin-top: .75rem;
+  font-size: .78rem; color: var(--dim);
+  font-family: var(--mono); font-style: normal;
+}
+
+/* ─────────────────────────────────────────
+   Honest "built by" section
+───────────────────────────────────────── */
+.built-by {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 3rem 2rem;
+}
+.built-by-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem; align-items: center;
+}
+.by-text h3 {
+  font-size: 1.3rem; font-weight: 700;
+  margin-bottom: .75rem; letter-spacing: -.01em;
+}
+.by-text p {
+  font-size: .9rem; color: var(--muted); line-height: 1.7;
+}
+.by-stats {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+.by-stat { }
+.by-stat-n {
+  font-family: var(--mono);
+  font-size: 1.6rem; font-weight: 700;
+  color: var(--text); letter-spacing: -.02em;
+  line-height: 1;
+}
+.by-stat-n em { color: var(--accent); font-style: normal; }
+.by-stat-l { font-size: .75rem; color: var(--muted); margin-top: .3rem; }
+
+/* ─────────────────────────────────────────
+   CTA
+───────────────────────────────────────── */
+.cta-wrap {
+  max-width: 1100px; margin: 6rem auto 4rem; padding: 0 2rem;
+}
+.cta-inner {
+  padding: 3rem;
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 2rem;
+}
+.cta-text h2 {
+  font-size: 1.4rem; font-weight: 700;
+  margin-bottom: .4rem; letter-spacing: -.01em;
+}
+.cta-text p { font-size: .875rem; color: var(--muted); }
+
+/* ─────────────────────────────────────────
+   Footer
+───────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 1.75rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+}
+.footer-left {
+  font-family: var(--mono); font-size: .75rem; color: var(--dim);
+}
+.footer-right { display: flex; gap: 1.5rem; }
+.footer-right a { font-size: .8rem; color: var(--muted); text-decoration: none; }
+.footer-right a:hover { color: var(--text); }
+
+/* ─────────────────────────────────────────
+   Scroll reveal
+───────────────────────────────────────── */
+.reveal {
+  opacity: 0; transform: translateY(16px);
+  transition: opacity .55s ease, transform .55s ease;
+}
+.reveal.in { opacity: 1; transform: none; }
+
+/* ─────────────────────────────────────────
+   Responsive
+───────────────────────────────────────── */
+@media (max-width: 780px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+  .hero-term { display: none; }
+  .built-by-inner { grid-template-columns: 1fr; gap: 2rem; }
+  .cta-inner { flex-direction: column; align-items: flex-start; }
+  .stats-inner { flex-wrap: wrap; }
+  .stat-item { min-width: 130px; }
+  .nav-link { display: none; }
+  .cmd-row, .feature-row { grid-template-columns: 1fr; gap: .5rem; }
+}
+
+/* ─────────────────────────────────────────
+   Subtle entrance for hero
+───────────────────────────────────────── */
+.hero-text > * {
+  opacity: 0; transform: translateY(14px);
+  animation: heroIn .5s ease forwards;
+}
+.hero-text > *:nth-child(1) { animation-delay: .05s; }
+.hero-text > *:nth-child(2) { animation-delay: .12s; }
+.hero-text > *:nth-child(3) { animation-delay: .19s; }
+.hero-text > *:nth-child(4) { animation-delay: .26s; }
+@keyframes heroIn {
+  to { opacity: 1; transform: none; }
+}
+.hero-term {
+  opacity: 0; transform: translateX(20px);
+  animation: termIn .55s ease .3s forwards;
+}
+@keyframes termIn { to { opacity: 1; transform: none; } }
+
+/* Live typing animation for hero terminal */
+.typing-line .t-cursor { display: inline-block; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-mark"></div>
+    claude-memory-starter
+  </a>
+  <div class="nav-right">
+    <a href="#install" class="nav-link">Install</a>
+    <a href="#commands" class="nav-link">Commands</a>
+    <a href="#how" class="nav-link">How it works</a>
+    <a href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit" target="_blank" class="gh-btn">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="eyebrow">open source · MIT license</div>
+      <h1>
+        Claude keeps forgetting.<br>
+        <span class="h1-line2">This fixes that.</span>
+      </h1>
+      <p class="hero-desc">
+        A memory system for Claude Code. Claude remembers your functions, your decisions, and where you left off — across sessions, machines, and teammates.
+      </p>
+      <div class="hero-actions">
+        <a href="#install" class="btn btn-primary">Install — one line</a>
+        <a href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit" target="_blank" class="btn btn-ghost">View source</a>
+      </div>
+    </div>
+
+    <!-- Real terminal showing actual kit output -->
+    <div class="hero-term">
+      <div class="term-bar">
+        <div class="term-dot term-dot-r"></div>
+        <div class="term-dot term-dot-y"></div>
+        <div class="term-dot term-dot-g"></div>
+        <span class="term-title">bash — your-project/</span>
+      </div>
+      <div class="term-body">
+        <span class="t-line"><span class="t-prompt">$ </span><span class="t-user">Start Session</span></span>
+        <span class="t-out"><span class="t-ok">✓</span> Python 3.11 found</span>
+        <span class="t-out"><span class="t-ok">✓</span> check_memory.py — no drift</span>
+        <span class="t-out"><span class="t-ok">✓</span> STATUS.md — Session 87</span>
+        <span class="t-out"><span class="t-ok">✓</span> 5 lessons loaded</span>
+        <span class="t-out"><span class="t-ok">✓</span> 3 decisions loaded</span>
+        <span class="t-out"><span class="t-ok">✓</span> 2 known errors loaded</span>
+        <span class="t-gap"></span>
+        <span class="t-line"><span class="t-ok">Session 87 ready.</span></span>
+        <span class="t-out2">Last change: added unsubscribe flow</span>
+        <span class="t-out2">What are we working on?</span>
+        <span class="t-gap"></span>
+        <span class="t-line"><span class="t-prompt">$ </span><span class="t-cursor"></span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="s-num"><span class="counter" data-target="86">0</span></div>
+      <div class="s-label">real dev sessions — not a demo project</div>
+    </div>
+    <div class="stat-item">
+      <div class="s-num"><span class="counter" data-target="13">0</span></div>
+      <div class="s-label">built-in commands + 7 auto-invoked skills</div>
+    </div>
+    <div class="stat-item">
+      <div class="s-num"><span class="counter" data-target="21">0</span></div>
+      <div class="s-label">undocumented functions caught first run</div>
+    </div>
+    <div class="stat-item">
+      <div class="s-num"><span class="counter" data-target="1">0</span> <span style="font-size:1.1rem;color:var(--muted);font-family:var(--font);font-weight:400">line</span></div>
+      <div class="s-label">to install</div>
+    </div>
+  </div>
+</div>
+
+<!-- INSTALL -->
+<div class="section narrow reveal" id="install">
+  <div class="section-tag">Get started</div>
+  <h2 class="section-h">One line, then you're in Claude Code</h2>
+  <p class="section-p">Run this in your project root. It downloads setup.py and runs it. Claude handles the rest from inside the chat.</p>
+
+  <div class="install-wrap">
+    <div class="install-head">
+      <div class="install-dots">
+        <div class="d d1"></div><div class="d d2"></div><div class="d d3"></div>
+      </div>
+      <span class="install-label">terminal</span>
+      <button class="copy-btn" id="copyBtn" onclick="copyInstall()">copy</button>
+    </div>
+    <div class="install-body">
+      <span class="i-prompt">$ </span><span class="i-cmd">python -c "import urllib.request; exec(urllib.request.urlopen('<span style="color:#8b5cf6">https://raw.githubusercontent.com/YehudaFrankel/Claude-Code-memory-starter-kit/main/install.py</span>').read().decode())"</span>
+    </div>
+    <div class="install-footer">
+      <div class="i-step"><span class="step-n">2</span> open Claude Code: <code>claude</code></div>
+      <div class="i-step"><span class="step-n">3</span> type <code>Setup Memory</code> in chat</div>
+      <div class="i-step"><span class="step-n">4</span> type <code>Start Session</code> — done</div>
+    </div>
+  </div>
+</div>
+
+<!-- WORKFLOW -->
+<div class="section reveal">
+  <div class="section-tag">Daily workflow</div>
+  <h2 class="section-h">Three commands. Everything else runs itself.</h2>
+  <p class="section-p">The drift checker runs automatically after every file edit. Memory updates after every code change. You just work.</p>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-step-n">STEP 01</div>
+      <div class="flow-step-title">Open project</div>
+      <div class="flow-step-cmd">cd your-project</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="flow-step-n">STEP 02</div>
+      <div class="flow-step-title">Load memory</div>
+      <div class="flow-step-cmd">Start Session</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="flow-step-n">STEP 03</div>
+      <div class="flow-step-title">Work normally</div>
+      <div class="flow-step-cmd">auto-saves</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="flow-step-n">STEP 04</div>
+      <div class="flow-step-title">Close out</div>
+      <div class="flow-step-cmd">End Session</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color: var(--accent); background: rgba(139,92,246,.06);">
+      <div class="flow-step-n" style="color: var(--green);">NEXT TIME</div>
+      <div class="flow-step-title">Full context</div>
+      <div class="flow-step-cmd" style="color: var(--green);">instantly</div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="section reveal">
+  <div class="section-tag">What's included</div>
+  <h2 class="section-h">Every piece earns its place</h2>
+  <p class="section-p">Nothing here is decoration. Each feature came from hitting a real problem.</p>
+
+  <div class="feature-list">
+    <div class="feature-row">
+      <div class="feat-label"><span class="feat-icon">🧠</span> Memory files</div>
+      <div class="feat-desc">JS functions, endpoints, CSS classes, decisions — all documented in <code>.claude/memory/</code>. Claude reads compact summaries instead of re-scanning thousands of lines every session.</div>
+    </div>
+    <div class="feature-row">
+      <div class="feat-label"><span class="feat-icon">🔍</span> Drift detection</div>
+      <div class="feat-desc"><code>check_memory.py</code> runs silently after every file edit via a PostToolUse hook. Add a function and forget to document it — Claude knows within seconds, not next session.</div>
+    </div>
+    <div class="feature-row">
+      <div class="feat-label"><span class="feat-icon">📋</span> Task continuity</div>
+      <div class="feat-desc">Four files that travel with your repo: <code>todo.md</code> for plans, <code>lessons.md</code> so mistakes don't repeat, <code>decisions.md</code> so architecture doesn't get re-debated, <code>errors.md</code> so you never debug the same bug twice.</div>
+    </div>
+    <div class="feature-row">
+      <div class="feat-label"><span class="feat-icon">⚡</span> Auto-invoked skills</div>
+      <div class="feat-desc">Say "review this file" and Claude runs the full code-review skill automatically. <code>Generate Skills</code> builds a starter set of 7 skills tailored to your stack: <code>code-review</code>, <code>security-check</code>, <code>fix-bug</code>, <code>new-feature</code>, <code>environment-check</code>, <code>run-verification</code>, and <code>refactor</code>. Each skill includes supporting reference docs (like <code>ANTI-PATTERNS.md</code>, <code>ENVIRONMENT-MATRIX.md</code>) that Claude reads when it runs. Add custom skills with a single chat message.</div>
+    </div>
+    <div class="feature-row">
+      <div class="feat-label"><span class="feat-icon">🚀</span> Headless mode</div>
+      <div class="feat-desc">For large refactors, scaffolding, or multi-file changes: run <code>claude --headless "your task"</code> and Claude works fully in the background. You return to finished code. Best for well-defined jobs where you don't need to watch every step.</div>
+    </div>
+    <div class="feature-row">
+      <div class="feat-label"><span class="feat-icon">🔄</span> Safe updater</div>
+      <div class="feat-desc">Type <code>Update Kit</code>. The updater shows you exactly what will change and asks before touching anything. Your memory files, task files, and everything below the kit block in CLAUDE.md — never touched.</div>
+    </div>
+    <div class="feature-row">
+      <div class="feat-label"><span class="feat-icon">🤝</span> Team-ready</div>
+      <div class="feat-desc">Memory files commit to git. Merge strategy: they're append-only tables, conflicts are rare and obvious. <code>Handoff</code> generates a snapshot for whoever picks up the project next — no Slack thread required.</div>
+    </div>
+  </div>
+</div>
+
+<!-- COMMANDS -->
+<div class="section reveal" id="commands">
+  <div class="section-tag">Reference</div>
+  <h2 class="section-h">13 commands, all in plain English</h2>
+  <p class="section-p">Type any of these in Claude Code chat. Skills fire automatically — no commands needed.</p>
+
+  <div class="cmd-list">
+    <div class="cmd-row"><span class="cmd-name">Setup Memory</span><span class="cmd-desc-text">First time only. Runs setup.py from inside Claude Code — no terminal needed.</span></div>
+    <div class="cmd-row"><span class="cmd-name">Start Session</span><span class="cmd-desc-text">Loads memory, reads all four task files, reports session number and last change. Full context in seconds.</span></div>
+    <div class="cmd-row"><span class="cmd-name">End Session</span><span class="cmd-desc-text">Updates STATUS.md, syncs memory, runs drift check. Confirms everything is clean before you close.</span></div>
+    <div class="cmd-row"><span class="cmd-name">Check Drift</span><span class="cmd-desc-text">Compares live code against memory. Reports what's missing and what's stale. Fixes it if you confirm.</span></div>
+    <div class="cmd-row"><span class="cmd-name">Analyze Codebase</span><span class="cmd-desc-text">Scans all JS/CSS/backend files. Updates memory with everything found. Adds missing entries only — never overwrites.</span></div>
+    <div class="cmd-row"><span class="cmd-name">Install Memory</span><span class="cmd-desc-text">New machine. Scans project, copies memory files to system path, fills gaps. One command to rebuild context.</span></div>
+    <div class="cmd-row"><span class="cmd-name">Generate Skills</span><span class="cmd-desc-text">Reads your stack and creates auto-invoked skills tailored to your actual file names and conventions.</span></div>
+    <div class="cmd-row"><span class="cmd-name">Update Kit</span><span class="cmd-desc-text">Pulls latest kit from GitHub. Previews changes. Applies only the kit-managed block — nothing else moves.</span></div>
+    <div class="cmd-row"><span class="cmd-name">Estimate: [task]</span><span class="cmd-desc-text">Before starting anything. Complexity rating, files that will change, risks flagged, one clarifying question if needed.</span></div>
+    <div class="cmd-row"><span class="cmd-name">Debug Session</span><span class="cmd-desc-text">Reproduce → isolate → hypothesize → test → fix → verify → log. Structured, no jumping straight to a fix.</span></div>
+    <div class="cmd-row"><span class="cmd-name">Code Health</span><span class="cmd-desc-text">Finds console.logs, hardcoded values, missing error handling, dead code, files over 500 lines. Pre-ship scan.</span></div>
+    <div class="cmd-row"><span class="cmd-name">Handoff</span><span class="cmd-desc-text">Generates HANDOFF.md from your task files and memory. Current state, next tasks, decisions made, gotchas.</span></div>
+    <div class="cmd-row"><span class="cmd-name">Create a skill called…</span><span class="cmd-desc-text">Describe what you want in plain English. Claude creates the SKILL.md and tells you the trigger phrase.</span></div>
+  </div>
+
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="section narrow reveal" id="how">
+  <div class="section-tag">How it works</div>
+  <h2 class="section-h">7 files. Each one does one thing.</h2>
+  <p class="section-p">No framework. No cloud. Just markdown files and a Python script.</p>
+
+  <div class="how-list">
+    <div class="how-row">
+      <div class="how-n">01</div>
+      <div>
+        <div class="how-title">CLAUDE.md — the instruction file</div>
+        <div class="how-body">Claude reads this automatically when you open a project. You fill in your stack, file names, and conventions once. It also contains all the commands. This is the only file you actually edit.</div>
+      </div>
+    </div>
+    <div class="how-row">
+      <div class="how-n">02</div>
+      <div>
+        <div class="how-title">.claude/memory/ — the knowledge base</div>
+        <div class="how-body">Five markdown files: <code>js_functions.md</code>, <code>backend_reference.md</code>, <code>html_css_reference.md</code>, <code>project_status.md</code>, <code>user_preferences.md</code>. Claude reads these instead of re-scanning your whole codebase every session.</div>
+      </div>
+    </div>
+    <div class="how-row">
+      <div class="how-n">03</div>
+      <div>
+        <div class="how-title">tasks/ — session continuity</div>
+        <div class="how-body"><code>todo.md</code> is Claude's plan. <code>lessons.md</code> is its mistake log. <code>decisions.md</code> is its architecture record. <code>errors.md</code> is its bug history. All four are read at the start of every session. All four commit to your repo.</div>
+      </div>
+    </div>
+    <div class="how-row">
+      <div class="how-n">04</div>
+      <div>
+        <div class="how-title">check_memory.py — the drift guard</div>
+        <div class="how-body">Scans your JS and CSS files, finds every function and class, checks whether they're in the memory files. If something's missing or stale, it reports it. Runs automatically after every edit via a PostToolUse hook in <code>settings.json</code>.</div>
+      </div>
+    </div>
+    <div class="how-row">
+      <div class="how-n">05</div>
+      <div>
+        <div class="how-title">settings.json — the automation layer</div>
+        <div class="how-body">Tells Claude Code to run <code>check_memory.py --silent</code> after every Edit or Write tool call. You never trigger it manually. It just runs in the background and alerts you if drift appears.</div>
+      </div>
+    </div>
+    <div class="how-row">
+      <div class="how-n">06</div>
+      <div>
+        <div class="how-title">.claude/skills/ — reusable playbooks</div>
+        <div class="how-body">Each skill is a folder with a <code>SKILL.md</code> (trigger + instructions) and optional supporting docs Claude reads when it runs — like <code>ANTI-PATTERNS.md</code> for the refactor skill, or <code>ENVIRONMENT-MATRIX.md</code> for the environment-check skill. <code>Generate Skills</code> creates 7 skills tuned to your stack. You can add custom ones with a single chat message: <em>"Create a skill called [name] that [does X]."</em></div>
+      </div>
+    </div>
+    <div class="how-row">
+      <div class="how-n">07</div>
+      <div>
+        <div class="how-title">update.py — the safe updater</div>
+        <div class="how-body">Finds the kit-managed commands block in CLAUDE.md (looks for <code>## Session Commands</code> or older heading variants). Replaces only that block. Everything else — your project config, memory files, task files — is untouched. Shows a diff before applying.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FILE TREE -->
+<div class="section narrow reveal" id="files">
+  <div class="section-tag">What gets created</div>
+  <h2 class="section-h">The full file layout</h2>
+  <p class="section-p">Everything commits to your repo. Pull on a new machine, type <code style="font-family:var(--mono);font-size:.85rem;color:var(--amber);background:rgba(210,153,34,.08);border-radius:4px;padding:.1rem .4rem">Install Memory</code>, and you're back.</p>
+
+  <div class="tree-wrap">
+    <div class="tree-head">
+      <div class="term-dot term-dot-r"></div>
+      <div class="term-dot term-dot-y"></div>
+      <div class="term-dot term-dot-g"></div>
+      <span class="tree-head-name">your-project/</span>
+    </div>
+    <div class="tree-body">
+      <span class="tl"><span class="tl-dir">your-project/</span></span>
+      <span class="tl">├── <span class="tl-file">CLAUDE.md</span>               <span class="tl-comment">← edit the bottom half for your project</span></span>
+      <span class="tl">├── <span class="tl-file">STATUS.md</span>               <span class="tl-comment">← session log, auto-updated</span></span>
+      <span class="tl">├── <span class="tl-file">update.py</span>               <span class="tl-comment">← safe updater</span></span>
+      <span class="tl">├── <span class="tl-dir">tasks/</span>                  <span class="tl-comment">← commit this</span></span>
+      <span class="tl">│   ├── <span class="tl-new">todo.md</span>             <span class="tl-comment">← plan before code</span></span>
+      <span class="tl">│   ├── <span class="tl-new">lessons.md</span>          <span class="tl-comment">← mistake log</span></span>
+      <span class="tl">│   ├── <span class="tl-new">decisions.md</span>        <span class="tl-comment">← architecture record</span></span>
+      <span class="tl">│   └── <span class="tl-new">errors.md</span>           <span class="tl-comment">← bug history</span></span>
+      <span class="tl">├── <span class="tl-dir">tools/</span></span>
+      <span class="tl">│   └── <span class="tl-file">check_memory.py</span>     <span class="tl-comment">← drift detector, auto-runs</span></span>
+      <span class="tl">└── <span class="tl-dir">.claude/</span></span>
+      <span class="tl">    ├── <span class="tl-file">settings.json</span>       <span class="tl-comment">← hooks + permissions</span></span>
+      <span class="tl">    ├── <span class="tl-dir">memory/</span></span>
+      <span class="tl">    │   ├── <span class="tl-file">MEMORY.md</span></span>
+      <span class="tl">    │   ├── <span class="tl-file">js_functions.md</span></span>
+      <span class="tl">    │   ├── <span class="tl-file">backend_reference.md</span></span>
+      <span class="tl">    │   ├── <span class="tl-file">html_css_reference.md</span></span>
+      <span class="tl">    │   ├── <span class="tl-file">project_status.md</span></span>
+      <span class="tl">    │   └── <span class="tl-file">user_preferences.md</span></span>
+      <span class="tl">    └── <span class="tl-dir">skills/</span>             <span class="tl-comment">← auto-invoked by Claude</span></span>
+      <span class="tl">        ├── <span class="tl-file">code-review/</span></span>
+      <span class="tl">        ├── <span class="tl-file">security-check/</span></span>
+      <span class="tl">        ├── <span class="tl-file">fix-bug/</span></span>
+      <span class="tl">        ├── <span class="tl-file">new-feature/</span></span>
+      <span class="tl">        ├── <span class="tl-dir">environment-check/</span>   <span class="tl-comment">← fill in ENVIRONMENT-MATRIX.md</span></span>
+      <span class="tl">        ├── <span class="tl-dir">run-verification/</span>    <span class="tl-comment">← fill in TEST-STRATEGY.md</span></span>
+      <span class="tl">        └── <span class="tl-dir">refactor/</span>            <span class="tl-comment">← fill in ANTI-PATTERNS.md</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- BUILT BY -->
+<div class="built-by reveal">
+  <div class="built-by-inner">
+    <div class="by-text">
+      <h3>Built from real sessions, not a weekend prototype</h3>
+      <p>
+        This started as a personal CLAUDE.md I was copy-pasting between projects. After session 20 or so I got annoyed and built the drift detector. Skills came after noticing I was pasting the same prompt for "review this file" every single day. The updater came after manually patching CLAUDE.md on three different projects. Everything here has a story.
+      </p>
+    </div>
+    <div class="by-stats">
+      <div class="by-stat">
+        <div class="by-stat-n"><em>86</em></div>
+        <div class="by-stat-l">sessions on a real production project — the course platform that stress-tested this kit</div>
+      </div>
+      <div class="by-stat">
+        <div class="by-stat-n"><em>1</em> wk</div>
+        <div class="by-stat-l">to build a full course delivery platform with scheduler, emails, admin panel, and dashboard</div>
+      </div>
+      <div class="by-stat">
+        <div class="by-stat-n"><em>21</em></div>
+        <div class="by-stat-l">undocumented functions the drift detector caught on first run</div>
+      </div>
+      <div class="by-stat">
+        <div class="by-stat-n"><em>0</em></div>
+        <div class="by-stat-l">times the same bug was debugged twice, once errors.md existed</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUOTE -->
+<div class="section narrow reveal" style="max-width:680px">
+  <blockquote class="pull-quote">
+    <p>"The kit isn't a nice-to-have. It's what made the week possible. Without it, day 3 would have started re-explaining the Java patterns to Claude. By day 6 the context would have been too bloated to continue cleanly."</p>
+    <cite>— from an actual session recap</cite>
+  </blockquote>
+</div>
+
+<!-- CTA -->
+<div class="cta-wrap reveal">
+  <div class="cta-inner">
+    <div class="cta-text">
+      <h2>Ready to stop re-explaining your project?</h2>
+      <p>One line installs it. Claude handles setup. Takes about 90 seconds total.</p>
+    </div>
+    <div style="display:flex; gap:.75rem; flex-wrap:wrap; flex-shrink:0">
+      <a href="#install" class="btn btn-primary">Install now</a>
+      <a href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit" target="_blank" class="btn btn-ghost">★ Star on GitHub</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-left">
+    claude-memory-starter · MIT · by YehudaFrankel
+  </div>
+  <div class="footer-right">
+    <a href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit" target="_blank">GitHub</a>
+    <a href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit/blob/main/README.md" target="_blank">Docs</a>
+    <a href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit/blob/main/LICENSE" target="_blank">License</a>
+  </div>
+</footer>
+
+<script>
+/* ── Counter roll-up ── */
+function animateCount(el, target) {
+  const dur = 900, start = performance.now();
+  function tick(now) {
+    const p = Math.min((now - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(ease * target);
+    if (p < 1) requestAnimationFrame(tick);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(tick);
+}
+
+const statsObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.querySelectorAll('.counter').forEach(el => {
+      animateCount(el, +el.dataset.target);
+    });
+    statsObs.disconnect();
+  });
+}, { threshold: .3 });
+statsObs.observe(document.querySelector('.stats'));
+
+/* ── Scroll reveal (generic) ── */
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); }
+  });
+}, { threshold: .08 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+/* ── Feature rows staggered ── */
+const featObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.querySelectorAll('.feature-row').forEach((row, i) => {
+      setTimeout(() => row.classList.add('in'), i * 70);
+    });
+    featObs.unobserve(e.target);
+  });
+}, { threshold: .05 });
+const fl = document.querySelector('.feature-list');
+if (fl) featObs.observe(fl);
+
+/* ── Command rows staggered ── */
+const cmdObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.querySelectorAll('.cmd-row').forEach((row, i) => {
+      setTimeout(() => row.classList.add('in'), i * 45);
+    });
+    cmdObs.unobserve(e.target);
+  });
+}, { threshold: .05 });
+const cl = document.querySelector('.cmd-list');
+if (cl) cmdObs.observe(cl);
+
+/* ── How rows staggered ── */
+const howObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.querySelectorAll('.how-row').forEach((row, i) => {
+      setTimeout(() => row.classList.add('in'), i * 60);
+    });
+    howObs.unobserve(e.target);
+  });
+}, { threshold: .05 });
+const hl = document.querySelector('.how-list');
+if (hl) howObs.observe(hl);
+
+/* ── Copy install ── */
+const INSTALL = `python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/YehudaFrankel/Claude-Code-memory-starter-kit/main/install.py').read().decode())"`;
+function copyInstall() {
+  navigator.clipboard.writeText(INSTALL).then(() => {
+    const b = document.getElementById('copyBtn');
+    b.textContent = '✓ copied';
+    b.classList.add('ok');
+    setTimeout(() => { b.textContent = 'copy'; b.classList.remove('ok'); }, 2000);
+  });
+}
+
+/* ── Nav shadow on scroll ── */
+const nav = document.querySelector('nav');
+window.addEventListener('scroll', () => {
+  nav.style.boxShadow = window.scrollY > 20 ? '0 1px 0 rgba(255,255,255,.04)' : 'none';
+}, { passive: true });
+
+/* ── Smooth anchor scroll ── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (!t) return;
+    e.preventDefault();
+    t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
