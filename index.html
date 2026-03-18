@@ -1124,8 +1124,7 @@ const howObs = new IntersectionObserver(entries => {
     howObs.unobserve(e.target);
   });
 }, { threshold: .05 });
-const hl = document.querySelector('.how-list');
-if (hl) howObs.observe(hl);
+document.querySelectorAll('.how-list').forEach(hl => howObs.observe(hl));
 
 /* ── Copy install ── */
 const INSTALL = `python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/YehudaFrankel/Claude-Code-memory-starter-kit/main/install.py').read().decode())"`;
