@@ -144,17 +144,18 @@ When the user types **"Install Memory"**, do the following:
 ### `End Session`
 When the user types **"End Session"**, do the following:
 > **Tip:** If this session ran long, type `/compact` first to summarize the conversation before ending. This keeps context clean and prevents the next session from starting with a bloated history.
-1. Update `STATUS.md` — increment session number, add one-line entry: date + what changed
-2. Update all relevant memory files in `.claude/memory/` for anything changed this session:
+1. Run `/learn` — extract patterns, lessons, and decisions from this session into `tasks/lessons.md` and `tasks/decisions.md` before saving anything
+2. Update `STATUS.md` — increment session number, add one-line entry: date + what changed
+3. Update all relevant memory files in `.claude/memory/` for anything changed this session:
    - JS changed → update `js_functions.md`
    - HTML/CSS changed → update `html_css_reference.md`
    - Backend/API changed → update `backend_reference.md`
    - Phase or architecture change → update `project_status.md`
    - New rules or gotchas → update `user_preferences.md`
    - Update `currentDate` in `.claude/memory/MEMORY.md` to today's date
-3. Sync memory files to any project bundle (`.claude/memory/` in repo if present)
-4. Run drift check to confirm everything is clean
-5. Report: "Session N complete. Updated: [list]. Memory clean."
+4. Sync memory files to any project bundle (`.claude/memory/` in repo if present)
+5. Run drift check to confirm everything is clean
+6. Report: "Session N complete. Updated: [list]. Memory clean."
 
 ---
 
@@ -172,6 +173,20 @@ After **any code change** this session, immediately update the relevant memory f
 | Fixed a runtime error / bug | `tasks/errors.md` |
 
 `End Session` handles `STATUS.md`, the full drift check, and confirms everything is clean.
+
+---
+
+## Mid-Session: Context Getting Long?
+
+If the session is getting long and responses feel slower or repetitive, run `/compact` proactively — don't wait for a crash.
+
+**Safe compact checklist:**
+1. Run `/learn` first — capture session patterns before compacting
+2. Confirm memory files are up to date (Auto-Save Rule)
+3. Run `/compact` — the PreCompact hook re-injects memory automatically
+4. Continue working — full context is available within 1–2 messages
+
+Alternatively say: **"Should I compact?"** and Claude will evaluate and guide you through it.
 
 ---
 

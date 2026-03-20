@@ -902,12 +902,12 @@ footer {
         <span class="t-line"><span class="t-prompt">$ </span><span class="t-user">Start Session</span></span>
         <span class="t-out"><span class="t-ok">✓</span> Python 3.11 found</span>
         <span class="t-out"><span class="t-ok">✓</span> check_memory.py — no drift</span>
-        <span class="t-out"><span class="t-ok">✓</span> STATUS.md — Session 91</span>
+        <span class="t-out"><span class="t-ok">✓</span> STATUS.md — Session 94</span>
         <span class="t-out"><span class="t-ok">✓</span> 5 lessons loaded</span>
         <span class="t-out"><span class="t-ok">✓</span> 4 decisions loaded</span>
-        <span class="t-out"><span class="t-ok">✓</span> 3 known errors loaded</span>
+        <span class="t-out"><span class="t-ok">✓</span> 13 skills ready</span>
         <span class="t-gap"></span>
-        <span class="t-line"><span class="t-ok">Session 88 ready.</span></span>
+        <span class="t-line"><span class="t-ok">Session 94 ready.</span></span>
         <span class="t-out2">Last change: drift fixes + SETUP.md update</span>
         <span class="t-out2">What are we working on?</span>
         <span class="t-gap"></span>
@@ -921,7 +921,7 @@ footer {
 <div class="stats">
   <div class="stats-inner">
     <div class="stat-item">
-      <div class="s-num"><span class="counter" data-target="91">91</span></div>
+      <div class="s-num"><span class="counter" data-target="94">94</span></div>
       <div class="s-label">real production sessions — not a demo project</div>
     </div>
     <div class="stat-item">
@@ -933,8 +933,8 @@ footer {
       <div class="s-label">undocumented functions caught by drift detection — first run</div>
     </div>
     <div class="stat-item">
-      <div class="s-num"><span class="counter" data-target="7">7</span></div>
-      <div class="s-label">production bugs permanently captured in errors.md — never hit twice</div>
+      <div class="s-num"><span class="counter" data-target="13">13</span></div>
+      <div class="s-label">skills — 7 starter + 6 new from the everything-claude-code project</div>
     </div>
   </div>
 </div>
@@ -943,7 +943,7 @@ footer {
 <div class="section reveal" id="proof">
   <div class="section-tag">Real-world test</div>
   <h2 class="section-h">Tested on a production codebase — not a todo app</h2>
-  <p class="section-p">91 sessions. Legacy Java backend. Multiple crashes. This is what actually happened.</p>
+  <p class="section-p">94 sessions. Legacy Java backend. Multiple crashes. This is what actually happened.</p>
 
   <div class="how-list">
     <div class="how-row">
@@ -1025,25 +1025,25 @@ footer {
 <div class="section reveal" id="workflow">
   <div class="section-tag">Daily workflow</div>
   <h2 class="section-h">Two commands. Everything else is automatic.</h2>
-  <p class="section-p">The drift checker runs silently after every file edit. Memory updates after every code change. You don't manage any of it — you just work.</p>
+  <p class="section-p">The drift checker runs silently after every file edit. Memory updates after every code change. <code style="font-family:var(--mono);font-size:.78rem;color:var(--amber);background:rgba(210,153,34,.08);border-radius:4px;padding:.1rem .4rem">/learn</code> captures session patterns at close. You don't manage any of it — you just work.</p>
 
   <div class="flow">
     <div class="flow-step">
       <div class="flow-step-n">STEP 01</div>
-      <div class="flow-step-title">Open project</div>
-      <div class="flow-step-cmd">cd your-project</div>
-    </div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-step">
-      <div class="flow-step-n">STEP 02</div>
       <div class="flow-step-title">Load memory</div>
       <div class="flow-step-cmd">Start Session</div>
     </div>
     <div class="flow-arrow">→</div>
     <div class="flow-step">
-      <div class="flow-step-n">STEP 03</div>
+      <div class="flow-step-n">STEP 02</div>
       <div class="flow-step-title">Work normally</div>
       <div class="flow-step-cmd">auto-saves</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="flow-step-n">STEP 03</div>
+      <div class="flow-step-title">Long session?</div>
+      <div class="flow-step-cmd">/learn → /compact</div>
     </div>
     <div class="flow-arrow">→</div>
     <div class="flow-step">
@@ -1159,7 +1159,7 @@ footer {
     </div>
     <div class="feature-row">
       <div class="feat-label"><span class="feat-icon">🔗</span> Lifecycle hooks</div>
-      <div class="feat-desc">Three hooks beyond drift detection: <code>SessionStart</code> injects memory before your first message — Claude starts warm without a manual command. <code>PreCompact</code> preserves memory through <code>/compact</code>, so long sessions stay clean without losing context. <code>Stop</code> silently checks for unsaved memory changes and surfaces a reminder only when needed. All three ship as Python scripts — cross-platform, no dependencies.</div>
+      <div class="feat-desc">Three hooks beyond drift detection: <code>SessionStart</code> injects memory before your first message — Claude starts warm without a manual command. <code>PreCompact</code> preserves memory through <code>/compact</code> — run <code>/learn</code> first to capture session patterns, then compact freely. <code>Stop</code> silently checks for unsaved memory changes and surfaces a reminder only when needed. All three ship as Python scripts — cross-platform, no dependencies.</div>
     </div>
     <div class="feature-row">
       <div class="feat-label"><span class="feat-icon">📋</span> Task continuity</div>
@@ -1167,7 +1167,7 @@ footer {
     </div>
     <div class="feature-row">
       <div class="feat-label"><span class="feat-icon">⚡</span> Auto-invoked skills</div>
-      <div class="feat-desc">Say "review this file" and Claude runs the full code-review skill automatically. <code>Generate Skills</code> builds a starter set of 7 skills tailored to your stack: <code>code-review</code>, <code>security-check</code>, <code>fix-bug</code>, <code>new-feature</code>, <code>environment-check</code>, <code>run-verification</code>, and <code>refactor</code>. Each skill includes supporting reference docs (like <code>ANTI-PATTERNS.md</code>, <code>ENVIRONMENT-MATRIX.md</code>) that Claude reads when it runs. Add custom skills with a single chat message.</div>
+      <div class="feat-desc">Say "review this file" and Claude runs the full code-review skill automatically. <code>Generate Skills</code> builds a starter set of 7 skills tailored to your stack. Six additional skills ship with the kit: <code>/learn</code> auto-runs at every End Session — extracting patterns, lessons, and decisions from the session into <code>tasks/lessons.md</code> before memory is pushed; <code>/evolve</code> clusters repeated lessons into new reusable skills; <code>strategic-compact</code> guides safe context compaction mid-session without losing memory; <code>search-first</code> enforces finding existing code before writing new; <code>verification-loop</code> runs compile + smoke test + self-evaluation after every change; <code>java-reviewer</code> deep-checks Java files against your stack's patterns. Add custom skills with a single chat message.</div>
     </div>
     <div class="feature-row">
       <div class="feat-label"><span class="feat-icon">🚀</span> Headless mode</div>
