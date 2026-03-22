@@ -92,49 +92,82 @@ nav {
 .neon-banner {
   position: relative;
   text-align: center;
-  padding: 6rem 2rem 5rem;
+  padding: 3rem 2rem 2.5rem;
   overflow: hidden;
   border-bottom: 1px solid var(--border);
 }
 .neon-banner::before {
   content: '';
   position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 70%, rgba(139,92,246,0.18) 0%, transparent 65%);
+  background: radial-gradient(ellipse at 50% 70%, rgba(139,92,246,0.15) 0%, transparent 65%);
   pointer-events: none;
 }
 .neon-bg-line {
   position: absolute;
   font-family: var(--mono);
-  font-size: .72rem;
-  color: rgba(139,92,246,0.13);
+  font-size: .7rem;
+  color: rgba(139,92,246,0.11);
   pointer-events: none;
   user-select: none;
   white-space: nowrap;
 }
 .neon-title {
   font-family: var(--mono);
-  font-size: clamp(3rem, 9vw, 7rem);
+  font-size: clamp(2rem, 6vw, 4rem);
   font-weight: 800;
   letter-spacing: -.02em;
   color: #c4b5fd;
-  text-shadow:
-    0 0 10px rgba(139,92,246,1),
-    0 0 30px rgba(139,92,246,0.8),
-    0 0 70px rgba(139,92,246,0.5),
-    0 0 140px rgba(139,92,246,0.25);
-  animation: neonPulse 4s ease-in-out infinite;
   position: relative;
+  display: inline-block;
+  animation: glitch 6s infinite;
 }
-@keyframes neonPulse {
-  0%,100% { text-shadow: 0 0 10px rgba(139,92,246,1), 0 0 30px rgba(139,92,246,.8), 0 0 70px rgba(139,92,246,.5), 0 0 140px rgba(139,92,246,.25); }
-  50%     { text-shadow: 0 0 20px rgba(167,139,250,1), 0 0 50px rgba(139,92,246,1), 0 0 110px rgba(139,92,246,.7), 0 0 220px rgba(139,92,246,.4); }
+.neon-title::before,
+.neon-title::after {
+  content: 'Claude Recall';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  opacity: 0;
+}
+.neon-title::before {
+  color: #a78bfa;
+  animation: glitchTop 6s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+}
+.neon-title::after {
+  color: #7c3aed;
+  animation: glitchBot 6s infinite;
+  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+}
+@keyframes glitch {
+  0%,94%,100% {
+    text-shadow: 0 0 8px rgba(139,92,246,1), 0 0 25px rgba(139,92,246,.7), 0 0 60px rgba(139,92,246,.3);
+    transform: none;
+  }
+  95% { transform: skewX(-1deg); }
+  96% { transform: skewX(1deg) translateX(-2px); }
+  97% { transform: none; }
+  98% { transform: skewX(.5deg) translateX(2px); }
+  99% { transform: none; }
+}
+@keyframes glitchTop {
+  0%,94%,100% { opacity: 0; transform: none; }
+  95% { opacity: .8; transform: translateX(-3px); }
+  96% { opacity: .8; transform: translateX(3px); }
+  97% { opacity: 0; }
+}
+@keyframes glitchBot {
+  0%,94%,100% { opacity: 0; transform: none; }
+  96% { opacity: .7; transform: translateX(4px); }
+  97% { opacity: .7; transform: translateX(-2px); }
+  98% { opacity: 0; }
 }
 .neon-sub {
   font-family: var(--mono);
-  font-size: .95rem;
+  font-size: .85rem;
   color: var(--muted);
   letter-spacing: .1em;
-  margin-top: 1.25rem;
+  margin-top: .9rem;
   position: relative;
 }
 
