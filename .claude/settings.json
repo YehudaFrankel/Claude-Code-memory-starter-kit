@@ -18,6 +18,23 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python tools/session_journal.py",
+            "timeout": 10,
+            "statusMessage": "Capturing session journal..."
+          },
+          {
+            "type": "command",
+            "command": "python tools/stop_check.py",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   }
 }

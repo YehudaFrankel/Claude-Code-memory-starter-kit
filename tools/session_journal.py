@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+"""
+session_journal.py - Auto-captures a rich session summary on every Stop.
+No /learn needed. No manual action required.
+
+Reads draft-lessons.md (auto-tracked edits) + STATUS.md current phase,
+writes a searchable entry to session_journal.md.
+
+Search the journal: Grep(pattern='keyword', path=session_journal.md)
+Hook event: Stop
+"""
+
+import re
+from pathlib import Path
+from datetime import datetime
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+ROOT = SCRIPT_DIR.parent
+
+
+def find_memory_dir():
+    """Auto-detect the .claude/memory directory."""
+    for path in ROOT.rglob('MEMORY.md'):
+        if '.claude' in path.parts:
+            return path.parent
+    return ROOT / '.claude' / 'memory'
+
+
+def read_edited_files(draft_path: Path) -> list:
+    """Extract unique filenames from draft-lessons.md."""
+    if not draft_path.exists():
+        return []
+    seen = []
+    for line in draft_path.read_text(encoding='utf-8').splitlines():
+        m = re.search(r'Edited: (.+)$', line)
+        if m:
+            f = m.group(1).strip()
+            if f not in seen:
+                seen.append(f)
+    return seen
+
+
+def read_current_phase(status_path: Path) -> str:
+    """Read the current phase summary from STATUS.md."""
+    if not status_path.exists():
+        return ''
+    lines = status_path.read_text(encoding='utf-8').splitlines()
+    capture_next = False
+    for line in lines:
+        if capture_next and line.strip():
+            phase = re.sub(r'^>\s*', '', line)
+            phase = re.sub(r'^\*\*[^*]+\*\*\s*', '', phase)
+            return phase[:120]
+        if '## Current Phase' in line:
+            capture_next = True
+    return ''
+
+
+def main():
+    mem_dir = find_memory_dir()
+    draft_file   = mem_dir / 'tasks' / 'draft-lessons.md'
+    status_file  = mem_dir / 'STATUS.md'
+    journal_file = mem_dir / 'session_journal.md'
+
+    edited_files = read_edited_files(draft_file)
+    phase        = read_current_phase(status_file)
+
+    # Skip if nothing happened
+    if not edited_files and not phase:
+        return
+
+    now       = datetime.now().strftime('%Y-%m-%d %H:%M')
+    files_str = ', '.join(edited_files) if edited_files else 'no files edited'
+
+    entry = f'\n## [{now}]\n**Files:** {files_str}\n**What:** {phase}\n'
+
+    # Create journal with header if missing
+    if not journal_file.exists():
+        journal_file.write_text(
+            '# Session Journal\n'
+            'Auto-captured every session. '
+            'Search: Grep(pattern=\'keyword\', path=session_journal.md)\n',
+            encoding='utf-8'
+        )
+
+    with open(journal_file, 'a', encoding='utf-8') as f:
+        f.write(entry)
+
+    # Clear draft-lessons for next session
+    if draft_file.exists():
+        draft_file.write_text(
+            '# Draft Lessons (auto-tracked edits)\n'
+            '_Run /learn to extract patterns from these._\n',
+            encoding='utf-8'
+        )
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception:
+        pass  # Never block the session on a hook error
