@@ -87,60 +87,40 @@ nav {
 .gh-btn:hover { color: var(--text); border-color: var(--dim); background: var(--surface); }
 
 /* ─────────────────────────────────────────
-   Neon Banner
+   Hero brand — neon product name in hero
 ───────────────────────────────────────── */
-.neon-banner {
-  position: relative;
-  text-align: center;
-  padding: 3rem 2rem 2rem;
-  overflow: hidden;
-}
-.neon-banner::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 70%, rgba(139,92,246,0.15) 0%, transparent 65%);
-  pointer-events: none;
-}
-.neon-bg-line {
-  position: absolute;
+.hero-brand {
   font-family: var(--mono);
-  font-size: .7rem;
-  color: rgba(139,92,246,0.11);
-  pointer-events: none;
-  user-select: none;
-  white-space: nowrap;
-}
-.neon-title {
-  font-family: var(--mono);
-  font-size: clamp(2rem, 6vw, 4rem);
-  font-weight: 800;
-  letter-spacing: -.02em;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 700;
   color: #c4b5fd;
-  position: relative;
+  letter-spacing: .02em;
   display: inline-block;
+  position: relative;
+  margin-bottom: 1rem;
   animation: glitch 6s infinite;
 }
-.neon-title::before,
-.neon-title::after {
+.hero-brand::before,
+.hero-brand::after {
   content: 'Claude Recall';
   position: absolute;
   top: 0; left: 0;
   width: 100%;
   opacity: 0;
 }
-.neon-title::before {
+.hero-brand::before {
   color: #a78bfa;
   animation: glitchTop 6s infinite;
   clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
 }
-.neon-title::after {
+.hero-brand::after {
   color: #7c3aed;
   animation: glitchBot 6s infinite;
   clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
 }
 @keyframes glitch {
   0%,94%,100% {
-    text-shadow: 0 0 8px rgba(139,92,246,1), 0 0 25px rgba(139,92,246,.7), 0 0 60px rgba(139,92,246,.3);
+    text-shadow: 0 0 8px rgba(139,92,246,.9), 0 0 24px rgba(139,92,246,.5), 0 0 50px rgba(139,92,246,.2);
     transform: none;
   }
   95% { transform: skewX(-1deg); }
@@ -161,40 +141,14 @@ nav {
   97% { opacity: .7; transform: translateX(-2px); }
   98% { opacity: 0; }
 }
-/* Scan line sweeping across banner */
-.neon-banner::after {
-  content: '';
-  position: absolute;
-  top: 0; bottom: 0;
-  width: 3px;
-  background: linear-gradient(180deg, transparent 0%, rgba(139,92,246,.6) 20%, rgba(167,139,250,1) 50%, rgba(139,92,246,.6) 80%, transparent 100%);
-  animation: scanH 5s ease-in-out infinite;
-  pointer-events: none;
-  opacity: 0;
-  left: -5%;
-}
-@keyframes scanH {
-  0%   { left: -5%;  opacity: 0; }
-  8%   { opacity: 1; }
-  92%  { opacity: 1; }
-  100% { left: 105%; opacity: 0; }
-}
-.neon-sub {
-  font-family: var(--mono);
-  font-size: .85rem;
-  color: var(--muted);
-  letter-spacing: .1em;
-  margin-top: .9rem;
-  position: relative;
-}
 
 /* ─────────────────────────────────────────
    Hero  —  intentionally NOT centered
 ───────────────────────────────────────── */
 .hero {
-  min-height: 80vh;
+  min-height: 90vh;
   display: flex; align-items: center;
-  padding: 1.5rem 2rem 3rem;
+  padding: 7rem 2rem 4rem;
   max-width: 1100px; margin: 0 auto;
 }
 
@@ -976,24 +930,11 @@ footer {
   </div>
 </nav>
 
-<!-- NEON BANNER -->
-<div class="neon-banner">
-  <span class="neon-bg-line" style="top:18%;left:4%">$ Start Session</span>
-  <span class="neon-bg-line" style="top:33%;left:9%">✓ no drift detected</span>
-  <span class="neon-bg-line" style="top:60%;left:6%">✓ 5 lessons loaded</span>
-  <span class="neon-bg-line" style="top:76%;left:3%">Session 94 ready.</span>
-  <span class="neon-bg-line" style="top:22%;right:4%">$ End Session</span>
-  <span class="neon-bg-line" style="top:42%;right:7%">✓ memory saved</span>
-  <span class="neon-bg-line" style="top:63%;right:3%">Check Drift</span>
-  <span class="neon-bg-line" style="top:79%;right:9%">✓ all clean</span>
-  <div class="neon-title">Claude Recall</div>
-  <div class="neon-sub">Persistent memory for Claude Code</div>
-</div>
-
 <!-- HERO -->
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-text">
+      <div class="hero-brand">Claude Recall</div>
       <div class="eyebrow">v1.0.0 · open source · MIT license</div>
       <h1>
         You re-explain your codebase to Claude<br>
