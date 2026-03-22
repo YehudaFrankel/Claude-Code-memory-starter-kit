@@ -1,8 +1,8 @@
-# Claude Code Memory — Persistent Context for Claude Code
+# Claude Recall — Persistent Context for Claude Code
 
-![Claude Code Memory Starter Kit](memory-starter-kit.png)
+![Claude Recall](memory-starter-kit.png)
 
-[![v1.0.0](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square)](https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit/releases) [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue?style=flat-square)](https://python.org/downloads) [![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE) [![Claude Code](https://img.shields.io/badge/Claude-Code-orange?style=flat-square)](https://claude.ai/claude-code)
+[![v1.0.0](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square)](https://github.com/YehudaFrankel/claude-recall/releases) [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue?style=flat-square)](https://python.org/downloads) [![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE) [![Claude Code](https://img.shields.io/badge/Claude-Code-orange?style=flat-square)](https://claude.ai/claude-code)
 
 **Claude starts from zero every session. This kit gives it a memory that compounds over time.**
 
@@ -77,7 +77,7 @@ This kit was stress-tested on a production Java course delivery platform — not
 **Step 1 — Clone the kit**
 
 ```bash
-git clone https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit.git
+git clone https://github.com/YehudaFrankel/claude-recall.git
 ```
 
 **Step 2 — Run setup in your project**
@@ -108,7 +108,7 @@ That's the entire routine.
 
 **Quick Try (advanced)**
 
-Runs `install.py` directly from GitHub without cloning. Review the source before running if you prefer: [install.py on GitHub](https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit/blob/main/install.py)
+Runs `install.py` directly from GitHub without cloning. Review the source before running if you prefer: [install.py on GitHub](https://github.com/YehudaFrankel/claude-recall/blob/main/install.py)
 
 > ⚠️ This executes remote code directly — use the `git clone` method above if you want to inspect first.
 
@@ -370,4 +370,4 @@ Skip `setup.py` entirely — paste one of these directly into Claude Code:
 
 > Built across 91 real development sessions on a production codebase. The drift detector found 21 undocumented functions the first run. Skills were added after noticing the same prompts typed every day. Everything here came from actual use — nothing hypothetical.
 
-**[YehudaFrankel/Claude-Code-memory-starter-kit](https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit)**
+**[YehudaFrankel/Claude-Code-memory-starter-kit](https://github.com/YehudaFrankel/claude-recall)**
