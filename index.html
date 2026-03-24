@@ -1126,6 +1126,15 @@ footer {
         </div>
       </details>
       <details>
+        <summary>Does this work with Anthropic's native Auto Memory?</summary>
+        <div class="faq-body">
+          Yes — they solve different problems. Anthropic's Auto Memory captures conversational context within a session.
+          claude-recall persists <em>project knowledge across sessions</em>: your codebase structure, architectural decisions,
+          lessons from past mistakes, and custom workflows. Auto Memory forgets when the session closes.
+          claude-recall doesn't. Run both — they complement each other.
+        </div>
+      </details>
+      <details>
         <summary>How is this different from other Claude memory repos?</summary>
         <div class="faq-body">
           Most repos save a snapshot — a CLAUDE.md file you maintain by hand.
