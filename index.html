@@ -214,91 +214,42 @@ section { border-top: 1px solid var(--border); position: relative; overflow: hid
 .wrap-sm { max-width: 800px; margin: 0 auto; padding: 5rem 2rem; position: relative; z-index: 1; }
 .wrap-lg { max-width: 1120px; margin: 0 auto; padding: 5rem 2rem; position: relative; z-index: 1; }
 
-/* Install — subtle amber top-left glow */
-#install {
-  background: radial-gradient(ellipse at 0% 0%,
-    rgba(212,137,10,.09) 0%, transparent 55%);
+/* ── Section alternation — real visible contrast ── */
+#install, #loop, #tiers, #commands {
+  background: #23190a;
+}
+#living, #skills, #hooks, #stats, #faq {
+  background: #1c1508;
 }
 
-/* Living System — dot grid */
+/* Living — dot grid overlay on top of base */
 #living {
   background:
-    radial-gradient(circle, rgba(212,137,10,.18) 1px, transparent 1px),
-    radial-gradient(ellipse at 100% 50%, rgba(232,88,32,.07) 0%, transparent 55%);
-  background-size: 32px 32px, 100% 100%;
+    radial-gradient(circle, rgba(212,137,10,.22) 1px, transparent 1px),
+    #1c1508;
+  background-size: 30px 30px, auto;
 }
-#living .living-cell { backdrop-filter: blur(0); }
 
-/* Loop — diagonal line mesh */
+/* Loop — amber top glow on the alternating surface */
 #loop {
   background:
-    repeating-linear-gradient(
-      -45deg,
-      transparent,
-      transparent 38px,
-      rgba(212,137,10,.035) 38px,
-      rgba(212,137,10,.035) 39px
-    ),
-    radial-gradient(ellipse at 50% 0%, rgba(212,137,10,.08) 0%, transparent 60%);
+    radial-gradient(ellipse at 50% -10%, rgba(212,137,10,.18) 0%, transparent 55%),
+    #23190a;
 }
 
-/* Skills — left-edge amber bar */
-#skills {
-  background: linear-gradient(90deg,
-    rgba(212,137,10,.07) 0px,
-    rgba(212,137,10,.02) 300px,
-    transparent 600px);
-}
-
-/* Tiers — dramatic left amber glow */
-#tiers {
-  background:
-    radial-gradient(ellipse at -5% 50%,
-      rgba(212,137,10,.15) 0%,
-      rgba(212,137,10,.05) 30%,
-      transparent 55%),
-    radial-gradient(ellipse at 110% 80%, rgba(109,186,120,.06) 0%, transparent 40%);
-}
-
-/* Hooks — blue-green circuit feel */
+/* Hooks — green grid on top (autonomous section = green feel) */
 #hooks {
   background:
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 80px,
-      rgba(109,186,120,.025) 80px,
-      rgba(109,186,120,.025) 81px
-    ),
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 80px,
-      rgba(109,186,120,.02) 80px,
-      rgba(109,186,120,.02) 81px
-    );
+    repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(109,186,120,.06) 60px, rgba(109,186,120,.06) 61px),
+    repeating-linear-gradient(0deg,  transparent, transparent 60px, rgba(109,186,120,.05) 60px, rgba(109,186,120,.05) 61px),
+    #1c1508;
 }
 
-/* Stats — CRT green glow from bottom */
+/* Stats — strong CRT green glow from bottom center */
 #stats {
   background:
-    radial-gradient(ellipse at 50% 110%,
-      rgba(109,186,120,.12) 0%,
-      rgba(109,186,120,.04) 35%,
-      transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(212,137,10,.06) 0%, transparent 40%);
-}
-
-/* Commands — amber right-side glow */
-#commands {
-  background: radial-gradient(ellipse at 105% 50%,
-    rgba(212,137,10,.1) 0%, transparent 45%);
-}
-
-/* FAQ — subtle centered glow */
-#faq {
-  background: radial-gradient(ellipse at 50% 50%,
-    rgba(212,137,10,.05) 0%, transparent 70%);
+    radial-gradient(ellipse at 50% 120%, rgba(109,186,120,.22) 0%, rgba(109,186,120,.06) 40%, transparent 65%),
+    #1c1508;
 }
 
 .sec-label {
@@ -456,7 +407,7 @@ h2 {
   background: var(--s1);
 }
 .hook-row:first-child { border-top: none; }
-.hk-event { padding: 1rem 1.25rem; border-right: 1px solid var(--border); font-size: .78rem; color: var(--amber); display: flex; align-items: center; }
+.hk-event { padding: 1rem 1.25rem; border-right: 1px solid var(--border); font-size: .78rem; color: var(--green); display: flex; align-items: center; }
 .hk-file  { padding: 1rem 1.25rem; border-right: 1px solid var(--border); font-size: .76rem; color: var(--muted); display: flex; align-items: center; }
 .hk-does  { padding: 1rem 1.25rem; font-size: .76rem; color: var(--text); display: flex; align-items: center; }
 
@@ -549,7 +500,7 @@ footer {
   <a class="nav-logo" href="#">
     <div class="yf-mark">YF</div>
     <span class="nav-name">claude-recall</span>
-    <span class="nav-tag">// living system</span>
+    <span class="nav-tag">// agentic engineering</span>
   </a>
   <div class="nav-links">
     <a class="nav-a" href="#install">install</a>
@@ -561,7 +512,7 @@ footer {
     <a class="nav-a" href="#commands">commands</a>
     <span class="nav-div">·</span>
     <a class="nav-a" href="#faq">faq</a>
-    <a class="nav-gh" href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit" target="_blank">
+    <a class="nav-gh" href="https://github.com/YehudaFrankel/claude-recall" target="_blank">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
       GitHub
     </a>
@@ -587,7 +538,7 @@ footer {
     </p>
     <div class="hero-btns">
       <a class="btn btn-primary" href="#install">Get started →</a>
-      <a class="btn btn-ghost" href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit" target="_blank">View on GitHub</a>
+      <a class="btn btn-ghost" href="https://github.com/YehudaFrankel/claude-recall" target="_blank">View on GitHub</a>
     </div>
   </div>
 
@@ -620,8 +571,8 @@ footer {
     <div class="install-block reveal">
       <div class="install-title">// STEP 1 — clone the kit</div>
       <div class="install-cmd">
-        <span><span class="tp">$</span> <span class="cmd-text">git clone https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit</span></span>
-        <button class="copy-btn" onclick="copyCmd(this,'git clone https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit')">copy</button>
+        <span><span class="tp">$</span> <span class="cmd-text">git clone https://github.com/YehudaFrankel/claude-recall</span></span>
+        <button class="copy-btn" onclick="copyCmd(this,'git clone https://github.com/YehudaFrankel/claude-recall')">copy</button>
       </div>
     </div>
 
@@ -748,11 +699,11 @@ footer {
         <span style="color:var(--text)">On pass:</span> smoke-test → done</div>
       </div>
       <div style="background:var(--s1); padding:1.4rem 1.6rem; border-left:1px solid var(--border);">
-        <div style="font-size:.68rem; color:var(--muted); margin-bottom:.6rem; letter-spacing:.06em;">AUTONOMOUS</div>
+        <div style="font-size:.68rem; color:var(--green); margin-bottom:.6rem; letter-spacing:.06em;">AUTONOMOUS</div>
         <div style="font-size:.82rem; color:var(--text); line-height:1.8;">Self-healing: retry before escalating</div>
-        <div style="font-size:.78rem; color:var(--muted); line-height:1.8;">Stop hook: push memory after 9pm<br>
-        PreCompact hook: saves in-flight work<br>
-        PostToolUse hook: drift check after every edit</div>
+        <div style="font-size:.78rem; color:var(--muted); line-height:1.8;">Stop hook: <span style="color:var(--green)">push memory after 9pm</span><br>
+        PreCompact hook: <span style="color:var(--green)">saves in-flight work</span><br>
+        PostToolUse hook: <span style="color:var(--green)">drift check after every edit</span></div>
       </div>
     </div>
   </div>
@@ -867,17 +818,17 @@ footer {
       <div class="tier-row">
         <div class="tr-label">
           <div class="tr-tier">TIER 3</div>
-          <div class="tr-name">Autonomous Operation</div>
+          <div class="tr-name" style="color:var(--green)">Autonomous Operation</div>
         </div>
         <div class="tr-body">
           <div style="font-size:.78rem; color:var(--muted); margin-bottom:.6rem;">Hooks fire without human prompts. Memory pushes automatically. Health checks run on schedule.</div>
           <div class="tr-items">
-            <div class="tr-item active">stop hook</div>
-            <div class="tr-item active">PostToolUse hook</div>
-            <div class="tr-item active">auto end-session</div>
-            <div class="tr-item active">self-healing retry</div>
-            <div class="tr-item active">nightly health check</div>
-            <div class="tr-item active">daily summary</div>
+            <div class="tr-item active" style="color:var(--green);border-color:rgba(109,186,120,.3)">stop hook</div>
+            <div class="tr-item active" style="color:var(--green);border-color:rgba(109,186,120,.3)">PostToolUse hook</div>
+            <div class="tr-item active" style="color:var(--green);border-color:rgba(109,186,120,.3)">auto end-session</div>
+            <div class="tr-item active" style="color:var(--green);border-color:rgba(109,186,120,.3)">self-healing retry</div>
+            <div class="tr-item active" style="color:var(--green);border-color:rgba(109,186,120,.3)">PreCompact hook</div>
+            <div class="tr-item active" style="color:var(--green);border-color:rgba(109,186,120,.3)">SessionStart hook</div>
           </div>
           <div class="tr-score" style="margin-top:.75rem; font-size:.72rem;">→ Claude operates without checkpoints</div>
         </div>
@@ -889,8 +840,8 @@ footer {
 <!-- LIFECYCLE HOOKS -->
 <section id="hooks">
   <div class="wrap">
-    <div class="sec-label">autonomous operation</div>
-    <h2>Runs without<br><span class="h2-amber">being asked.</span></h2>
+    <div class="sec-label" style="color:var(--green)">autonomous operation</div>
+    <h2>Runs without<br><span style="color:var(--green)">being asked.</span></h2>
     <p class="sec-desc">
       Lifecycle hooks fire on session events — no prompting required.
       <em>The environment monitors itself, pushes memory, and runs health checks
@@ -1103,9 +1054,9 @@ footer {
     <span>claude-recall</span>
   </div>
   <div class="footer-links">
-    <a href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit" target="_blank">GitHub</a>
-    <a href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit/blob/main/README.md" target="_blank">README</a>
-    <a href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit/issues" target="_blank">Issues</a>
+    <a href="https://github.com/YehudaFrankel/claude-recall" target="_blank">GitHub</a>
+    <a href="https://github.com/YehudaFrankel/claude-recall/blob/main/README.md" target="_blank">README</a>
+    <a href="https://github.com/YehudaFrankel/claude-recall/issues" target="_blank">Issues</a>
   </div>
   <div class="footer-sig">// built by yf</div>
 </footer>
