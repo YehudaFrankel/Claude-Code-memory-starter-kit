@@ -3,909 +3,1053 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Claude Recall — The Living System for Claude Code</title>
+<title>claude-recall — The Living System for Claude Code</title>
 <style>
 :root {
-  --bg:      #0d1117;
-  --surface: #161b22;
-  --border:  #21262d;
-  --border2: #30363d;
-  --accent:  #8b5cf6;
-  --green:   #3fb950;
-  --amber:   #d29922;
-  --text:    #e6edf3;
-  --muted:   #8b949e;
-  --dim:     #484f58;
-  --font:    -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  --mono:    'SF Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+  --bg:      #07050302;
+  --bg0:     #070503;
+  --s1:      #110d07;
+  --s2:      #1a1409;
+  --border:  #241c0e;
+  --border2: #312510;
+  --amber:   #d4890a;
+  --amber2:  #f5a623;
+  --orange:  #e85820;
+  --green:   #6dba78;
+  --red:     #c85040;
+  --text:    #dfd2b8;
+  --muted:   #8a7a5a;
+  --dim:     #3d3020;
+  --mono: 'SF Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
 }
-* { margin: 0; padding: 0; box-sizing: border-box; }
+
+* { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior: smooth; }
+
 body {
-  font-family: var(--font);
-  background: var(--bg);
+  font-family: var(--mono);
+  background: var(--bg0);
   color: var(--text);
   line-height: 1.6;
   overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
 }
 
-/* ── Grid background ── */
-body::before {
-  content: '';
-  position: fixed; inset: 0; z-index: 0;
-  background-image:
-    linear-gradient(rgba(139,92,246,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(139,92,246,.03) 1px, transparent 1px);
-  background-size: 48px 48px;
-  pointer-events: none;
-}
+/* Grain */
 body::after {
   content: '';
-  position: fixed; inset: 0; z-index: 0;
-  background: radial-gradient(ellipse at 65% 30%, rgba(139,92,246,.12) 0%, transparent 55%);
-  pointer-events: none;
+  position: fixed; inset: 0; z-index: 999; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: .6;
 }
-nav, section, .hero, .cta-section, .install-section { position: relative; z-index: 1; }
 
-/* ── Nav ── */
+main { position: relative; z-index: 1; }
+
+/* ─── NAV ─── */
 nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  position: fixed; top:0; left:0; right:0; z-index:200;
   display: flex; align-items: center; justify-content: space-between;
-  padding: .85rem 2rem;
-  background: rgba(13,17,23,.85);
-  backdrop-filter: blur(12px);
+  padding: .8rem 2rem;
+  background: rgba(7,5,3,.96);
   border-bottom: 1px solid var(--border);
 }
-.logo { font-family: var(--mono); font-size: .9rem; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: .5rem; }
-.logo-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 2px; box-shadow: 0 0 10px var(--accent); animation: markPulse 3s ease-in-out infinite; }
-@keyframes markPulse { 0%,100%{opacity:1;box-shadow:0 0 10px var(--accent)} 50%{opacity:.4;box-shadow:0 0 4px var(--accent)} }
-.nav-right { display: flex; align-items: center; gap: 1.5rem; }
-.nav-link { font-size: .85rem; color: var(--muted); text-decoration: none; transition: color .15s; }
-.nav-link:hover { color: var(--text); }
-.gh-btn { display: flex; align-items: center; gap: .4rem; font-size: .8rem; color: var(--muted); text-decoration: none; border: 1px solid var(--border2); border-radius: 6px; padding: .35rem .8rem; transition: all .15s; }
-.gh-btn:hover { color: var(--text); border-color: var(--dim); background: var(--surface); }
 
-/* ── Hero ── */
-.hero { min-height: 0; display: flex; align-items: center; padding: 6rem 2rem 3rem; max-width: 1100px; margin: 0 auto; }
-.hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-.eyebrow { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--mono); font-size: .75rem; color: var(--green); margin-bottom: 1.5rem; letter-spacing: .04em; }
-.eyebrow::before { content: '▸'; }
-
-.hero-brand {
-  font-family: var(--mono); font-size: clamp(1.5rem,3vw,2.2rem); font-weight: 700; color: #c4b5fd;
-  letter-spacing: .02em; display: inline-block; position: relative; margin-bottom: 1rem;
-  animation: glitch 6s infinite;
-  text-shadow: 0 0 8px rgba(139,92,246,.9), 0 0 24px rgba(139,92,246,.5);
+.nav-logo {
+  display: flex; align-items: center; gap: .65rem;
+  text-decoration: none; color: var(--text); font-size: .82rem;
 }
-.hero-brand::before,.hero-brand::after { content:'Claude Recall'; position:absolute; top:0; left:0; width:100%; opacity:0; }
-.hero-brand::before { color:#a78bfa; animation:glitchTop 6s infinite; clip-path:polygon(0 0,100% 0,100% 35%,0 35%); }
-.hero-brand::after  { color:#7c3aed; animation:glitchBot 6s infinite; clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%); }
-@keyframes glitch { 0%,94%,100%{transform:none} 95%{transform:skewX(-1deg)} 96%{transform:skewX(1deg) translateX(-2px)} 97%{transform:none} 98%{transform:skewX(.5deg) translateX(2px)} 99%{transform:none} }
-@keyframes glitchTop { 0%,94%,100%{opacity:0;transform:none} 95%{opacity:.8;transform:translateX(-3px)} 96%{opacity:.8;transform:translateX(3px)} 97%{opacity:0} }
-@keyframes glitchBot { 0%,94%,100%{opacity:0;transform:none} 96%{opacity:.7;transform:translateX(4px)} 97%{opacity:.7;transform:translateX(-2px)} 98%{opacity:0} }
-
-h1 { font-size: clamp(2.2rem,4vw,3.4rem); font-weight: 800; line-height: 1.1; letter-spacing: -.025em; margin-bottom: 1.25rem; }
-.h1-accent { color: var(--accent); }
-.hero-desc { font-size: 1.05rem; color: var(--muted); line-height: 1.7; margin-bottom: .75rem; max-width: 420px; }
-.hero-living {
-  display: inline-flex; align-items: center; gap: .5rem;
-  font-family: var(--mono); font-size: .8rem;
-  color: #c4b5fd; margin-bottom: 2rem;
-  background: rgba(139,92,246,.08); border: 1px solid rgba(139,92,246,.25);
-  border-radius: 20px; padding: .3rem .8rem;
-}
-.living-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: livePulse 1.5s ease-in-out infinite; }
-@keyframes livePulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.6} }
-.hero-actions { display: flex; gap: .75rem; flex-wrap: wrap; }
-.btn { display: inline-flex; align-items: center; gap: .4rem; padding: .65rem 1.4rem; border-radius: 7px; font-size: .875rem; font-weight: 500; text-decoration: none; transition: all .2s; border: none; cursor: pointer; font-family: var(--font); }
-.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 0 20px rgba(139,92,246,.3); }
-.btn-primary:hover { background: #7c3aed; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139,92,246,.4); }
-.btn-ghost { color: var(--muted); border: 1px solid var(--border2); background: var(--surface); }
-.btn-ghost:hover { color: var(--text); border-color: var(--dim); }
-
-/* ── Terminal ── */
-.hero-term { background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; overflow: hidden; font-family: var(--mono); font-size: .8rem; box-shadow: 0 0 60px rgba(139,92,246,.2), 0 8px 32px rgba(0,0,0,.5); }
-.term-bar { padding: .7rem 1rem; background: rgba(255,255,255,.03); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: .5rem; }
-.term-dot { width: 11px; height: 11px; border-radius: 50%; }
-.term-dot-r { background: #ff5f57; } .term-dot-y { background: #febc2e; } .term-dot-g { background: #28c840; }
-.term-title { margin-left: .3rem; font-size: .72rem; color: var(--dim); }
-.term-body { padding: 1.2rem 1.4rem; line-height: 2; min-height: 280px; }
-.t-prompt { color: var(--accent); }
-.t-cmd    { color: var(--text); }
-.t-ok     { color: var(--green); }
-.t-warn   { color: var(--amber); }
-.t-dim    { color: var(--dim); }
-.t-muted  { color: var(--muted); }
-.t-chain  { color: #c4b5fd; }
-.t-gap    { display: block; height: .5rem; }
-.cursor   { display: inline-block; width: 8px; height: 14px; background: var(--accent); animation: blink .8s step-end infinite; vertical-align: text-bottom; margin-left: 1px; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-.term-line { opacity: 0; }
-.term-line.visible { opacity: 1; }
-
-/* ── Install Section ── */
-.install-section {
-  padding: 4rem 2rem; border-top: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(139,92,246,.04) 0%, transparent 100%);
-}
-.install-inner { max-width: 1100px; margin: 0 auto; text-align: center; }
-.install-inner h2 { font-size: clamp(1.6rem,3vw,2.2rem); font-weight: 800; margin-bottom: .75rem; }
-.install-inner .sub { color: var(--muted); margin-bottom: 3rem; font-size: 1rem; }
-.install-steps { display: flex; align-items: flex-start; justify-content: center; gap: 0; max-width: 860px; margin: 0 auto 3rem; flex-wrap: wrap; }
-.install-step {
-  flex: 1; min-width: 200px; padding: 1.5rem 1rem;
-  opacity: 0; transform: translateY(20px);
-  transition: opacity .5s, transform .5s;
-}
-.install-step.reveal { opacity: 1; transform: none; }
-.install-step:nth-child(1) { transition-delay: 0s; }
-.install-step:nth-child(3) { transition-delay: .15s; }
-.install-step:nth-child(5) { transition-delay: .3s; }
-.install-num {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(139,92,246,.15); border: 1px solid rgba(139,92,246,.4);
+.yf-mark {
+  width: 26px; height: 26px; background: var(--amber);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: .8rem; color: var(--accent);
-  margin: 0 auto .75rem;
+  font-size: .62rem; font-weight: 700; color: #07050a;
+  letter-spacing: -.02em; flex-shrink: 0;
 }
-.install-step h3 { font-size: .95rem; font-weight: 600; margin-bottom: .4rem; }
-.install-step p  { font-size: .82rem; color: var(--muted); }
-.install-arrow {
-  color: var(--dim); font-size: 1.2rem; padding-top: 3rem; flex-shrink: 0;
-  opacity: 0; transition: opacity .5s .1s;
+.nav-name { color: var(--text); letter-spacing: .02em; }
+.nav-tag  { color: var(--muted); font-size: .72rem; }
+
+.nav-links { display: flex; align-items: center; gap: 0; }
+.nav-a {
+  font-size: .73rem; color: var(--muted);
+  text-decoration: none; padding: .3rem .75rem;
+  transition: color .12s;
 }
-.install-arrow.reveal { opacity: 1; }
+.nav-a:hover { color: var(--text); }
+.nav-div { color: var(--dim); font-size: .65rem; }
+
+.nav-gh {
+  font-size: .73rem; color: var(--muted);
+  text-decoration: none; padding: .3rem .8rem;
+  border: 1px solid var(--border2); margin-left: .75rem;
+  transition: all .12s; display: flex; align-items: center; gap: .35rem;
+}
+.nav-gh:hover { color: var(--amber); border-color: var(--amber); }
+
+/* ─── HERO ─── */
+.hero {
+  padding: 7rem 2rem 4rem;
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1.05fr;
+  gap: 4rem; align-items: start; position: relative;
+}
+
+/* Ambient glow behind hero */
+.hero::before {
+  content: '';
+  position: absolute; top: 30%; left: 5%;
+  width: 480px; height: 480px; z-index: -1;
+  background: radial-gradient(ellipse at center, rgba(212,137,10,.07) 0%, transparent 70%);
+  pointer-events: none;
+  animation: ambientShift 8s ease-in-out infinite alternate;
+}
+@keyframes ambientShift {
+  0%   { transform: translate(0,0) scale(1); }
+  100% { transform: translate(30px,20px) scale(1.1); }
+}
+
+.hero-eyebrow {
+  font-size: .7rem; color: var(--muted);
+  letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+.hero-eyebrow .dot {
+  display: inline-block; width: 5px; height: 5px;
+  background: var(--amber); border-radius: 50%;
+  margin-right: .45rem; animation: blink 1.6s step-end infinite;
+  vertical-align: middle; position: relative; top: -1px;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+h1 {
+  font-size: clamp(2.2rem,3.8vw,3.4rem);
+  font-weight: 800; line-height: 1.05; letter-spacing: -.03em;
+  color: var(--text); margin-bottom: 1.2rem;
+}
+.h1-dim { color: var(--muted); }
+.h1-amber { color: var(--amber); }
+
+.hero-sub {
+  font-size: .925rem; color: var(--muted); line-height: 1.8;
+  margin-bottom: 2rem; max-width: 400px;
+}
+.hero-sub em { color: var(--text); font-style: normal; }
+
+.hero-btns { display: flex; gap: .65rem; flex-wrap: wrap; }
+.btn {
+  font-family: var(--mono); font-size: .76rem;
+  text-decoration: none; padding: .55rem 1.25rem;
+  transition: all .12s; display: inline-flex; align-items: center; gap: .35rem;
+  letter-spacing: .02em;
+}
+.btn-primary {
+  background: var(--amber); color: #07050a; font-weight: 600;
+}
+.btn-primary:hover { background: var(--amber2); transform: translateY(-1px); }
+.btn-ghost {
+  color: var(--muted); border: 1px solid var(--border2);
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+
+/* ─── HERO TERMINAL ─── */
+.term {
+  background: var(--s1); border: 1px solid var(--border2);
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(212,137,10,.04) inset;
+}
+.term-bar {
+  display: flex; align-items: center; gap: .45rem;
+  padding: .55rem 1rem;
+  background: var(--s2); border-bottom: 1px solid var(--border);
+}
+.td { width: 9px; height: 9px; border-radius: 50%; }
+.td-r{background:#c84040} .td-y{background:#c88020} .td-g{background:#28a030}
+.term-path { margin-left: .4rem; font-size: .66rem; color: var(--muted); }
+.term-path .amber { color: var(--amber); }
+.term-body {
+  padding: 1.1rem 1.3rem; line-height: 2.0;
+  min-height: 280px; font-size: .77rem;
+}
+.tp    { color: var(--amber); }
+.tok   { color: var(--green); }
+.twarn { color: var(--amber2); }
+.tmut  { color: var(--muted); }
+.tdim  { color: var(--dim); }
+.tchain{ color: #d4a040; }
+.th    { color: var(--text); }
+.tgap  { display: block; height: .4rem; }
+.cursor {
+  display: inline-block; width: 7px; height: 13px;
+  background: var(--amber); animation: blink .9s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+/* ─── SECTION COMMON ─── */
+section { border-top: 1px solid var(--border); }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 5rem 2rem; }
+.wrap-sm { max-width: 800px; margin: 0 auto; padding: 5rem 2rem; }
+.wrap-lg { max-width: 1120px; margin: 0 auto; padding: 5rem 2rem; }
+
+.sec-label {
+  font-size: .68rem; color: var(--muted);
+  letter-spacing: .12em; text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+.sec-label::before { content: '## '; color: var(--dim); }
+
+h2 {
+  font-size: clamp(1.6rem,2.6vw,2.2rem); font-weight: 700;
+  letter-spacing: -.025em; color: var(--text);
+  margin-bottom: .85rem;
+}
+.h2-amber { color: var(--amber); }
+
+.sec-desc {
+  font-size: .9rem; color: var(--muted); line-height: 1.8;
+  max-width: 520px; margin-bottom: 2.5rem;
+}
+.sec-desc em { color: var(--text); font-style: normal; }
+
+/* ─── INSTALL ─── */
+.install-block {
+  background: var(--s1); border: 1px solid var(--border2);
+  padding: 1.75rem 2rem; margin-top: 2rem;
+}
+.install-title { font-size: .7rem; color: var(--muted); margin-bottom: 1.2rem; letter-spacing: .06em; }
 .install-cmd {
-  display: inline-block;
-  background: var(--surface); border: 1px solid var(--border2);
-  border-radius: 8px; padding: 1rem 2rem;
-  font-family: var(--mono); font-size: .82rem; color: var(--text);
-  margin-bottom: 2rem; text-align: left;
-  box-shadow: 0 4px 16px rgba(0,0,0,.3);
+  font-size: .85rem; color: var(--text);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap;
 }
-.install-cmd .ic-line { display: block; line-height: 2; }
-.install-cmd .ic-prompt { color: var(--accent); }
-.install-cmd .ic-comment { color: var(--dim); }
-.install-badge {
-  display: inline-flex; align-items: center; gap: .4rem;
-  font-size: .78rem; color: var(--muted);
-  border: 1px solid var(--border); border-radius: 4px;
-  padding: .25rem .6rem; font-family: var(--mono);
+.cmd-text { color: var(--amber); }
+.cmd-comment { color: var(--muted); font-size: .72rem; }
+.copy-btn {
+  font-family: var(--mono); font-size: .68rem; color: var(--muted);
+  background: none; border: 1px solid var(--border2); padding: .2rem .6rem;
+  cursor: pointer; transition: all .12s;
+}
+.copy-btn:hover { color: var(--amber); border-color: var(--amber); }
+.copy-btn.copied { color: var(--green); border-color: var(--green); }
+
+.install-steps {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1px; background: var(--border); margin-top: 2.5rem;
+}
+.istep {
+  background: var(--s1); padding: 1.6rem 1.75rem;
+}
+.istep-n { font-size: .65rem; color: var(--amber); margin-bottom: .6rem; letter-spacing: .08em; }
+.istep-title { font-size: .88rem; color: var(--text); margin-bottom: .35rem; }
+.istep-desc { font-size: .76rem; color: var(--muted); line-height: 1.65; }
+
+/* ─── LIVING SYSTEM ─── */
+.living-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1px; background: var(--border); margin-top: 2.5rem;
+}
+.living-cell {
+  background: var(--s1); padding: 2rem 1.75rem;
+  position: relative; overflow: hidden;
+}
+.living-cell::before {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--amber), transparent);
+  opacity: 0; transition: opacity .25s;
+}
+.living-cell:hover::before { opacity: 1; }
+.lc-num { font-size: .65rem; color: var(--dim); margin-bottom: .75rem; }
+.lc-head { font-size: 1.05rem; color: var(--amber); font-weight: 600; margin-bottom: .75rem; }
+.lc-body { font-size: .8rem; color: var(--muted); line-height: 1.75; }
+.lc-body em { color: var(--text); font-style: normal; }
+
+/* ─── LOOP DIAGRAM ─── */
+.loop-track {
+  display: grid; grid-template-columns: repeat(5,1fr);
+  gap: 0; background: var(--border); margin-top: 2.5rem;
+  border: 1px solid var(--border);
+}
+.loop-node {
+  background: var(--s1); padding: 1.4rem 1.2rem;
+  position: relative; text-align: center;
+}
+.loop-node:not(:last-child)::after {
+  content: '→';
+  position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
+  color: var(--amber); z-index: 1; font-size: .9rem;
+}
+.ln-cmd  { font-size: .72rem; color: var(--amber); margin-bottom: .4rem; }
+.ln-desc { font-size: .7rem; color: var(--muted); line-height: 1.5; }
+.ln-sub  { font-size: .64rem; color: var(--dim); margin-top: .3rem; }
+
+/* ─── SKILLS TABLE ─── */
+.skills-tbl {
+  width: 100%; border-collapse: collapse;
+  margin-top: 2rem; font-size: .8rem;
+}
+.skills-tbl th {
+  text-align: left; padding: .6rem 1rem;
+  font-size: .65rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase;
+  border-bottom: 1px solid var(--border2);
+}
+.skills-tbl td {
+  padding: .75rem 1rem; border-bottom: 1px solid var(--border);
+  vertical-align: top; line-height: 1.5;
+}
+.skills-tbl tr:hover td { background: rgba(212,137,10,.025); }
+.td-cmd  { color: var(--amber); white-space: nowrap; }
+.td-trig { color: var(--muted); font-size: .74rem; }
+.td-desc { color: var(--text); }
+
+/* ─── TIER BLOCKS ─── */
+.tier-rows { display: flex; flex-direction: column; gap: 1px; background: var(--border); margin-top: 2.5rem; }
+.tier-row {
+  display: grid; grid-template-columns: 200px 1fr;
+  background: var(--s1);
+}
+.tr-label {
+  padding: 1.5rem 1.75rem; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; justify-content: center; gap: .3rem;
+}
+.tr-tier  { font-size: .62rem; color: var(--dim); letter-spacing: .08em; }
+.tr-name  { font-size: .9rem; color: var(--amber); }
+.tr-body  { padding: 1.5rem 1.75rem; }
+.tr-items { display: flex; gap: .65rem; flex-wrap: wrap; margin-top: .5rem; }
+.tr-item {
+  font-size: .73rem; color: var(--muted); padding: .2rem .6rem;
+  border: 1px solid var(--border2); background: var(--s2);
+}
+.tr-item.active { color: var(--text); border-color: var(--dim); }
+.tr-score { font-size: .7rem; color: var(--green); }
+
+/* ─── STATS TERMINAL ─── */
+.stats-term {
+  background: var(--s1); border: 1px solid var(--border2);
+  margin-top: 2.5rem; font-size: .79rem;
+}
+.stats-bar {
+  display: flex; align-items: center; gap: .45rem;
+  padding: .55rem 1rem; background: var(--s2); border-bottom: 1px solid var(--border);
+  font-size: .68rem; color: var(--muted);
+}
+.stats-body { padding: 1.4rem 1.75rem; line-height: 2.2; }
+.st-cmd  { color: var(--amber); }
+.st-key  { color: var(--text); }
+.st-val  { color: var(--green); }
+.st-note { color: var(--muted); font-size: .74rem; }
+
+/* ─── HOOKS LIST ─── */
+.hooks-list { margin-top: 2rem; display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+.hook-row {
+  display: grid; grid-template-columns: 170px 1fr 1fr;
+  background: var(--s1);
+}
+.hook-row:first-child { border-top: none; }
+.hk-event { padding: 1rem 1.25rem; border-right: 1px solid var(--border); font-size: .78rem; color: var(--amber); display: flex; align-items: center; }
+.hk-file  { padding: 1rem 1.25rem; border-right: 1px solid var(--border); font-size: .76rem; color: var(--muted); display: flex; align-items: center; }
+.hk-does  { padding: 1rem 1.25rem; font-size: .76rem; color: var(--text); display: flex; align-items: center; }
+
+/* ─── COMMANDS TABLE ─── */
+.cmds-list { margin-top: 2rem; display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+.cmd-row {
+  display: grid; grid-template-columns: 220px 1fr;
+  background: var(--s1); transition: background .1s;
+}
+.cmd-row:hover { background: var(--s2); }
+.cr-cmd  { padding: 1rem 1.25rem; border-right: 1px solid var(--border); font-size: .8rem; color: var(--amber); display: flex; align-items: center; }
+.cr-desc { padding: 1rem 1.25rem; font-size: .78rem; color: var(--muted); display: flex; align-items: center; }
+.cr-desc em { color: var(--text); font-style: normal; }
+
+/* ─── FAQ ─── */
+.faq-list { margin-top: 2rem; }
+details {
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+details:first-child { border-top: 1px solid var(--border); }
+summary {
+  padding: 1.1rem .25rem; font-size: .86rem; color: var(--text);
+  cursor: pointer; list-style: none; display: flex; align-items: center;
+  gap: .75rem; transition: color .12s; user-select: none;
+}
+summary::-webkit-details-marker { display: none; }
+summary::before {
+  content: '+'; color: var(--amber); font-size: 1rem;
+  width: 14px; text-align: center; flex-shrink: 0;
+  transition: transform .2s;
+}
+details[open] summary::before { content: '−'; }
+summary:hover { color: var(--amber); }
+.faq-body {
+  padding: .25rem .25rem 1.25rem 1.9rem;
+  font-size: .82rem; color: var(--muted); line-height: 1.85;
+}
+.faq-body em { color: var(--text); font-style: normal; }
+.faq-body code {
+  font-family: var(--mono); font-size: .76rem; color: var(--amber);
+  background: var(--s2); padding: .1rem .35rem;
 }
 
-/* ── Sections ── */
-section { padding: 5rem 2rem; }
-.section-inner { max-width: 1100px; margin: 0 auto; }
-.section-label { font-family: var(--mono); font-size: .72rem; color: var(--accent); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; }
-.section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--accent); }
-h2 { font-size: clamp(1.6rem,3vw,2.4rem); font-weight: 700; letter-spacing: -.02em; margin-bottom: 1rem; }
-.section-sub { font-size: 1.05rem; color: var(--muted); max-width: 560px; margin-bottom: 3rem; line-height: 1.7; }
-
-/* ── Living system callout ── */
-.living-callout {
-  display: flex; align-items: center; gap: 1.5rem;
-  background: rgba(139,92,246,.06); border: 1px solid rgba(139,92,246,.2);
-  border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 3rem;
-  max-width: 700px;
+/* ─── FOOTER ─── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2.5rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  max-width: 1120px; margin: 0 auto;
+  font-size: .74rem; color: var(--muted);
 }
-.living-callout-icon { font-size: 2rem; flex-shrink: 0; }
-.living-callout strong { display: block; margin-bottom: .25rem; font-size: 1rem; }
-.living-callout p { font-size: .9rem; color: var(--muted); }
+.footer-mark { display: flex; align-items: center; gap: .6rem; }
+.footer-links { display: flex; gap: 1.5rem; }
+.footer-links a { color: var(--muted); text-decoration: none; transition: color .12s; }
+.footer-links a:hover { color: var(--amber); }
+.footer-sig { color: var(--dim); }
 
-/* ── Tiers ── */
-.tiers { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
-.tier { background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; padding: 1.8rem; position: relative; overflow: hidden; transition: border-color .2s, transform .2s; opacity: 0; transform: translateY(24px); }
-.tier.reveal { opacity: 1; transform: none; }
-.tier:hover { border-color: var(--accent); transform: translateY(-3px); }
-.tier-num { font-family: var(--mono); font-size: .7rem; color: var(--dim); margin-bottom: 1rem; letter-spacing: .06em; }
-.tier-name { font-size: 1.1rem; font-weight: 700; margin-bottom: .5rem; }
-.tier-desc { font-size: .9rem; color: var(--muted); line-height: 1.6; }
-.tier-glow { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0; transition: opacity .2s; }
-.tier:hover .tier-glow { opacity: 1; }
-.tier:nth-child(1) { transition-delay: 0s; }
-.tier:nth-child(2) { transition-delay: .1s; }
-.tier:nth-child(3) { transition-delay: .2s; }
+/* ─── SCROLL REVEAL ─── */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .5s ease, transform .5s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
 
-/* ── Loop ── */
-.loop-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
-.loop-steps { display: flex; flex-direction: column; gap: 0; }
-.loop-step { display: flex; gap: 1rem; align-items: flex-start; padding: 1.2rem 0; border-bottom: 1px solid var(--border); transition: background .2s; opacity: 0; transform: translateX(-16px); }
-.loop-step.reveal { opacity: 1; transform: none; }
-.loop-step:last-child { border-bottom: none; }
-.loop-step:nth-child(1) { transition-delay: 0s; }
-.loop-step:nth-child(2) { transition-delay: .1s; }
-.loop-step:nth-child(3) { transition-delay: .2s; }
-.loop-step:nth-child(4) { transition-delay: .3s; }
-.loop-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(139,92,246,.15); border: 1px solid rgba(139,92,246,.3); display: flex; align-items: center; justify-content: center; font-size: .85rem; flex-shrink: 0; margin-top: .1rem; }
-.loop-step-title { font-weight: 600; margin-bottom: .25rem; }
-.loop-step-desc { font-size: .875rem; color: var(--muted); line-height: 1.6; }
-
-/* Loop pulse */
-.loop-flow {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 0; margin-bottom: 1.5rem;
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; gap: 2.5rem; }
+  .install-steps, .living-grid { grid-template-columns: 1fr; }
+  .loop-track { grid-template-columns: 1fr 1fr; }
+  .loop-node::after { display: none; }
+  .tier-row { grid-template-columns: 1fr; }
+  .tr-label { border-right: none; border-bottom: 1px solid var(--border); }
+  .hook-row { grid-template-columns: 1fr; }
+  .hk-event { border-right: none; border-bottom: 1px solid var(--border); }
+  .hk-file { border-right: none; border-bottom: 1px solid var(--border); }
+  .cmd-row { grid-template-columns: 1fr; }
+  .cr-cmd { border-right: none; border-bottom: 1px solid var(--border); }
 }
-.lf-node {
-  background: var(--surface); border: 1px solid rgba(139,92,246,.3);
-  border-radius: 8px; padding: .6rem 1.2rem;
-  font-family: var(--mono); font-size: .78rem; color: var(--text);
-  width: 200px; text-align: center; position: relative;
-  transition: border-color .3s, box-shadow .3s;
-}
-.lf-node.active { border-color: var(--accent); box-shadow: 0 0 16px rgba(139,92,246,.3); color: #c4b5fd; }
-.lf-arrow {
-  height: 28px; width: 1px; background: var(--border2);
-  position: relative; margin: 0 auto;
-}
-.lf-arrow::after { content: '▾'; position: absolute; bottom: -6px; left: -5px; color: var(--dim); font-size: .7rem; }
-.lf-label { font-size: .7rem; color: var(--dim); margin: .15rem 0; font-family: var(--mono); }
-
-.loop-term { background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; overflow: hidden; font-family: var(--mono); font-size: .78rem; }
-
-/* ── Autonomous ── */
-.auto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-.auto-card { background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; padding: 1.8rem; opacity: 0; transform: translateY(20px); transition: opacity .5s, transform .5s; }
-.auto-card.reveal { opacity: 1; transform: none; }
-.auto-card:nth-child(1) { transition-delay: 0s; }
-.auto-card:nth-child(2) { transition-delay: .1s; }
-.auto-card:nth-child(3) { transition-delay: .2s; }
-.auto-card:nth-child(4) { transition-delay: .3s; }
-.auto-card:hover { border-color: rgba(139,92,246,.4); }
-.auto-card-title { font-weight: 700; font-size: 1rem; margin-bottom: .6rem; display: flex; align-items: center; gap: .5rem; }
-.auto-icon { font-size: 1.1rem; }
-.auto-card p { font-size: .9rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
-.auto-card p:last-child { margin-bottom: 0; }
-.code-snip { background: rgba(0,0,0,.3); border: 1px solid var(--border); border-radius: 6px; padding: .8rem 1rem; font-family: var(--mono); font-size: .75rem; color: var(--muted); line-height: 1.8; }
-.code-snip .t-ok { color: var(--green); }
-.code-snip .t-chain { color: #c4b5fd; }
-.code-snip .t-warn { color: var(--amber); }
-.code-snip .t-dim { color: var(--dim); }
-
-/* ── Commands ── */
-.cmd-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-.cmd-group-title { font-size: .8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 1rem; }
-table { width: 100%; border-collapse: collapse; }
-th { text-align: left; font-size: .75rem; color: var(--dim); font-weight: 500; padding: .4rem 0; border-bottom: 1px solid var(--border); }
-td { font-size: .875rem; padding: .7rem 0; border-bottom: 1px solid var(--border); vertical-align: top; }
-td:first-child { font-family: var(--mono); font-size: .8rem; color: var(--accent); padding-right: 1.5rem; white-space: nowrap; }
-td:last-child { color: var(--muted); }
-tr:last-child td { border-bottom: none; }
-
-/* ── Stats ── */
-.stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; margin-bottom: 3rem; }
-.stat { background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; padding: 1.5rem; text-align: center; opacity: 0; transform: scale(.95); transition: opacity .5s, transform .5s; }
-.stat.reveal { opacity: 1; transform: none; }
-.stat:nth-child(1) { transition-delay: 0s; }
-.stat:nth-child(2) { transition-delay: .1s; }
-.stat:nth-child(3) { transition-delay: .2s; }
-.stat:nth-child(4) { transition-delay: .3s; }
-.stat-num { font-size: 2.4rem; font-weight: 800; color: var(--accent); font-family: var(--mono); letter-spacing: -.02em; }
-.stat-label { font-size: .8rem; color: var(--muted); margin-top: .25rem; }
-
-/* ── CTA ── */
-.cta-section { text-align: center; padding: 5rem 2rem; border-top: 1px solid var(--border); }
-.cta-section h2 { margin-bottom: 1rem; }
-.cta-section p { color: var(--muted); margin-bottom: 2rem; max-width: 440px; margin-left: auto; margin-right: auto; }
-.cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-
-/* ── Scroll reveal base ── */
-.reveal-on-scroll { opacity: 0; transform: translateY(20px); transition: opacity .6s, transform .6s; }
-.reveal-on-scroll.reveal { opacity: 1; transform: none; }
-
-/* ── Responsive ── */
-@media (max-width: 768px) {
-  .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
-  .tiers { grid-template-columns: 1fr; }
-  .loop-wrap { grid-template-columns: 1fr; }
-  .auto-grid { grid-template-columns: 1fr; }
-  .cmd-groups { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: repeat(2,1fr); }
-  .install-steps { flex-direction: column; align-items: center; }
-  .install-arrow { display: none; }
+@media (max-width: 600px) {
+  nav { padding: .7rem 1.2rem; }
+  .nav-links { display: none; }
+  .wrap, .wrap-sm, .wrap-lg { padding: 3.5rem 1.2rem; }
+  .hero { padding: 5.5rem 1.2rem 3rem; }
+  .skills-tbl { font-size: .72rem; }
 }
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
-  <a class="logo" href="#">
-    <span class="logo-mark"></span>
-    claude-recall
+  <a class="nav-logo" href="#">
+    <div class="yf-mark">YF</div>
+    <span class="nav-name">claude-recall</span>
+    <span class="nav-tag">// living system</span>
   </a>
-  <div class="nav-right">
-    <a class="nav-link" href="#install">Install</a>
-    <a class="nav-link" href="#loop">Loop</a>
-    <a class="nav-link" href="#skills">Skills</a>
-    <a class="nav-link" href="#hooks">Hooks</a>
-    <a class="nav-link" href="#commands">Commands</a>
-    <a class="gh-btn" href="https://github.com/YehudaFrankel/claude-recall" target="_blank">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+  <div class="nav-links">
+    <a class="nav-a" href="#install">install</a>
+    <span class="nav-div">·</span>
+    <a class="nav-a" href="#loop">loop</a>
+    <span class="nav-div">·</span>
+    <a class="nav-a" href="#skills">skills</a>
+    <span class="nav-div">·</span>
+    <a class="nav-a" href="#commands">commands</a>
+    <span class="nav-div">·</span>
+    <a class="nav-a" href="#faq">faq</a>
+    <a class="nav-gh" href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit" target="_blank">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
       GitHub
     </a>
   </div>
 </nav>
 
-<!-- Hero -->
+<main>
+
+<!-- HERO -->
 <div class="hero">
-  <div class="hero-inner">
-    <div class="hero-text">
-      <div class="eyebrow">Claude Code · Agentic Engineering</div>
-      <div class="hero-brand">Claude Recall</div>
-      <h1>The <span class="h1-accent">living system</span><br>for Claude Code.</h1>
-      <p class="hero-desc">Memory that syncs. Skills that evolve. Sessions that compound — not reset.</p>
-      <div class="hero-living">
-        <span class="living-dot"></span>
-        memory syncs · skills evolve · sessions compound
-      </div>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="#install">Get Started — 3 commands</a>
-        <a class="btn btn-ghost" href="#loop">See the loop →</a>
-      </div>
+  <div>
+    <div class="hero-eyebrow"><span class="dot"></span>open source · MIT license</div>
+    <h1>
+      Claude forgets.<br>
+      <span class="h1-amber">claude-recall</span><br>
+      <span class="h1-dim">doesn't.</span>
+    </h1>
+    <p class="hero-sub">
+      A <em>living system</em> for Claude Code — memory that persists, skills that self-improve,
+      and workflows that run themselves. Ships in 5 minutes. Gets smarter every session.
+    </p>
+    <div class="hero-btns">
+      <a class="btn btn-primary" href="#install">Get started →</a>
+      <a class="btn btn-ghost" href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit" target="_blank">View on GitHub</a>
     </div>
+  </div>
 
-    <div class="hero-term">
-      <div class="term-bar">
-        <div class="term-dot term-dot-r"></div>
-        <div class="term-dot term-dot-y"></div>
-        <div class="term-dot term-dot-g"></div>
-        <div class="term-title">claude-code — session 47</div>
-      </div>
-      <div class="term-body" id="heroTerm">
-        <span class="cursor" id="termCursor"></span>
-      </div>
+  <div class="term">
+    <div class="term-bar">
+      <div class="td td-r"></div>
+      <div class="td td-y"></div>
+      <div class="td td-g"></div>
+      <span class="term-path"><span class="amber">yf@recall</span> ~ sessions/112</span>
+    </div>
+    <div class="term-body" id="hero-term">
+      <span class="tmut"># session 112 / march 23</span><br>
+      <span class="tgap"></span>
+      <span class="tp">yf@recall ~ $</span> <span id="typeTarget"></span><span class="cursor" id="typeCursor"></span>
     </div>
   </div>
 </div>
 
-<!-- Install -->
-<div class="install-section" id="install">
-  <div class="install-inner">
-    <div class="section-label" style="justify-content:center;">Quick Start</div>
-    <h2>Three commands. Two minutes.</h2>
-    <p class="sub">Then two words every day.</p>
+<!-- INSTALL -->
+<section id="install">
+  <div class="wrap-sm">
+    <div class="sec-label">get started</div>
+    <h2>Five minutes to a <span class="h2-amber">living system</span></h2>
+    <p class="sec-desc">
+      Python 3.7+ and Claude Code are the only requirements.
+      Setup runs from inside Claude Code — no terminal juggling.
+    </p>
 
-    <div class="install-steps">
-      <div class="install-step">
-        <div class="install-num">1</div>
-        <h3>Clone the kit</h3>
-        <p>Grab it from GitHub once</p>
-      </div>
-      <div class="install-arrow">→</div>
-      <div class="install-step">
-        <div class="install-num">2</div>
-        <h3>Run setup</h3>
-        <p>Point it at your project</p>
-      </div>
-      <div class="install-arrow">→</div>
-      <div class="install-step">
-        <div class="install-num">3</div>
-        <h3>Start working</h3>
-        <p>Two words from here on</p>
+    <div class="install-block reveal">
+      <div class="install-title">// STEP 1 — clone the kit</div>
+      <div class="install-cmd">
+        <span><span class="tp">$</span> <span class="cmd-text">git clone https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit</span></span>
+        <button class="copy-btn" onclick="copyCmd(this,'git clone https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit')">copy</button>
       </div>
     </div>
 
-    <div class="install-cmd">
-      <span class="ic-line"><span class="ic-prompt">$</span> git clone https://github.com/YehudaFrankel/claude-recall.git</span>
-      <span class="ic-line"><span class="ic-prompt">$</span> python claude-recall/setup.py <span class="ic-comment"># run from your project folder</span></span>
-      <span class="ic-line ic-comment"># that's it — now inside Claude Code:</span>
-      <span class="ic-line"><span style="color:#c4b5fd">›</span> Start Session <span class="ic-comment">← every morning</span></span>
-      <span class="ic-line"><span style="color:#c4b5fd">›</span> End Session   <span class="ic-comment">← when done</span></span>
+    <div class="install-steps reveal">
+      <div class="istep">
+        <div class="istep-n">// 02</div>
+        <div class="istep-title">Open Claude Code</div>
+        <div class="istep-desc">Navigate to your project. Type <span style="color:var(--amber)">Setup Memory</span> — Claude runs the Python setup for you.</div>
+      </div>
+      <div class="istep">
+        <div class="istep-n">// 03</div>
+        <div class="istep-title">Type: Start Session</div>
+        <div class="istep-desc">Memory loads from disk, drift check runs, Claude picks up exactly where you left off.</div>
+      </div>
+      <div class="istep">
+        <div class="istep-n">// 04</div>
+        <div class="istep-title">Type: End Session</div>
+        <div class="istep-desc">/learn extracts lessons. Memory pushes to GitHub. Next session starts smarter.</div>
+      </div>
     </div>
 
-    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-      <span class="install-badge">Python 3.7+</span>
-      <span class="install-badge">Claude Code</span>
-      <span class="install-badge">No other dependencies</span>
-      <span class="install-badge">Works on any OS</span>
+    <div style="margin-top:2rem; font-size:.78rem; color:var(--muted); line-height:1.8; padding: 1rem 1.25rem; border-left: 2px solid var(--amber);" class="reveal">
+      <span style="color:var(--text)">New machine?</span> Clone your memory repo, run <span style="color:var(--amber)">Install Memory</span> — Claude scans the codebase and rebuilds all knowledge files from scratch.
     </div>
   </div>
-</div>
+</section>
 
-<!-- Three Tiers -->
-<section style="border-top:1px solid var(--border);">
-  <div class="section-inner">
-    <div class="section-label">Why it's different</div>
-    <h2>Three tiers. Most tools ship one.</h2>
-    <p class="section-sub">Memory is the foundation. But memory alone doesn't learn from mistakes or act without prompting. Claude Recall ships all three — and they compound.</p>
+<!-- LIVING SYSTEM -->
+<section id="living">
+  <div class="wrap">
+    <div class="sec-label">the differentiator</div>
+    <h2>A system that <span class="h2-amber">compounds</span></h2>
+    <p class="sec-desc">
+      Other solutions save a snapshot. claude-recall builds a system that
+      <em>gets better every time you use it</em>.
+      Three properties that set it apart.
+    </p>
 
-    <div class="living-callout reveal-on-scroll">
-      <div class="living-callout-icon">🔁</div>
-      <div>
-        <strong>The living system advantage</strong>
-        <p>Other memory tools are static — you document once, things go stale. Claude Recall stays alive: memory syncs to git after every session, skills patch themselves from failure data, and each session builds directly on the last. It's not a snapshot. It's a system that grows.</p>
+    <div class="living-grid reveal">
+      <div class="living-cell">
+        <div class="lc-num">01 ─────</div>
+        <div class="lc-head">Memory Syncs</div>
+        <div class="lc-body">
+          Everything lives on disk and in git — not in the session.
+          Crashes don't lose work. <em>New machine = clone + Start Session.</em>
+          MEMORY.md auto-loads at every session start.
+        </div>
       </div>
-    </div>
-
-    <div class="tiers">
-      <div class="tier">
-        <div class="tier-num">TIER 01</div>
-        <div class="tier-name">Memory</div>
-        <div class="tier-desc">Claude remembers your codebase, decisions, patterns, and known bugs across every session. Syncs to git — pull on any machine and pick up where you left off. Nothing is re-explained.</div>
-        <div class="tier-glow"></div>
+      <div class="living-cell">
+        <div class="lc-num">02 ─────</div>
+        <div class="lc-head">Skills Evolve</div>
+        <div class="lc-body">
+          <em>/learn extracts lessons after every session.</em>
+          /evolve reads skill scores, patches steps that needed correction,
+          and proposes new skills from repeated patterns.
+        </div>
       </div>
-      <div class="tier">
-        <div class="tier-num">TIER 02</div>
-        <div class="tier-name">Skills</div>
-        <div class="tier-desc">Skills score themselves after every use. /evolve reads the scores and rewrites the failing step automatically. The same skill failure never happens twice — without you touching anything.</div>
-        <div class="tier-glow"></div>
-      </div>
-      <div class="tier">
-        <div class="tier-num">TIER 03</div>
-        <div class="tier-name">Autonomous</div>
-        <div class="tier-desc">Skills chain into multi-step workflows. Self-healing retries before escalating. Memory auto-pushes after 9pm. Drift detection catches undocumented changes after every edit. Claude acts.</div>
-        <div class="tier-glow"></div>
+      <div class="living-cell">
+        <div class="lc-num">03 ─────</div>
+        <div class="lc-head">Sessions Compound</div>
+        <div class="lc-body">
+          lessons.md grows every session and is applied at every Start Session.
+          <em>Claude stops re-debating settled decisions.</em>
+          By session 50 it knows your codebase better than you do.
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Compound Learning Loop -->
-<section id="loop" style="border-top:1px solid var(--border);">
-  <div class="section-inner">
-    <div class="section-label">Compound Learning Loop</div>
-    <h2>Skills that fix themselves.</h2>
-    <p class="section-sub">Run /learn at End Session. Run /evolve every few sessions. Watch skills get better without you touching them.</p>
-    <div class="loop-wrap">
-      <div>
-        <div class="loop-flow" id="loopFlow">
-          <div class="lf-node" id="lf0">session work</div>
-          <div class="lf-arrow"></div>
-          <div class="lf-node" id="lf1">/learn</div>
-          <div class="lf-label">lessons · scores · velocity</div>
-          <div class="lf-arrow"></div>
-          <div class="lf-node" id="lf2">skill_scores.md</div>
-          <div class="lf-label">Y = needed correction</div>
-          <div class="lf-arrow"></div>
-          <div class="lf-node" id="lf3">/evolve</div>
-          <div class="lf-label">patches failing step</div>
-          <div class="lf-arrow"></div>
-          <div class="lf-node" id="lf4">better skills</div>
+<!-- LEARNING LOOP -->
+<section id="loop">
+  <div class="wrap">
+    <div class="sec-label">compound learning loop</div>
+    <h2>The system that <span class="h2-amber">self-improves</span></h2>
+    <p class="sec-desc">
+      Ships with a full agentic layer. Three commands drive the loop —
+      <em>run /learn before End Session, /evolve every few sessions.</em>
+    </p>
+
+    <div class="loop-track reveal">
+      <div class="loop-node">
+        <div class="ln-cmd">session work</div>
+        <div class="ln-desc">code, fixes, features</div>
+      </div>
+      <div class="loop-node">
+        <div class="ln-cmd">/learn</div>
+        <div class="ln-desc">extract patterns, score skills Y/N</div>
+        <div class="ln-sub">→ lessons.md<br>→ skill_scores.md</div>
+      </div>
+      <div class="loop-node">
+        <div class="ln-cmd">End Session</div>
+        <div class="ln-desc">push memory to GitHub</div>
+        <div class="ln-sub">→ STATUS.md<br>→ memory/</div>
+      </div>
+      <div class="loop-node">
+        <div class="ln-cmd">/evolve</div>
+        <div class="ln-desc">every 3-5 sessions</div>
+        <div class="ln-sub">patches weak skills<br>proposes new ones</div>
+      </div>
+      <div class="loop-node">
+        <div class="ln-cmd">Start Session</div>
+        <div class="ln-desc">applies all lessons</div>
+        <div class="ln-sub">Claude arrives<br>smarter</div>
+      </div>
+    </div>
+
+    <div style="margin-top:2.5rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1px; background:var(--border);" class="reveal">
+      <div style="background:var(--s1); padding:1.4rem 1.6rem;">
+        <div style="font-size:.68rem; color:var(--muted); margin-bottom:.6rem; letter-spacing:.06em;">GETS SMARTER</div>
+        <div style="font-size:.82rem; color:var(--text); line-height:1.8;">lessons.md — grows every session</div>
+        <div style="font-size:.78rem; color:var(--muted); line-height:1.8;">decisions.md — stops re-debating</div>
+        <div style="font-size:.78rem; color:var(--muted); line-height:1.8;">regret.md — never re-proposes bad ideas</div>
+        <div style="font-size:.78rem; color:var(--muted); line-height:1.8;">velocity.md — self-calibrating estimates</div>
+        <div style="font-size:.78rem; color:var(--muted); line-height:1.8;">skill_scores.md — tracks what failed</div>
+      </div>
+      <div style="background:var(--s1); padding:1.4rem 1.6rem; border-left:1px solid var(--border);">
+        <div style="font-size:.68rem; color:var(--muted); margin-bottom:.6rem; letter-spacing:.06em;">SKILL AUTO-CHAIN</div>
+        <div style="font-size:.82rem; color:var(--amber); line-height:1.8; margin-bottom:.5rem;">fix-bug → verification-loop</div>
+        <div style="font-size:.78rem; color:var(--muted); line-height:1.8;">Add <code style="color:var(--amber); background:var(--s2); padding:.1rem .3rem;">## Auto-Chain</code> to any skill.<br>
+        Claude continues without waiting.<br><br>
+        <span style="color:var(--text)">On fail:</span> debug-resin → retry<br>
+        <span style="color:var(--text)">On pass:</span> smoke-test → done</div>
+      </div>
+      <div style="background:var(--s1); padding:1.4rem 1.6rem; border-left:1px solid var(--border);">
+        <div style="font-size:.68rem; color:var(--muted); margin-bottom:.6rem; letter-spacing:.06em;">AUTONOMOUS</div>
+        <div style="font-size:.82rem; color:var(--text); line-height:1.8;">Self-healing: auto-touch + retry</div>
+        <div style="font-size:.78rem; color:var(--muted); line-height:1.8;">Stop hook: push memory after 9pm<br>
+        Nightly health check at midnight<br>
+        Daily summary at 6pm</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="wrap-lg">
+    <div class="sec-label">what ships</div>
+    <h2>10 skills out of the box.<br><span class="h2-amber">You grow the rest.</span></h2>
+    <p class="sec-desc">
+      Skills are markdown files in <code style="color:var(--amber); background:var(--s2); padding:.1rem .35rem; font-family:var(--mono); font-size:.76rem;">.claude/skills/</code>.
+      Type the trigger phrase. Claude runs the steps.
+      <em>/evolve creates new ones from patterns it detects in your sessions.</em>
+    </p>
+
+    <table class="skills-tbl reveal">
+      <thead>
+        <tr>
+          <th>skill</th>
+          <th>trigger phrase</th>
+          <th>what it does</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="td-cmd">Start Session</td><td class="td-trig">start session, start a new session</td><td class="td-desc">Pull memory, check drift, load lessons, report last status</td></tr>
+        <tr><td class="td-cmd">End Session</td><td class="td-trig">end session, end of session</td><td class="td-desc">Run /learn, update all memory, push to GitHub</td></tr>
+        <tr><td class="td-cmd">/learn</td><td class="td-trig">/learn, extract patterns</td><td class="td-desc">Extract lessons, score skills Y/N, log velocity, update decisions.md</td></tr>
+        <tr><td class="td-cmd">/evolve</td><td class="td-trig">/evolve, evolve lessons into skills</td><td class="td-desc">Read skill scores, patch weak steps, propose new skills from patterns</td></tr>
+        <tr><td class="td-cmd">Check Drift</td><td class="td-trig">check drift, find code drift</td><td class="td-desc">Run check_memory.py — find code changes Claude doesn't know about yet</td></tr>
+        <tr><td class="td-cmd">Analyze Codebase</td><td class="td-trig">analyze codebase, scan project</td><td class="td-desc">Scan all files and rebuild memory indexes automatically</td></tr>
+        <tr><td class="td-cmd">Install Memory</td><td class="td-trig">install memory, new machine</td><td class="td-desc">Rebuild all knowledge from scratch by scanning the project</td></tr>
+        <tr><td class="td-cmd">Generate Skills</td><td class="td-trig">generate skills</td><td class="td-desc">Auto-create skills tailored to your tech stack</td></tr>
+        <tr><td class="td-cmd">Update Kit</td><td class="td-trig">update kit</td><td class="td-desc">Pull latest from GitHub — shows diff, asks before touching anything</td></tr>
+        <tr><td class="td-cmd">Setup Memory</td><td class="td-trig">setup memory (first time)</td><td class="td-desc">Run Python setup, choose Full or Lite mode, configure memory files</td></tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:2.5rem; border:1px solid var(--border2); background:var(--s1); padding:1.5rem 1.75rem;" class="reveal">
+      <div style="font-size:.68rem; color:var(--muted); letter-spacing:.06em; margin-bottom:1rem;">// TOOLS THAT SHIP WITH THE KIT</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:.6rem 2rem;">
+        <div style="font-size:.8rem; line-height:1.8;">
+          <span style="color:var(--amber)">check_memory.py</span> <span style="color:var(--muted)">— drift detection, runs on every file edit via hook</span>
         </div>
-        <div class="loop-steps">
-          <div class="loop-step">
-            <div class="loop-icon">📝</div>
-            <div>
-              <div class="loop-step-title">/learn — extract what happened</div>
-              <div class="loop-step-desc">Writes to lessons.md, decisions.md, and skill_scores.md. Scores every skill that fired: Y if it needed correction, N if it worked first time. The "What Failed" column is what /evolve reads to patch the right step.</div>
-            </div>
+        <div style="font-size:.8rem; line-height:1.8;">
+          <span style="color:var(--amber)">session_journal.py</span> <span style="color:var(--muted)">— log what happened this session with timestamp</span>
+        </div>
+        <div style="font-size:.8rem; line-height:1.8;">
+          <span style="color:var(--amber)">bootstrap.py</span> <span style="color:var(--muted)">— new project setup, verify node/git/env</span>
+        </div>
+        <div style="font-size:.8rem; line-height:1.8;">
+          <span style="color:var(--amber)">stop_check.py</span> <span style="color:var(--muted)">— auto end-session after 9pm if unsaved changes exist</span>
+        </div>
+        <div style="font-size:.8rem; line-height:1.8;">
+          <span style="color:var(--amber)">update.py</span> <span style="color:var(--muted)">— safe kit updater, shows diff before applying</span>
+        </div>
+        <div style="font-size:.8rem; line-height:1.8;">
+          <span style="color:var(--amber)">setup.py</span> <span style="color:var(--muted)">— first-time project setup, Full or Lite mode</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENTIC TIER -->
+<section id="tiers">
+  <div class="wrap">
+    <div class="sec-label">architecture</div>
+    <h2>Three tiers. Scored <span class="h2-amber">8.5/10 agentic</span>.</h2>
+    <p class="sec-desc">
+      Most "Claude memory" setups are Tier 1.
+      <em>claude-recall ships all three.</em>
+    </p>
+
+    <div class="tier-rows reveal">
+      <div class="tier-row">
+        <div class="tr-label">
+          <div class="tr-tier">TIER 1</div>
+          <div class="tr-name">Memory Persistence</div>
+        </div>
+        <div class="tr-body">
+          <div style="font-size:.78rem; color:var(--muted); margin-bottom:.6rem;">Disk-backed memory survives session crashes. Git-synced across machines. Auto-loads at every session start.</div>
+          <div class="tr-items">
+            <div class="tr-item active">MEMORY.md</div>
+            <div class="tr-item active">project_status.md</div>
+            <div class="tr-item active">js_functions.md</div>
+            <div class="tr-item active">backend_reference.md</div>
+            <div class="tr-item active">drift detection</div>
+            <div class="tr-item active">git sync</div>
           </div>
-          <div class="loop-step">
-            <div class="loop-icon">📊</div>
-            <div>
-              <div class="loop-step-title">skill_scores.md — binary log</div>
-              <div class="loop-step-desc">A running table of every skill, every session. /evolve finds rows where Correction Needed = Y and Improvement Applied = — and fixes them. Specific failure data → specific patch.</div>
-            </div>
+        </div>
+      </div>
+      <div class="tier-row">
+        <div class="tr-label">
+          <div class="tr-tier">TIER 2</div>
+          <div class="tr-name">Self-Improving Skills</div>
+        </div>
+        <div class="tr-body">
+          <div style="font-size:.78rem; color:var(--muted); margin-bottom:.6rem;">Skills are scored after every session. /evolve patches weak steps. Skill chains run without prompting.</div>
+          <div class="tr-items">
+            <div class="tr-item active">skill_scores.md</div>
+            <div class="tr-item active">lessons.md</div>
+            <div class="tr-item active">decisions.md</div>
+            <div class="tr-item active">regret.md</div>
+            <div class="tr-item active">Auto-Chain</div>
+            <div class="tr-item active">/evolve</div>
           </div>
-          <div class="loop-step">
-            <div class="loop-icon">⚡</div>
-            <div>
-              <div class="loop-step-title">/evolve — patch and cluster</div>
-              <div class="loop-step-desc">Rewrites the failing step in the skill file. Clusters repeated lessons across sessions into new reusable skills. Logs every change to skill_improvements.md. The same mistake is never made twice.</div>
-            </div>
+          <div class="tr-score" style="margin-top:.75rem; font-size:.72rem;">→ skills improve from failure data</div>
+        </div>
+      </div>
+      <div class="tier-row">
+        <div class="tr-label">
+          <div class="tr-tier">TIER 3</div>
+          <div class="tr-name">Autonomous Operation</div>
+        </div>
+        <div class="tr-body">
+          <div style="font-size:.78rem; color:var(--muted); margin-bottom:.6rem;">Hooks fire without human prompts. Memory pushes automatically. Health checks run on schedule.</div>
+          <div class="tr-items">
+            <div class="tr-item active">stop hook</div>
+            <div class="tr-item active">PostToolUse hook</div>
+            <div class="tr-item active">auto end-session</div>
+            <div class="tr-item active">self-healing retry</div>
+            <div class="tr-item active">nightly health check</div>
+            <div class="tr-item active">daily summary</div>
           </div>
-          <div class="loop-step">
-            <div class="loop-icon">🔁</div>
-            <div>
-              <div class="loop-step-title">Next session — compounded</div>
-              <div class="loop-step-desc">Patched skills load at Start Session. Lessons apply before any code is touched. Rejected approaches in regret.md are never re-proposed. Each session is smarter than the last.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="loop-term">
-        <div class="term-bar">
-          <div class="term-dot term-dot-r"></div><div class="term-dot term-dot-y"></div><div class="term-dot term-dot-g"></div>
-          <div class="term-title">skill_scores.md</div>
-        </div>
-        <div class="term-body" style="font-size:.72rem;line-height:1.8;min-height:0;">
-          <div class="t-dim"># Skill Effectiveness Scores</div>
-          <span class="t-gap"></span>
-          <div class="t-dim">| Date  | Skill     | Correction | What Failed          |</div>
-          <div class="t-dim">|-------|-----------|------------|----------------------|</div>
-          <div><span class="t-warn">| 03-20 | fix-bug   | Y</span><span class="t-muted"> | Missed .env check    |</span></div>
-          <div><span class="t-ok">| 03-21 | fix-bug   | N</span><span class="t-muted"> | -                    |</span></div>
-          <div><span class="t-ok">| 03-22 | code-review | N</span><span class="t-muted"> | -                  |</span></div>
-          <span class="t-gap"></span>
-          <div class="t-dim"># Score Summary</div>
-          <div class="t-dim">| Skill      | Fired | Rate  |</div>
-          <div class="t-dim">|------------|-------|-------|</div>
-          <div><span class="t-muted">| fix-bug    |</span><span class="t-ok"> 12    | 92%   |</span></div>
-          <div><span class="t-muted">| verify     |</span><span class="t-ok"> 8     | 100%  |</span></div>
-          <span class="t-gap"></span>
-          <div class="t-chain">→ /evolve: fix-bug Step 3 patched</div>
-          <div class="t-chain">  added: check .env before logic fix</div>
-          <div class="t-ok">  Applied: 2026-03-23 ✓</div>
+          <div class="tr-score" style="margin-top:.75rem; font-size:.72rem;">→ Claude operates without checkpoints</div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Autonomous -->
-<section id="autonomous" style="border-top:1px solid var(--border);">
-  <div class="section-inner">
-    <div class="section-label">Autonomous Behaviors</div>
-    <h2>It runs. You work.</h2>
-    <p class="section-sub">No commands, no checkpoints — these happen automatically throughout every session.</p>
-    <div class="auto-grid">
-      <div class="auto-card">
-        <div class="auto-card-title"><span class="auto-icon">⛓</span> Skill Chaining</div>
-        <p>Add one section to any skill and it automatically triggers the next — pass or fail. No human steps between.</p>
-        <div class="code-snip">
-          <span class="t-dim">## Auto-Chain</span><br>
-          <span class="t-ok">On pass:</span> <span class="t-chain">→ verification-loop</span><br>
-          <span class="t-warn">On fail:</span> <span class="t-chain">→ debug-topic, retry</span><br><br>
-          <span class="t-dim">fix-bug → verify → smoke-test</span><br>
-          <span class="t-dim">            ↓ fail</span><br>
-          <span class="t-dim">        debug → smoke-test</span>
+<!-- LIFECYCLE HOOKS -->
+<section id="hooks">
+  <div class="wrap">
+    <div class="sec-label">lifecycle hooks</div>
+    <h2>Runs without <span class="h2-amber">being asked</span></h2>
+    <p class="sec-desc">
+      Hooks fire automatically at session events.
+      <em>Configured in .claude/settings.json — Claude reads the results, not the prompts.</em>
+    </p>
+
+    <div class="hooks-list reveal">
+      <div class="hook-row" style="background:var(--s2);">
+        <div class="hk-event" style="font-size:.65rem; color:var(--dim); font-weight:600;">EVENT</div>
+        <div class="hk-file"  style="font-size:.65rem; color:var(--dim); font-weight:600;">SCRIPT</div>
+        <div class="hk-does"  style="font-size:.65rem; color:var(--dim); font-weight:600;">DOES</div>
+      </div>
+      <div class="hook-row">
+        <div class="hk-event">SessionStart</div>
+        <div class="hk-file">tools/session_start.py</div>
+        <div class="hk-does">Load MEMORY.md, check for stale files, apply lessons</div>
+      </div>
+      <div class="hook-row">
+        <div class="hk-event">PostToolUse</div>
+        <div class="hk-file">tools/check_memory.py</div>
+        <div class="hk-does">After every file edit — check drift, warn if memory is stale</div>
+      </div>
+      <div class="hook-row">
+        <div class="hk-event">Stop</div>
+        <div class="hk-file">tools/stop_check.py</div>
+        <div class="hk-does">After 9pm with unsaved changes → auto push memory to GitHub</div>
+      </div>
+      <div class="hook-row">
+        <div class="hk-event">PreCompact</div>
+        <div class="hk-file">tools/pre_compact.py</div>
+        <div class="hk-does">Before context compaction — save all in-flight work to memory</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="wrap-sm">
+    <div class="sec-label">results</div>
+    <h2>112 sessions.<br><span class="h2-amber">Still going.</span></h2>
+    <p class="sec-desc">
+      Built on a production InfoGrasp project — Java backend, vanilla JS, SQL Server.
+      These numbers are real, from the repo that powers this kit.
+    </p>
+
+    <div class="stats-term reveal">
+      <div class="stats-bar">
+        <div class="td td-r"></div>
+        <div class="td td-y"></div>
+        <div class="td td-g"></div>
+        <span style="margin-left:.4rem">yf@recall ~ $</span>
+      </div>
+      <div class="stats-body">
+        <span class="st-cmd">cat</span> <span style="color:var(--text)">stats.md</span><br>
+        <span class="tdim">────────────────────────────────────────</span><br>
+        <span class="st-key">sessions logged         </span><span class="st-val">112</span><br>
+        <span class="st-key">skills in active use    </span><span class="st-val">23+</span><br>
+        <span class="st-key">agentic score           </span><span class="st-val">8.5 / 10</span><br>
+        <span class="st-key">memory survives crash   </span><span class="st-val">yes — disk + git</span><br>
+        <span class="st-key">drift caught auto       </span><span class="st-val">yes — PostToolUse hook</span><br>
+        <span class="st-key">cross-machine transfer  </span><span class="st-val">yes — clone + Start Session</span><br>
+        <span class="st-key">setup time              </span><span class="st-val">~5 minutes</span><br>
+        <span class="tdim">────────────────────────────────────────</span><br>
+        <span class="tmut">// compare to: rwieruch/the-road-to-claude (no loop), </span><br>
+        <span class="tmut">// anthropics/claude-code-examples (no persistence)</span><br>
+        <span class="tmut">// nothing else ships git-sync + compound learning loop</span><br>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMANDS -->
+<section id="commands">
+  <div class="wrap">
+    <div class="sec-label">every command</div>
+    <h2>Type these in <span class="h2-amber">Claude Code</span></h2>
+
+    <div class="cmds-list reveal">
+      <div class="cmd-row" style="background:var(--s2);">
+        <div class="cr-cmd" style="font-size:.65rem; color:var(--dim);">COMMAND</div>
+        <div class="cr-desc" style="font-size:.65rem; color:var(--dim);">WHAT IT DOES</div>
+      </div>
+      <div class="cmd-row"><div class="cr-cmd">Setup Memory</div><div class="cr-desc"><em>First time only</em> — runs Python setup, creates all memory files, configures hooks</div></div>
+      <div class="cmd-row"><div class="cr-cmd">Start Session</div><div class="cr-desc">Pull memory from GitHub, check drift, apply lessons, report last session status</div></div>
+      <div class="cmd-row"><div class="cr-cmd">End Session</div><div class="cr-desc">Run /learn, update memory, push to GitHub — <em>session complete, no work lost</em></div></div>
+      <div class="cmd-row"><div class="cr-cmd">/learn</div><div class="cr-desc">Extract lessons + decisions from this session, score skills Y/N, log velocity</div></div>
+      <div class="cmd-row"><div class="cr-cmd">/evolve</div><div class="cr-desc">Every 3-5 sessions — patch weak skills, propose new ones from detected patterns</div></div>
+      <div class="cmd-row"><div class="cr-cmd">Check Drift</div><div class="cr-desc">Find code Claude doesn't know about yet — run anytime, runs automatically on file edits</div></div>
+      <div class="cmd-row"><div class="cr-cmd">Analyze Codebase</div><div class="cr-desc">Scan every file, rebuild all memory indexes in one pass</div></div>
+      <div class="cmd-row"><div class="cr-cmd">Install Memory</div><div class="cr-desc">New machine — scan project, rebuild Claude's knowledge from scratch</div></div>
+      <div class="cmd-row"><div class="cr-cmd">Generate Skills</div><div class="cr-desc">Auto-create skills tailored to your specific stack and file patterns</div></div>
+      <div class="cmd-row"><div class="cr-cmd">Push Memory</div><div class="cr-desc">Manually push memory to GitHub — useful mid-session before a risky change</div></div>
+      <div class="cmd-row"><div class="cr-cmd">Update Kit</div><div class="cr-desc">Pull latest from GitHub — shows exactly what will change, <em>asks before applying</em></div></div>
+      <div class="cmd-row"><div class="cr-cmd">Update Kit from [URL]</div><div class="cr-desc">Pull from a fork or branch — <em>your memory files are never touched</em></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap-sm">
+    <div class="sec-label">questions</div>
+    <h2>FAQ</h2>
+
+    <div class="faq-list reveal">
+      <details>
+        <summary>What happens if Claude Code crashes mid-session?</summary>
+        <div class="faq-body">
+          Memory files live on disk and in git — a crash never touches them.
+          Open a new session, type <em>Start Session</em>, and Claude picks up where you left off.
+          <code>STATUS.md</code> confirms what was last saved. Run <em>Check Drift</em> to find anything that happened between the last memory update and the crash.
         </div>
-      </div>
-      <div class="auto-card">
-        <div class="auto-card-title"><span class="auto-icon">🔧</span> Self-Healing</div>
-        <p>When a verify step fails, Claude attempts the minimal fix and retries once before escalating to you. Define the fix in a Recovery section.</p>
-        <div class="code-snip">
-          <span class="t-dim">## Recovery</span><br>
-          <span class="t-muted">1. touch the changed file</span><br>
-          <span class="t-muted">2. wait 5s for reload</span><br>
-          <span class="t-muted">3. re-run smoke test</span><br>
-          <span class="t-muted">4. escalate if still fails</span><br><br>
-          <span class="t-ok">✓ auto-recovery succeeded</span>
+      </details>
+      <details>
+        <summary>Do I need to use git for memory sync?</summary>
+        <div class="faq-body">
+          No — git sync is the default but it's optional. Memory files are just markdown on disk.
+          You can skip the push/pull steps and use any sync method you prefer (Dropbox, rsync, etc.),
+          or just keep everything local.
         </div>
-      </div>
-      <div class="auto-card">
-        <div class="auto-card-title"><span class="auto-icon">🌙</span> Auto End Session</div>
-        <p>After 9pm with unsaved memory changes, the stop hook auto-commits and pushes to git. Memory is never lost — even if you forget End Session.</p>
-        <div class="code-snip">
-          <span class="t-dim"># fires on every Stop event</span><br>
-          <span class="t-muted">hour ≥ 21 + unsaved changes</span><br>
-          <span class="t-chain">→ git add -A</span><br>
-          <span class="t-chain">→ git commit "Auto end session"</span><br>
-          <span class="t-chain">→ git push</span><br>
-          <span class="t-ok">Memory safe. /learn when ready.</span>
+      </details>
+      <details>
+        <summary>What's the difference between Full and Lite mode?</summary>
+        <div class="faq-body">
+          <em>Full:</em> 5 separate memory files (project status, JS functions, HTML/CSS, backend, preferences), drift detection script, auto-rebuild hooks. Best for multi-file projects.<br><br>
+          <em>Lite:</em> 1 notes file, no drift detection, no hooks. Best for solo or small projects. You can upgrade from Lite to Full at any time with a single prompt.
         </div>
-      </div>
-      <div class="auto-card">
-        <div class="auto-card-title"><span class="auto-icon">🔍</span> Drift Detection</div>
-        <p>Runs after every file edit. Catches new functions, deleted code, and new CSS classes before they cause confusion — silently when clean.</p>
-        <div class="code-snip">
-          <span class="t-warn">DRIFT DETECTED</span><br>
-          <span class="t-muted">  JS not in memory (2):</span><br>
-          <span class="t-muted">    - submitForm</span><br>
-          <span class="t-muted">    - resetPanel</span><br>
-          <span class="t-muted">  CSS not in memory (1):</span><br>
-          <span class="t-muted">    - .card--highlighted</span><br>
-          <span class="t-ok">→ memory updated automatically</span>
+      </details>
+      <details>
+        <summary>Can I add skills for my own tech stack?</summary>
+        <div class="faq-body">
+          Yes — type <em>Generate Skills</em> and Claude creates skills tailored to your files and patterns.
+          Or create one manually: <code>Create a skill called [name] that [description]</code>.
+          Skills are markdown files in <code>.claude/skills/name/SKILL.md</code> — easy to read, edit, and version-control.
         </div>
-      </div>
+      </details>
+      <details>
+        <summary>What does /evolve actually do?</summary>
+        <div class="faq-body">
+          It reads <code>skill_scores.md</code> (which /learn populates after every session with Y/N corrections),
+          finds steps that repeatedly needed fixing, and patches those steps. It also scans
+          <code>lessons.md</code> for recurring patterns and proposes new skills you don't have yet.
+          Run it every 3-5 sessions.
+        </div>
+      </details>
+      <details>
+        <summary>How do I move this to a new machine?</summary>
+        <div class="faq-body">
+          Clone your project and your memory repo. Open Claude Code and type <em>Install Memory</em>.
+          Claude scans the codebase and rebuilds all knowledge. If your memory is already on disk,
+          <em>Start Session</em> loads it directly.
+        </div>
+      </details>
+      <details>
+        <summary>What is the Auto-Chain feature?</summary>
+        <div class="faq-body">
+          Add an <code>## Auto-Chain</code> section to any skill file with <em>On pass</em> and <em>On fail</em> steps.
+          Claude reads it and continues to the next skill automatically — no human prompt needed.
+          Example: <code>fix-bug</code> → <code>verification-loop</code> → <code>smoke-test</code> runs as one chain.
+        </div>
+      </details>
+      <details>
+        <summary>Does updating the kit overwrite my memory or project notes?</summary>
+        <div class="faq-body">
+          No. The updater only replaces the kit commands block in <code>CLAUDE.md</code>.
+          Your memory files, <code>STATUS.md</code>, and everything below
+          <code>## What This Project Is</code> in <code>CLAUDE.md</code> are never touched.
+          The updater always shows a diff and asks <em>"Apply update? [y/N]"</em> before changing anything.
+        </div>
+      </details>
+      <details>
+        <summary>Is there a global lessons file that works across projects?</summary>
+        <div class="faq-body">
+          Yes — <code>~/.claude/global-lessons.md</code> (or <code>C:\Users\you\.claude\global-lessons.md</code> on Windows).
+          Any discovery you add here gets loaded at every session start across all your projects.
+          Use it for things like "always check for stale .class files before debugging Java".
+        </div>
+      </details>
+      <details>
+        <summary>What Python version do I need?</summary>
+        <div class="faq-body">
+          Python 3.7 or newer. That's it — no external packages, no pip install.
+          All tools use only the standard library.
+          Free at <a href="https://python.org/downloads" style="color:var(--amber)">python.org/downloads</a>.
+        </div>
+      </details>
+      <details>
+        <summary>How is this different from other Claude memory repos?</summary>
+        <div class="faq-body">
+          Most repos save a snapshot — a CLAUDE.md file you maintain by hand.
+          claude-recall ships: disk-backed memory that survives crashes, git sync across machines,
+          a compound learning loop (/learn → skill_scores → /evolve), autonomous hooks that fire without prompting,
+          and skill chaining. <em>Nothing else ships git-synced living memory + compound learning together.</em>
+        </div>
+      </details>
     </div>
   </div>
 </section>
 
-<!-- Skills showcase -->
-<section id="skills" style="border-top:1px solid var(--border);">
-  <div class="section-inner">
-    <div class="section-label">What Ships</div>
-    <h2>10 skills. All automatic.</h2>
-    <p class="section-sub">Every skill fires from plain English — you never invoke them by name. Generate Skills creates more, tailored to your exact stack.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-bottom:3rem;">
-      <div class="auto-card" style="opacity:1;transform:none;">
-        <div class="auto-card-title"><span class="auto-icon">🐛</span> fix-bug</div>
-        <p style="margin-bottom:.5rem;">Triggered by: <span style="font-family:var(--mono);font-size:.78rem;color:#c4b5fd">"fix the bug where..."</span></p>
-        <p>Root cause first, fix second. Logs the fix to lessons.md so it never happens again.</p>
-      </div>
-      <div class="auto-card" style="opacity:1;transform:none;">
-        <div class="auto-card-title"><span class="auto-icon">🔎</span> code-review</div>
-        <p style="margin-bottom:.5rem;">Triggered by: <span style="font-family:var(--mono);font-size:.78rem;color:#c4b5fd">"review this file"</span></p>
-        <p>Dead code, missing error handling, convention violations — reports file and line number.</p>
-      </div>
-      <div class="auto-card" style="opacity:1;transform:none;">
-        <div class="auto-card-title"><span class="auto-icon">🔒</span> security-check</div>
-        <p style="margin-bottom:.5rem;">Triggered by: <span style="font-family:var(--mono);font-size:.78rem;color:#c4b5fd">"check for security issues"</span></p>
-        <p>SQL injection, missing auth, exposed sensitive data across all layers.</p>
-      </div>
-      <div class="auto-card" style="opacity:1;transform:none;">
-        <div class="auto-card-title"><span class="auto-icon">✨</span> new-feature</div>
-        <p style="margin-bottom:.5rem;">Triggered by: <span style="font-family:var(--mono);font-size:.78rem;color:#c4b5fd">"add a new..."</span></p>
-        <p>Searches existing patterns before building — no duplicate code, no re-inventing what's already there.</p>
-      </div>
-      <div class="auto-card" style="opacity:1;transform:none;">
-        <div class="auto-card-title"><span class="auto-icon">✅</span> verification-loop</div>
-        <p style="margin-bottom:.5rem;">Triggered by: <span style="font-family:var(--mono);font-size:.78rem;color:#c4b5fd">"verify this works", "before I ship"</span></p>
-        <p>Compile + smoke test + self-check after every change. Chains automatically from fix-bug.</p>
-      </div>
-      <div class="auto-card" style="opacity:1;transform:none;">
-        <div class="auto-card-title"><span class="auto-icon">🔍</span> search-first</div>
-        <p style="margin-bottom:.5rem;">Triggered by: <span style="font-family:var(--mono);font-size:.78rem;color:#c4b5fd">"add new endpoint/feature"</span></p>
-        <p>Research before coding — finds existing implementations so you never build what's already there.</p>
-      </div>
-      <div class="auto-card" style="opacity:1;transform:none;">
-        <div class="auto-card-title"><span class="auto-icon">📝</span> /learn</div>
-        <p style="margin-bottom:.5rem;">Triggered by: <span style="font-family:var(--mono);font-size:.78rem;color:#c4b5fd">"/learn", "End Session"</span></p>
-        <p>Extracts lessons, scores every skill that fired (Y/N), logs velocity. Auto-runs at End Session.</p>
-      </div>
-      <div class="auto-card" style="opacity:1;transform:none;">
-        <div class="auto-card-title"><span class="auto-icon">⚡</span> /evolve</div>
-        <p style="margin-bottom:.5rem;">Triggered by: <span style="font-family:var(--mono);font-size:.78rem;color:#c4b5fd">"/evolve"</span></p>
-        <p>Patches failing skills using the exact failure data from skill_scores.md. Clusters patterns into new skills.</p>
-      </div>
-      <div class="auto-card" style="opacity:1;transform:none;">
-        <div class="auto-card-title"><span class="auto-icon">🗜</span> strategic-compact</div>
-        <p style="margin-bottom:.5rem;">Triggered by: <span style="font-family:var(--mono);font-size:.78rem;color:#c4b5fd">"should I compact?"</span></p>
-        <p>Guides safe context compaction — reinjects memory first so nothing is lost through /compact.</p>
-      </div>
-      <div class="auto-card" style="opacity:1;transform:none;">
-        <div class="auto-card-title"><span class="auto-icon">☕</span> java-reviewer</div>
-        <p style="margin-bottom:.5rem;">Triggered by: <span style="font-family:var(--mono);font-size:.78rem;color:#c4b5fd">"review this java"</span></p>
-        <p>Deep Java review against your stack's specific patterns — goes further than the general code-review skill.</p>
-      </div>
-    </div>
-    <div style="background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1rem;max-width:600px;">
-      <span style="font-size:1.4rem;">🛠</span>
-      <div>
-        <strong style="font-size:.95rem;">Generate Skills</strong>
-        <p style="font-size:.85rem;color:var(--muted);margin-top:.2rem;">Type <code style="font-family:var(--mono);color:#c4b5fd">Generate Skills</code> and Claude auto-creates additional skills tailored to your exact stack, file names, and patterns.</p>
-      </div>
-    </div>
-  </div>
-</section>
+</main>
 
-<!-- Hooks -->
-<section id="hooks" style="border-top:1px solid var(--border);">
-  <div class="section-inner">
-    <div class="section-label">Lifecycle Hooks</div>
-    <h2>Four hooks. Zero configuration.</h2>
-    <p class="section-sub">These run automatically at key moments — no commands, no setup beyond the initial install.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem;">
-      <div class="auto-card" style="opacity:1;transform:none;">
-        <div class="auto-card-title"><span class="auto-icon">🌅</span> SessionStart</div>
-        <p>Fires when Claude Code opens. Injects STATUS.md and MEMORY.md into context before your first message. Claude starts warm — no need to type Start Session.</p>
-        <div class="code-snip"><span class="t-dim">session_start.py</span><br><span class="t-ok">→ memory loaded before msg 1</span></div>
-      </div>
-      <div class="auto-card" style="opacity:1;transform:none;">
-        <div class="auto-card-title"><span class="auto-icon">📂</span> PostToolUse</div>
-        <p>Fires after every Edit or Write. Runs the drift detector immediately — catches undocumented changes right when they happen, not just at End Session.</p>
-        <div class="code-snip"><span class="t-dim">check_memory.py --silent</span><br><span class="t-ok">→ drift caught in real time</span></div>
-      </div>
-      <div class="auto-card" style="opacity:1;transform:none;">
-        <div class="auto-card-title"><span class="auto-icon">🗜</span> PreCompact</div>
-        <p>Fires before Claude compacts the conversation. Reinjects memory into the compacted context. Run /learn first, then /compact freely — nothing is ever lost.</p>
-        <div class="code-snip"><span class="t-dim">precompact.py</span><br><span class="t-ok">→ memory survives /compact</span></div>
-      </div>
-      <div class="auto-card" style="opacity:1;transform:none;">
-        <div class="auto-card-title"><span class="auto-icon">🛑</span> Stop</div>
-        <p>Fires after every response. Captures session journal automatically. Warns about unsaved memory. After 9pm with unsaved changes — auto-pushes to git.</p>
-        <div class="code-snip"><span class="t-dim">session_journal.py</span><br><span class="t-dim">stop_check.py</span><br><span class="t-ok">→ nothing ever lost</span></div>
-      </div>
-    </div>
+<footer>
+  <div class="footer-mark">
+    <div class="yf-mark">YF</div>
+    <span>claude-recall</span>
   </div>
-</section>
-
-<!-- Modes -->
-<section id="modes" style="border-top:1px solid var(--border);">
-  <div class="section-inner">
-    <div class="section-label">Two Modes</div>
-    <h2>Start light. Upgrade when ready.</h2>
-    <p class="section-sub">Setup asks which mode you want. You can always upgrade from Lite to Full later.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:700px;">
-      <div class="auto-card" style="opacity:1;transform:none;border-color:rgba(139,92,246,.3);">
-        <div class="auto-card-title"><span class="auto-icon">⚡</span> Lite</div>
-        <p>One notes file. Manual drift checks. Best for quick experiments and small solo projects.</p>
-        <div style="font-size:.8rem;color:var(--dim);font-family:var(--mono);margin-top:.5rem;">1 memory file · manual drift</div>
-      </div>
-      <div class="auto-card" style="opacity:1;transform:none;border-color:var(--accent);">
-        <div class="auto-card-title"><span class="auto-icon">🚀</span> Full</div>
-        <p>5 separate memory files. Automated drift detection after every edit. Session journal. Best for real projects.</p>
-        <div style="font-size:.8rem;color:var(--accent);font-family:var(--mono);margin-top:.5rem;">5 memory files · auto drift · journal</div>
-      </div>
-    </div>
+  <div class="footer-links">
+    <a href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit" target="_blank">GitHub</a>
+    <a href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit/blob/main/README.md" target="_blank">README</a>
+    <a href="https://github.com/YehudaFrankel/Claude-Code-memory-starter-kit/issues" target="_blank">Issues</a>
   </div>
-</section>
-
-<!-- Commands -->
-<section id="commands" style="border-top:1px solid var(--border);">
-  <div class="section-inner">
-    <div class="section-label">Commands</div>
-    <h2>Every command, explained.</h2>
-    <p class="section-sub">Two you use every day. The rest when you need them.</p>
-    <div class="cmd-groups">
-      <div>
-        <div class="cmd-group-title">Daily</div>
-        <table>
-          <tr><th>Command</th><th>What it does</th></tr>
-          <tr><td>Start Session</td><td>Reads memory, applies lessons, runs drift check, picks up where you left off</td></tr>
-          <tr><td>End Session</td><td>Runs /learn, updates STATUS.md, syncs all memory files</td></tr>
-          <tr><td>/learn</td><td>Extracts lessons, scores skills (Y/N), logs velocity</td></tr>
-          <tr><td>/evolve</td><td>Patches failing skills, clusters repeated patterns into new skills</td></tr>
-          <tr><td>Should I compact?</td><td>Safe context compaction — memory reinjects first, nothing lost</td></tr>
-        </table>
-      </div>
-      <div>
-        <div class="cmd-group-title">Analysis</div>
-        <table>
-          <tr><th>Command</th><th>What it does</th></tr>
-          <tr><td>Check Drift</td><td>Manually scan live code vs memory — find undocumented functions</td></tr>
-          <tr><td>Analyze Codebase</td><td>Full scan of all JS, CSS, backend — documents every function and endpoint</td></tr>
-          <tr><td>Code Health</td><td>console.log leftovers, hardcoded values, dead code, missing error handling</td></tr>
-        </table>
-      </div>
-      <div>
-        <div class="cmd-group-title">Setup & recovery</div>
-        <table>
-          <tr><th>Command</th><th>What it does</th></tr>
-          <tr><td>Setup Memory</td><td>First-time setup — creates all memory files</td></tr>
-          <tr><td>Install Memory</td><td>New machine — copies memory to Claude's system path</td></tr>
-          <tr><td>Generate Skills</td><td>Auto-creates skills tailored to your exact stack and file structure</td></tr>
-          <tr><td>Update Kit</td><td>Latest updates safely — only commands block updated, memory and skills never touched</td></tr>
-          <tr><td>Analyze Codebase</td><td>Full scan — documents every function, class, and endpoint found</td></tr>
-        </table>
-      </div>
-      <div>
-        <div class="cmd-group-title">Planning & debug</div>
-        <table>
-          <tr><th>Command</th><th>What it does</th></tr>
-          <tr><td>Estimate: [task]</td><td>Complexity, files, risks, written plan — before any code</td></tr>
-          <tr><td>Debug Session</td><td>Reproduce → isolate → hypothesize → fix → verify → log</td></tr>
-          <tr><td>Handoff</td><td>HANDOFF.md with current state, next 3 tasks, key decisions, how to start</td></tr>
-          <tr><td>Code Health</td><td>console.log leftovers, hardcoded values, dead code — reports file + line</td></tr>
-        </table>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Stats -->
-<section style="border-top:1px solid var(--border);">
-  <div class="section-inner">
-    <div class="section-label">Real-World Results</div>
-    <h2>112 sessions on a production codebase.</h2>
-    <p class="section-sub">Legacy Java backend, 5 JS files, 100+ functions, scheduler, email system, encrypted URLs. Not a demo project.</p>
-    <div class="stats-grid">
-      <div class="stat"><div class="stat-num" data-target="112">0</div><div class="stat-label">real dev sessions</div></div>
-      <div class="stat"><div class="stat-num" data-target="0">0</div><div class="stat-label">context losses</div></div>
-      <div class="stat"><div class="stat-num">8.5<span style="font-size:1rem">/10</span></div><div class="stat-label">agentic score</div></div>
-      <div class="stat"><div class="stat-num" data-target="21">0</div><div class="stat-label">undocumented functions caught on first drift run</div></div>
-    </div>
-    <div class="reveal-on-scroll" style="background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:1.8rem;max-width:680px;">
-      <div style="font-size:.9rem;color:var(--muted);line-height:2;">
-        Sessions crashed mid-task — <span style="color:var(--text)">Start Session recovered every time. Zero re-explanation.</span><br>
-        Skills patched themselves via /evolve — <span style="color:var(--text)">the same failure never happened twice.</span><br>
-        A compiler bug was logged permanently — <span style="color:var(--text)">it has never cost another debugging session.</span><br>
-        Everything here came from actual use — <span style="color:var(--text)">nothing hypothetical.</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<div class="cta-section">
-  <div class="section-label" style="justify-content:center;">Get Started</div>
-  <h2>A system that compounds.</h2>
-  <p>Memory syncs. Skills evolve. Sessions build on each other — not reset. Three commands to start.</p>
-  <div class="cta-actions">
-    <a class="btn btn-primary" href="https://github.com/YehudaFrankel/claude-recall">View on GitHub</a>
-    <a class="btn btn-ghost" href="#install">Quick Start →</a>
-  </div>
-  <p style="margin-top:2rem;font-size:.8rem;color:var(--dim);">Python 3.7+ · Claude Code · MIT License · No other dependencies</p>
-</div>
+  <div class="footer-sig">// built by yf</div>
+</footer>
 
 <script>
-/* ── Typing animation ── */
+// ─── TYPEWRITER ───
 const lines = [
-  { type: 'prompt', text: 'Start Session' },
-  { type: 'ok',    text: '  ✓ memory pulled · 14 lessons loaded' },
-  { type: 'ok',    text: '  ✓ 3 decisions — auth, DB schema, routing' },
-  { type: 'ok',    text: '  ✓ node_modules OK · MCP connected' },
-  { type: 'muted', text: '  Ready. Session 47. What are we working on?' },
-  { type: 'gap' },
-  { type: 'prompt', text: 'fix the bug where sessions expire too early' },
-  { type: 'muted', text: '  Heads up: JWT secret was hardcoded in test' },
-  { type: 'muted', text: '  (session 44) — check .env first' },
-  { type: 'gap' },
-  { type: 'chain', text: '  → fix-bug complete' },
-  { type: 'chain', text: '  → auto-chain: verification-loop' },
-  { type: 'ok',    text: '    ✓ smoke test passed' },
-  { type: 'gap' },
-  { type: 'prompt', text: 'End Session' },
-  { type: 'ok',    text: '  /learn → 2 lessons · fix-bug scored N' },
-  { type: 'ok',    text: '  memory pushed · session 47 complete' },
+  { text: 'Start Session', speed: 80, pause: 400 },
+];
+const outputs = [
+  { delay: 0,    html: '<span class="tmut">// pulling memory from GitHub...</span>' },
+  { delay: 600,  html: '<span class="tok">✓ MEMORY.md loaded (session 112)</span>' },
+  { delay: 1000, html: '<span class="tok">✓ lessons.md — 34 patterns applied</span>' },
+  { delay: 1400, html: '<span class="tok">✓ decisions.md — 12 settled decisions</span>' },
+  { delay: 1900, html: '<span class="tmut">// last session: skill chaining + autonomous hooks</span>' },
+  { delay: 2500, html: '<span class="twarn">→ 8.5/10 agentic · 112 sessions deep</span>' },
+  { delay: 3200, html: '<span class="tgap"></span><span class="tp">yf@recall ~ $</span> <span class="cursor"></span>' },
 ];
 
-const colorMap = {
-  prompt: 'var(--accent)',
-  ok:     'var(--green)',
-  warn:   'var(--amber)',
-  muted:  'var(--muted)',
-  chain:  '#c4b5fd',
-  dim:    'var(--dim)',
-};
+function runTerminal() {
+  const target = document.getElementById('typeTarget');
+  const cursor = document.getElementById('typeCursor');
+  const body   = document.getElementById('hero-term');
+  const cmd    = 'Start Session';
+  let i = 0;
 
-const term = document.getElementById('heroTerm');
-const cursor = document.getElementById('termCursor');
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-async function typeTerminal() {
-  await sleep(600);
-  for (const line of lines) {
-    if (line.type === 'gap') {
-      const gap = document.createElement('span');
-      gap.style.display = 'block';
-      gap.style.height = '.5rem';
-      term.insertBefore(gap, cursor);
-      await sleep(120);
-      continue;
+  function typeNext() {
+    if (i < cmd.length) {
+      target.textContent += cmd[i++];
+      setTimeout(typeNext, 75 + Math.random() * 40);
+    } else {
+      cursor.style.display = 'none';
+      outputs.forEach(o => {
+        setTimeout(() => {
+          const br  = document.createElement('br');
+          const div = document.createElement('span');
+          div.innerHTML = o.html;
+          body.appendChild(br);
+          body.appendChild(div);
+        }, 600 + o.delay);
+      });
     }
-    const el = document.createElement('div');
-    const color = colorMap[line.type] || 'var(--text)';
-    el.style.color = color;
-    term.insertBefore(el, cursor);
-
-    const prefix = line.type === 'prompt' ? '› ' : '';
-    const full = prefix + line.text;
-    const delay = line.type === 'prompt' ? 38 : 12;
-
-    for (let i = 0; i < full.length; i++) {
-      el.textContent = full.slice(0, i + 1);
-      await sleep(delay + Math.random() * (line.type === 'prompt' ? 30 : 8));
-    }
-    await sleep(line.type === 'prompt' ? 180 : 60);
   }
-  // hide cursor at end
-  await sleep(1200);
-  cursor.style.display = 'none';
+  setTimeout(typeNext, 900);
 }
-typeTerminal();
 
-/* ── Intersection Observer — scroll reveal ── */
+// ─── SCROLL REVEAL ───
 const io = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) {
-      e.target.classList.add('reveal');
+      e.target.classList.add('visible');
       io.unobserve(e.target);
     }
   });
-}, { threshold: 0.15 });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-document.querySelectorAll(
-  '.tier, .loop-step, .auto-card, .stat, .reveal-on-scroll, .install-step, .install-arrow'
-).forEach(el => io.observe(el));
-
-/* ── Counter animation ── */
-const counterIO = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      const el = e.target;
-      const target = parseInt(el.dataset.target);
-      if (isNaN(target)) return;
-      let start = 0;
-      const duration = 1200;
-      const step = timestamp => {
-        if (!start) start = timestamp;
-        const progress = Math.min((timestamp - start) / duration, 1);
-        const ease = 1 - Math.pow(1 - progress, 3);
-        el.textContent = Math.round(ease * target);
-        if (progress < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-      counterIO.unobserve(el);
-    }
+// ─── COPY BUTTON ───
+function copyCmd(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1800);
   });
-}, { threshold: 0.5 });
-document.querySelectorAll('[data-target]').forEach(el => counterIO.observe(el));
-
-/* ── Loop flow pulse ── */
-const nodes = ['lf0','lf1','lf2','lf3','lf4'];
-let lfIdx = 0;
-function pulseLoop() {
-  nodes.forEach(id => document.getElementById(id)?.classList.remove('active'));
-  const el = document.getElementById(nodes[lfIdx]);
-  if (el) el.classList.add('active');
-  lfIdx = (lfIdx + 1) % nodes.length;
 }
-setInterval(pulseLoop, 900);
-pulseLoop();
+
+// ─── RUN ───
+runTerminal();
 </script>
 </body>
 </html>
