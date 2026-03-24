@@ -3,7 +3,10 @@
     "allow": [
       "Read",
       "Glob",
-      "Grep"
+      "Grep",
+      "Edit",
+      "Write",
+      "Bash"
     ],
     "deny": []
   },

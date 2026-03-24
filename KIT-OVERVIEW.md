@@ -172,6 +172,42 @@ Claude Code sessions can die unexpectedly — API errors, large images pasted in
 
 ---
 
+## Agentic Tier — The Compound Learning Loop
+
+The kit ships with a full agentic layer on top of memory persistence. Here's how it works:
+
+```
+session work
+     ↓
+/learn  →  lessons.md + decisions.md + skill_scores.md
+                              ↓
+                        /evolve  →  patches failing skills
+                                 →  clusters patterns into new skills
+                                 →  skill_improvements.md log
+```
+
+**Three commands drive the loop:**
+
+| Command | When to run | What it does |
+|---------|-------------|--------------|
+| `/learn` | Before End Session | Extracts lessons, scores skills (Y/N), logs velocity |
+| `/evolve` | Every 3-5 sessions | Patches weak skills, proposes new ones from patterns |
+| `End Session` | End of work | Runs /learn, updates STATUS.md, pushes memory |
+
+**What gets smarter over time:**
+- `lessons.md` — grows with every session; applied at every Start Session
+- `decisions.md` — Claude stops re-debating settled choices
+- `skill_scores.md` — tracks which skills needed correction; /evolve auto-patches them
+- `regret.md` — rejected approaches; Claude never re-proposes them
+- `velocity.md` — estimated vs actual; Claude self-calibrates future estimates
+
+**Autonomous behaviors (no prompting needed):**
+- Stop hook auto-pushes memory after 9pm if unsaved changes exist
+- Skills chain automatically via `## Auto-Chain` sections
+- Self-healing: skills retry before escalating to you
+
+---
+
 ## Skill Auto-Chain Pattern
 
 Skills can automatically trigger the next skill on pass or fail — no human prompt needed.

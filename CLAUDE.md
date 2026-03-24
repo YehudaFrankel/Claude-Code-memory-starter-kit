@@ -27,11 +27,11 @@ When the user types **"Start Session"**, do the following:
    - If available or no MCP configured → silent, continue
 2. Run `python tools/check_memory.py` — check for JS/CSS drift; fix any found (update memory files + sync to bundle)
 3. Read `STATUS.md` — find the current session number and last change
-4. Read `tasks/lessons.md` — apply all lessons before touching anything
-5. Read `tasks/decisions.md` — understand past architectural choices
-6. Read `tasks/errors.md` — know which runtime errors have already been seen and solved
-7. Read `tasks/todo.md` — understand current state; if it doesn't exist, create it
-8. Report: "Session N ready. Last change: [X]. Memory: [OK or what was fixed]. [N] lessons loaded. What are we working on?"
+4. Read `.claude/memory/lessons.md` — apply all lessons before touching anything
+5. Read `.claude/memory/decisions.md` — understand past architectural choices; don't re-debate settled decisions
+6. Read `.claude/memory/tasks/regret.md` — know which approaches were rejected and why; don't re-propose them
+7. Read `.claude/memory/tasks/todo.md` — understand current state; if it doesn't exist, create it
+8. Report: "Session N ready. Last change: [X]. [N] lessons loaded. What are we working on?"
 
 ### `Analyze Codebase`
 When the user types **"Analyze Codebase"**, do the following:
@@ -177,10 +177,48 @@ After **any code change** this session, immediately update the relevant memory f
 | HTML element or CSS class added or changed | `html_css_reference.md` |
 | Endpoint or backend method added or changed | `backend_reference.md` |
 | Architecture decision or non-obvious gotcha | `project_status.md` |
-| Chose approach A over B for a reason | `tasks/decisions.md` |
-| Fixed a runtime error / bug | `tasks/errors.md` |
+| Chose approach A over B for a reason | `.claude/memory/decisions.md` |
+| Fixed a runtime error / bug | `.claude/memory/tasks/regret.md` |
 
 `End Session` handles `STATUS.md`, the full drift check, and confirms everything is clean.
+
+---
+
+## Autonomous Behaviors
+
+These run automatically — no prompt needed.
+
+### Skill Chaining
+Skills can trigger the next skill on pass or fail. Add `## Auto-Chain` to any `SKILL.md`:
+```markdown
+## Auto-Chain
+- **On pass:** → run `verification-loop`
+- **On fail:** → run `debug-[topic]`, then retry
+```
+Claude reads this and continues the chain without waiting. Build chains for your most common multi-step flows.
+
+### Self-Healing on Failure
+When a skill's smoke/verify step fails:
+1. Claude attempts the minimal fix autonomously (e.g. touch file, clear cache)
+2. Retries the check once
+3. Only escalates to you if the second attempt also fails
+
+Add a `## Recovery` section to any skill to define what "minimal fix" means for that skill.
+
+### Auto End Session
+The stop hook monitors every response. After 9pm with unsaved memory changes, it auto-pushes memory to git — so nothing is lost even if you forget `End Session`. `/learn` still runs manually (it needs Claude's analysis), but the raw memory is always safe.
+
+### Compound Learning Loop
+```
+session work → /learn (extract lessons + score skills)
+                     ↓
+              skill_scores.md (Y/N per skill)
+                     ↓
+              /evolve (patch failing skills, cluster patterns)
+                     ↓
+              better skills next session
+```
+Run `/learn` before `End Session`. Run `/evolve` when lessons accumulate (every 3-5 sessions).
 
 ---
 
