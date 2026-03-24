@@ -333,7 +333,7 @@ h2 {
   opacity: 0; transition: opacity .25s;
 }
 .living-cell:hover::before { opacity: 1; }
-.lc-num { font-size: .65rem; color: var(--dim); margin-bottom: .75rem; }
+.lc-num { font-size: .65rem; color: rgba(109,186,120,.55); margin-bottom: .75rem; }
 .lc-head { font-size: 1.05rem; color: var(--amber); font-weight: 600; margin-bottom: .75rem; }
 .lc-body { font-size: .8rem; color: var(--muted); line-height: 1.75; }
 .lc-body em { color: var(--text); font-style: normal; }
@@ -356,6 +356,8 @@ h2 {
 .ln-cmd  { font-size: .72rem; color: var(--amber); margin-bottom: .4rem; }
 .ln-desc { font-size: .7rem; color: var(--muted); line-height: 1.5; }
 .ln-sub  { font-size: .64rem; color: var(--dim); margin-top: .3rem; }
+.loop-node:last-child { border-top: 2px solid rgba(109,186,120,.35); }
+.loop-node:last-child .ln-cmd { color: var(--green); }
 
 /* ─── SKILLS TABLE ─── */
 .skills-tbl {
@@ -618,7 +620,7 @@ footer {
 <section id="living">
   <div class="wrap">
     <div class="sec-label">why it's different</div>
-    <h2>Not a config file.<br><span class="h2-amber">A living environment.</span></h2>
+    <h2>Not a config file.<br><span style="color:var(--green)">A living environment.</span></h2>
     <p class="sec-desc">
       Most setups drop a CLAUDE.md and call it done. claude-recall ships
       a <em>three-tier agentic system</em> — the environment learns your
@@ -697,7 +699,7 @@ footer {
 
     <div style="margin-top:2.5rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1px; background:var(--border);" class="reveal">
       <div style="background:var(--s1); padding:1.4rem 1.6rem;">
-        <div style="font-size:.68rem; color:var(--muted); margin-bottom:.6rem; letter-spacing:.06em;">GETS SMARTER</div>
+        <div style="font-size:.68rem; color:var(--green); margin-bottom:.6rem; letter-spacing:.06em;">GETS SMARTER</div>
         <div style="font-size:.82rem; color:var(--text); line-height:1.8;">lessons.md — grows every session</div>
         <div style="font-size:.78rem; color:var(--muted); line-height:1.8;">decisions.md — stops re-debating</div>
         <div style="font-size:.78rem; color:var(--muted); line-height:1.8;">regret.md — never re-proposes bad ideas</div>
