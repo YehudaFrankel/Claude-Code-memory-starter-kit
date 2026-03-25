@@ -159,6 +159,7 @@ One file, `tools/memory.py`, runs all lifecycle behaviors via subcommands:
 | `--complexity-scan` | First `Start Session` on a new project | Detects stack, DB, tests, API surface — scores complexity Low/Medium/High and recommends which skills to use. Auto-refreshes after 30 days. |
 | `--session-start` | When Claude Code opens | Injects memory into context before your first message — Claude starts warm |
 | `--precompact` | Before `/compact` | Reinjects memory into the compacted context — nothing lost through compaction |
+| `--search "query"` | On demand | Full-text search across all memory `.md` files — scored results with ±2 lines of context. `--top N` limits results (default 5). |
 
 ---
 
@@ -352,7 +353,8 @@ your-project/
 │       ├── --journal                ← Stop hook: auto-captures session journal
 │       ├── --stop-check             ← Stop hook: open plan + unsaved change reminders
 │       ├── --session-start          ← Run manually: memory health on session start
-│       └── --bootstrap              ← Run once: full codebase index on new projects
+│       ├── --bootstrap              ← Run once: full codebase index on new projects
+│       └── --search "query"         ← Search all memory files with scored results
 └── .claude/
     ├── settings.json                ← 3 hooks configured
     ├── memory/
