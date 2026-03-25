@@ -13,6 +13,8 @@ Usage:
   python tools/memory.py --bootstrap                  # One-time codebase indexer
   python tools/memory.py --complexity-scan            # Project complexity scanner
   python tools/memory.py --complexity-scan --silent   # Silent scan (Start Session)
+  python tools/memory.py --search "query"             # Fuzzy search across all memory files
+  python tools/memory.py --search "query" --top N     # Limit to N results (default 10)
 """
 
 import json
@@ -849,6 +851,125 @@ def cmd_complexity_scan():
         print(f'Profile: {profile_path}')
 
 
+# ─── SEARCH ───────────────────────────────────────────────────────────────────
+# Fuzzy/semantic grep across all .claude/memory/ files. No external deps.
+# Run: python tools/memory.py --search "query" [--top N]
+
+_SEARCH_CONTEXT = 2  # lines of context around each match
+
+
+def _search_score_line(line_lower, tokens, phrase):
+    """Score a single line for relevance. Higher is better."""
+    if phrase in line_lower:
+        return 10
+    if tokens and all(t in line_lower for t in tokens):
+        return 5
+    return sum(1 for t in tokens if t in line_lower)
+
+
+def _search_parse_args():
+    """Extract --search QUERY and optional --top N from sys.argv."""
+    argv = sys.argv[1:]
+    query = None
+    top_n = 10
+    i = 0
+    while i < len(argv):
+        if argv[i] == '--search' and i + 1 < len(argv):
+            query = argv[i + 1]
+            i += 2
+        elif argv[i] == '--top' and i + 1 < len(argv):
+            try:
+                top_n = int(argv[i + 1])
+            except ValueError:
+                pass
+            i += 2
+        else:
+            i += 1
+    return query, top_n
+
+
+def cmd_search():
+    query, top_n = _search_parse_args()
+    if not query:
+        print('Usage: python tools/memory.py --search "query terms" [--top N]')
+        sys.exit(1)
+
+    memory_dir = find_memory_dir()
+    if not memory_dir.exists():
+        print(f'Memory directory not found: {memory_dir}')
+        sys.exit(1)
+
+    query_lower = query.lower()
+    tokens = [t for t in re.split(r'\W+', query_lower) if t]
+
+    # Minimum score to avoid noise from single stop-word matches in multi-token queries
+    min_score = min(2, len(tokens)) if len(tokens) > 1 else 1
+
+    # Collect all hits: (score, path, match_line_no, ctx_start_no, ctx_lines)
+    all_hits = []
+    for path in sorted(memory_dir.rglob('*.md')):
+        try:
+            lines = path.read_text(encoding='utf-8', errors='ignore').splitlines()
+        except Exception:
+            continue
+        for i, line in enumerate(lines):
+            score = _search_score_line(line.lower(), tokens, query_lower)
+            if score < min_score:
+                continue
+            start = max(0, i - _SEARCH_CONTEXT)
+            end = min(len(lines), i + _SEARCH_CONTEXT + 1)
+            all_hits.append((score, path, i + 1, start + 1, lines[start:end]))
+
+    if not all_hits:
+        print(f'No results for: "{query}"')
+        sys.exit(0)
+
+    # Sort by score descending, take top N
+    all_hits.sort(key=lambda x: -x[0])
+    top_hits = all_hits[:top_n]
+
+    # Re-group by file for display, preserving score-based ordering within each file
+    seen_files = []
+    grouped = {}
+    for score, path, line_no, ctx_start, ctx_lines in top_hits:
+        if path not in grouped:
+            grouped[path] = []
+            seen_files.append(path)
+        grouped[path].append((score, line_no, ctx_start, ctx_lines))
+
+    total_matches = len(all_hits)
+    shown = len(top_hits)
+    suffix = f' (showing top {shown} of {total_matches})' if total_matches > shown else ''
+    print(f'Search: "{query}" — {shown} result(s) across {len(grouped)} file(s){suffix}\n')
+
+    for path in seen_files:
+        matches = grouped[path]
+        try:
+            rel = path.relative_to(memory_dir)
+        except ValueError:
+            rel = path
+        max_score = max(s for s, *_ in matches)
+        score_label = 'exact' if max_score >= 10 else 'all-words' if max_score >= 5 else 'partial'
+        print(f'-- {rel} [{score_label}] --')
+
+        # Print context, deduplicating overlapping windows
+        shown_lines = set()
+        prev_end = -1
+        for score, line_no, ctx_start, ctx_lines in sorted(matches, key=lambda x: x[1]):
+            ctx_end = ctx_start + len(ctx_lines) - 1
+            if ctx_start > prev_end + 1 and prev_end != -1:
+                print('   ...')
+            for offset, ctx_line in enumerate(ctx_lines):
+                abs_line = ctx_start + offset
+                if abs_line in shown_lines:
+                    continue
+                shown_lines.add(abs_line)
+                marker = '>' if abs_line == line_no else ' '
+                print(f'  {marker} {abs_line:4d} | {ctx_line}')
+            prev_end = ctx_end
+        print()
+
+
 # ─── DISPATCH ─────────────────────────────────────────────────────────────────
 
 def main():
@@ -866,6 +987,8 @@ def main():
         cmd_bootstrap()
     elif '--complexity-scan' in ARGS:
         cmd_complexity_scan()
+    elif '--search' in ARGS:
+        cmd_search()
     else:
         print(__doc__)
         sys.exit(1)
