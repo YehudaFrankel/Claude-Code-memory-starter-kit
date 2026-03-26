@@ -219,6 +219,18 @@ After **any code change** this session, immediately update the relevant memory f
 | Architecture decision or non-obvious gotcha | `project_status.md` |
 | Chose approach A over B for a reason | `.claude/memory/decisions.md` |
 | Fixed a runtime error / bug | `.claude/memory/tasks/regret.md` |
+| Any code change when a code-map exists | `code-map.md` — update affected flow, line number, or DB entry |
+
+### Code Map Self-Update Rule
+If the project has a `code-map.md` (a file mapping features → code paths → line numbers), update it **immediately** after every code change:
+- **New method added** → add row with name, line number, purpose
+- **Method moved / line numbers shifted** → update affected line numbers
+- **New endpoint** → add flow entry: URL → JS → endpoint name → logic method [line] → DB
+- **JS function renamed or added** → update its JS entry in the relevant flow
+- **New table or column** → update DB read/write lines in affected flows
+- **Behavior changed** → update the purpose description
+
+An outdated code-map causes the same slowdown as having no code-map.
 
 `End Session` handles `STATUS.md`, the full drift check, and confirms everything is clean.
 
