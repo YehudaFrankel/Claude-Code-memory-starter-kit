@@ -1284,6 +1284,45 @@ footer {
   </div>
 </section>
 
+<!-- CHECK-ANTHROPIC -->
+<section id="check-anthropic" style="background:#0b1210; border-top:1px solid rgba(109,186,120,.15);">
+  <div class="wrap-sm" style="padding:3.5rem 2rem;">
+    <div class="sec-label" style="color:var(--green)">stays current</div>
+    <h2 style="margin-bottom:.75rem;">Watches for new<br><span style="color:var(--green)">Anthropic features.</span></h2>
+    <p class="sec-desc" style="margin-bottom:2rem;">
+      Anthropic ships new hooks and APIs regularly.
+      <code style="font-size:.85em;color:var(--amber);background:var(--s2);padding:.1rem .35rem;">/check-anthropic</code>
+      fetches the latest releases and docs, cross-references against your current setup,
+      and rates every gap <em>High / Medium / Low</em> — so you decide what's worth adding.
+      Run it every few weeks.
+    </p>
+
+    <div class="stats-term reveal" style="max-width:640px;">
+      <div class="stats-bar">
+        <div class="td td-r"></div>
+        <div class="td td-y"></div>
+        <div class="td td-g"></div>
+        <span style="margin-left:.4rem">yf@recall ~ $</span>
+      </div>
+      <div class="stats-body" style="font-size:.78rem; line-height:1.8;">
+        <span class="tok">/check-anthropic</span><br>
+        <span class="tdim">────────────────────────────────────────────</span><br>
+        <span class="tmut">fetching GitHub releases + docs...</span><br>
+        <span class="tmut">reading local settings.json + 23 skills...</span><br>
+        <span class="tmut">cross-referencing 24-hook official list...</span><br>
+        <span class="tdim">────────────────────────────────────────────</span><br>
+        <span style="color:var(--red)">HIGH   </span><span class="th">PostCompact   </span><span class="tmut">re-inject memory after compaction</span><br>
+        <span style="color:var(--red)">HIGH   </span><span class="th">SessionEnd    </span><span class="tmut">complement to Stop on clean exit</span><br>
+        <span style="color:var(--amber)">MEDIUM </span><span class="th">StopFailure   </span><span class="tmut">capture state when Claude errors</span><br>
+        <span class="tdim">────────────────────────────────────────────</span><br>
+        <span class="tmut">hooks in use: 5 of 24 · 3 gaps worth acting on</span><br>
+        <span class="tgap"></span>
+        <span class="tok">→ run /evolve to build the PostCompact hook</span>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- MID-PAGE CTA -->
 <div style="background:var(--bg); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:2.25rem 1.2rem; text-align:center;">
   <a class="btn btn-primary" href="#install" style="font-size:1rem; padding:.75rem 2rem;">Set it up in 5 minutes →</a>
