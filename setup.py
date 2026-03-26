@@ -163,6 +163,13 @@ def create_task_files():
 |------|-------|-----------|-------------|
 """)
 
+    write("tasks/corrections_queue.md", """\
+# Corrections Queue
+
+<!-- Auto-captured by UserPromptSubmit hook when you correct Claude. -->
+<!-- Claude reads and clears this during /learn. -->
+""")
+
     # .gitkeep so tasks/ is committed to the repo even before files have content
     gitkeep = ROOT / "tasks" / ".gitkeep"
     gitkeep.parent.mkdir(parents=True, exist_ok=True)
@@ -1293,6 +1300,11 @@ type: reference
     "deny": []
   },
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [{ "type": "command", "command": "python tools/memory.py --capture-correction" }]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
@@ -1324,7 +1336,7 @@ Next steps:
   3. Claude will check memory, run drift detection, and report status
 
 Drift detection (memory.py auto-detects all JS/CSS files):
-  3 hooks installed: PostToolUse (drift), Stop (journal + stop-check)
+  4 hooks installed: UserPromptSubmit (corrections), PostToolUse (drift), Stop (journal + stop-check)
   Run manually: python tools/memory.py --check-drift
 
 Task files (commit these to your repo):

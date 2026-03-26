@@ -10,20 +10,22 @@
 
 ## Steps
 
-1. **Review the current conversation for:**
+1. **Check `tasks/corrections_queue.md`** — if it has entries, read each one. These are prompts where you were corrected mid-session (auto-captured by hook). Convert each into a lesson entry using the format in step 3, then clear the file back to its header only (keep the two comment lines, delete the `## date` entries).
+
+2. **Review the current conversation for:**
    - Bugs fixed and their root causes
    - Patterns that worked well
    - Mistakes made and how they were corrected
    - Architectural decisions made
    - Stack-specific gotchas discovered
 
-2. **Categorize findings:**
+3. **Categorize findings:**
    - Bugs/errors → append to `.claude/memory/lessons.md` (create if missing)
    - Architectural decisions → append to `.claude/memory/decisions.md` (create if missing)
    - Rejected approaches → append to `.claude/memory/tasks/regret.md` (format: `| Date | Approach | Why Rejected |`)
    - Repeated patterns (3+ times) → flag as skill candidate
 
-3. **Format each entry as:**
+4. **Format each entry as:**
    ```
    ## [YYYY-MM-DD] - [short title]
    **Context:** what you were doing
@@ -32,7 +34,7 @@
    **Apply when:** trigger conditions
    ```
 
-4. **Global lessons check:** For each lesson, ask: "Does this apply beyond this project?" If yes, also append to `~/.claude/global-lessons.md`:
+5. **Global lessons check:** For each lesson, ask: "Does this apply beyond this project?" If yes, also append to `~/.claude/global-lessons.md`:
    ```
    ## [YYYY-MM-DD] - [title]
    **Source:** [project name]
@@ -40,14 +42,14 @@
    **Apply when:** [trigger]
    ```
 
-5. **Skill scoring:** Log each skill that fired this session to `.claude/memory/tasks/skill_scores.md`:
+6. **Skill scoring:** Log each skill that fired this session to `.claude/memory/tasks/skill_scores.md`:
    `| [date] | [skill] | [used for] | Y/N | [what specifically failed — be precise, /evolve uses this to patch the right step] | - |`
    If Y: the "What Failed" column is critical — describe the exact step that was wrong, not just "it didn't work".
 
-6. **Velocity log:** If this session had an estimated task, append to `.claude/memory/tasks/velocity.md`:
+7. **Velocity log:** If this session had an estimated task, append to `.claude/memory/tasks/velocity.md`:
    `| [date] | [task] | [estimated] | [actual] | [complexity 1-5] | [notes] |`
 
-7. **After writing:**
+8. **After writing:**
    - Report: "Extracted N lessons: [list titles]"
    - If any pattern appeared 3+ times: "Suggest creating skill: [name] — run /evolve to cluster"
 

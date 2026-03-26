@@ -10,6 +10,7 @@ Usage:
   python tools/memory.py --precompact                 # PreCompact hook
   python tools/memory.py --stop-check                 # Stop hook (unsaved + plans)
   python tools/memory.py --journal                    # Stop hook (session journal)
+  python tools/memory.py --capture-correction         # UserPromptSubmit hook (correction detection)
   python tools/memory.py --bootstrap                  # One-time codebase indexer
   python tools/memory.py --complexity-scan            # Project complexity scanner
   python tools/memory.py --complexity-scan --silent   # Silent scan (Start Session)
@@ -72,6 +73,62 @@ def cmd_session_start():
         }
     }
     print(json.dumps(output))
+
+
+# ─── CAPTURE CORRECTION ──────────────────────────────────────────────────────
+# Detects correction language in user prompts and queues them for /learn.
+# Hook: UserPromptSubmit
+
+_CORRECTION_PATTERNS = [
+    r'(?i)^no[,!\. ]',
+    r"(?i)don't do that",
+    r"(?i)don't add ",
+    r"(?i)don't use ",
+    r"(?i)stop doing",
+    r"(?i)that's wrong",
+    r"(?i)you're wrong",
+    r"(?i)never do ",
+    r"(?i)never use ",
+    r"(?i)not what i (asked|wanted|meant|said)",
+    r"(?i)that's not (right|correct)",
+    r"(?i)wrong approach",
+]
+
+
+def _is_correction(prompt):
+    for pattern in _CORRECTION_PATTERNS:
+        if re.search(pattern, prompt):
+            return True
+    return False
+
+
+def cmd_capture_correction():
+    try:
+        raw = sys.stdin.read()
+        data = json.loads(raw)
+        prompt = data.get('prompt', '').strip()
+    except Exception:
+        return
+
+    if not prompt or not _is_correction(prompt):
+        return
+
+    memory_dir = find_memory_dir()
+    queue_file = memory_dir / 'tasks' / 'corrections_queue.md'
+
+    if not queue_file.exists():
+        queue_file.parent.mkdir(parents=True, exist_ok=True)
+        queue_file.write_text(
+            '# Corrections Queue\n\n'
+            '<!-- Auto-captured by UserPromptSubmit hook. -->\n'
+            '<!-- Claude reads and clears this during /learn. -->\n',
+            encoding='utf-8'
+        )
+
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    entry = f'\n## {timestamp}\n**Prompt:** "{prompt}"\n'
+    with open(queue_file, 'a', encoding='utf-8') as f:
+        f.write(entry)
 
 
 # ─── CHECK DRIFT ─────────────────────────────────────────────────────────────
@@ -945,6 +1002,8 @@ def cmd_search():
 def main():
     if '--session-start' in ARGS:
         cmd_session_start()
+    elif '--capture-correction' in ARGS:
+        cmd_capture_correction()
     elif '--check-drift' in ARGS:
         cmd_check_drift()
     elif '--precompact' in ARGS:
