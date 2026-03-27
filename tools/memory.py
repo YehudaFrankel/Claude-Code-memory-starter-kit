@@ -8,6 +8,8 @@ Usage:
   python tools/memory.py --check-drift                # PostToolUse hook
   python tools/memory.py --check-drift --silent       # silent drift check
   python tools/memory.py --precompact                 # PreCompact hook
+  python tools/memory.py --postcompact                # PostCompact hook (re-inject memory after compaction)
+  python tools/memory.py --stop-failure               # StopFailure hook (capture interruption state)
   python tools/memory.py --stop-check                 # Stop hook (unsaved + plans)
   python tools/memory.py --journal                    # Stop hook (session journal)
   python tools/memory.py --capture-correction         # UserPromptSubmit hook (correction detection)
@@ -63,6 +65,16 @@ def cmd_session_start():
         excerpt = '\n'.join(lines[-30:]) if len(lines) > 30 else text
         parts.append('\n\n# Current Status\n')
         parts.append(excerpt)
+
+    interrupt_path = memory_dir / 'tasks' / 'interruption_state.md'
+    if interrupt_path.exists():
+        try:
+            interrupt_content = interrupt_path.read_text(encoding='utf-8').strip()
+            if interrupt_content:
+                parts.append(f'\n\n# ⚠ LAST SESSION INTERRUPTED (API ERROR)\n{interrupt_content}')
+            interrupt_path.unlink()
+        except Exception:
+            pass
 
     queue_file = memory_dir / 'tasks' / 'corrections_queue.md'
     if queue_file.exists():
@@ -426,6 +438,67 @@ def cmd_precompact():
         }
     }
     print(json.dumps(output))
+
+
+# ─── POST COMPACT ────────────────────────────────────────────────────────────
+# Re-injects MEMORY.md after compaction so the session resumes warm.
+# Hook: PostCompact
+
+def cmd_postcompact():
+    memory_dir = find_memory_dir()
+    lines = [
+        'COMPACTION COMPLETE — memory re-loaded:',
+        '',
+    ]
+    memory_md = memory_dir / 'MEMORY.md'
+    if memory_md.exists():
+        lines.append('Current memory index:')
+        for line in memory_md.read_text(encoding='utf-8', errors='ignore').strip().splitlines():
+            if line.startswith('- [') or line.startswith('- **'):
+                lines.append('  ' + line)
+    lines += [
+        '',
+        'Session continues. MEMORY.md is fresh in context.',
+    ]
+    output = {
+        'hookSpecificOutput': {
+            'hookEventName': 'PostCompact',
+            'additionalContext': '\n'.join(lines)
+        }
+    }
+    print(json.dumps(output))
+
+
+# ─── STOP FAILURE ─────────────────────────────────────────────────────────────
+# Captures interruption state when the session ends due to an API error.
+# Surfaced by cmd_session_start() on the next session.
+# Hook: StopFailure
+
+def cmd_stop_failure():
+    memory_dir = find_memory_dir()
+    interrupt_path = memory_dir / 'tasks' / 'interruption_state.md'
+
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    error_detail = ''
+    try:
+        raw = sys.stdin.read()
+        if raw:
+            payload = json.loads(raw)
+            if payload.get('error'):
+                error_detail = f' — Error: {payload["error"]}'
+    except Exception:
+        pass
+
+    content = (
+        f'## Interrupted at {timestamp}{error_detail}\n'
+        'Session ended due to API error. Check STATUS.md for last known task.\n'
+        'Resume: re-read the task context and verify last edit was saved correctly.\n'
+    )
+    try:
+        interrupt_path.parent.mkdir(parents=True, exist_ok=True)
+        interrupt_path.write_text(content, encoding='utf-8')
+    except Exception:
+        pass
 
 
 # ─── STOP CHECK ──────────────────────────────────────────────────────────────
@@ -1053,6 +1126,10 @@ def main():
         cmd_check_drift()
     elif '--precompact' in ARGS:
         cmd_precompact()
+    elif '--postcompact' in ARGS:
+        cmd_postcompact()
+    elif '--stop-failure' in ARGS:
+        cmd_stop_failure()
     elif '--stop-check' in ARGS:
         cmd_stop_check()
     elif '--journal' in ARGS:

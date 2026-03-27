@@ -57,6 +57,30 @@
         ]
       }
     ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python tools/memory.py --postcompact",
+            "timeout": 15,
+            "statusMessage": "Restoring memory after compaction…"
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python tools/memory.py --stop-failure",
+            "timeout": 10,
+            "statusMessage": "Capturing interruption state…"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
