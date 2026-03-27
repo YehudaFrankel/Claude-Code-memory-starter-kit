@@ -154,10 +154,29 @@ nav::after {
   margin-bottom: 1.5rem;
 }
 .hero-eyebrow .dot {
-  display: inline-block; width: 5px; height: 5px;
+  display: inline-block; width: 6px; height: 6px;
   background: var(--amber); border-radius: 50%;
-  margin-right: .45rem; animation: blink 1.6s step-end infinite;
+  margin-right: .45rem;
   vertical-align: middle; position: relative; top: -1px;
+  box-shadow: 0 0 6px rgba(212,137,10,.8);
+}
+.hero-eyebrow .dot::before,
+.hero-eyebrow .dot::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  border: 1px solid rgba(212,137,10,.7);
+  transform: translate(-50%, -50%) scale(1);
+  animation: radar-ring 2.4s ease-out infinite;
+}
+.hero-eyebrow .dot::after {
+  animation-delay: 1.2s;
+}
+@keyframes radar-ring {
+  0%   { transform: translate(-50%,-50%) scale(1);   opacity: .8; }
+  100% { transform: translate(-50%,-50%) scale(4.5); opacity: 0;  }
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
@@ -189,8 +208,17 @@ h1 {
 }
 .btn-primary {
   background: var(--amber); color: #1c1508; font-weight: 600;
+  animation: btn-breathe 3s ease-in-out infinite;
 }
-.btn-primary:hover { background: var(--amber2); transform: translateY(-1px); box-shadow: 0 0 18px rgba(212,137,10,.45), 0 0 40px rgba(212,137,10,.18); }
+.btn-primary:hover {
+  background: var(--amber2); transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(212,137,10,.65), 0 0 40px rgba(212,137,10,.3);
+  animation: none;
+}
+@keyframes btn-breathe {
+  0%,100% { box-shadow: 0 0 8px rgba(212,137,10,.3); }
+  50%      { box-shadow: 0 0 22px rgba(212,137,10,.7), 0 0 40px rgba(212,137,10,.2); }
+}
 .btn-ghost {
   color: var(--muted); border: 1px solid var(--border2);
 }
@@ -244,9 +272,16 @@ section { border-top: 1px solid var(--border); position: relative; overflow: hid
 #living, #hooks {
   background: #0b1210;
 }
-/* Cool near-black (structural/mechanical): loop, skills, tiers, commands */
-#loop, #skills, #tiers, #commands {
+/* Cool near-black (structural/mechanical): loop, tiers, commands */
+#loop, #tiers, #commands {
   background: #0d0e12;
+}
+
+/* Skills — dark radial vignette so hex shows at edges but text stays readable */
+#skills {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(13,14,18,.85) 25%, transparent 72%),
+    #0d0e12;
 }
 
 /* Living — green dot grid on green-dark surface */
@@ -374,7 +409,14 @@ h2 {
   letter-spacing: -.025em; color: var(--text);
   margin-bottom: .85rem;
 }
-.h2-amber { color: var(--amber); }
+.h2-amber {
+  color: var(--amber);
+  animation: h2-pulse 3.5s ease-in-out infinite;
+}
+@keyframes h2-pulse {
+  0%,100% { text-shadow: 0 0 8px rgba(212,137,10,.15); }
+  50%      { text-shadow: 0 0 20px rgba(212,137,10,.55), 0 0 40px rgba(212,137,10,.2); }
+}
 
 .sec-desc {
   font-size: .9rem; color: var(--muted); line-height: 1.8;
@@ -1108,7 +1150,7 @@ footer {
 
 <!-- SKILLS -->
 <section id="skills">
-<canvas id="hexBg" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.55;"></canvas>
+<canvas id="hexBg" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.28;"></canvas>
   <div class="wrap-lg">
     <div class="sec-label">agentic toolkit</div>
     <h2>7 skills ship ready.<br><span class="h2-amber">Generate Skills builds the rest.</span></h2>
