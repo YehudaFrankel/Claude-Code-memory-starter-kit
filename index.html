@@ -1449,7 +1449,8 @@ footer {
 
 <!-- STATS -->
 <section id="stats">
-  <div class="wrap-sm">
+<canvas id="radarBg" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
+  <div class="wrap-sm" style="position:relative;z-index:1;">
     <div class="sec-label">proof of concept</div>
     <h2>128 sessions.<br><span class="h2-amber">One living environment.</span></h2>
     <p class="sec-desc">
@@ -2176,6 +2177,115 @@ function copyCmd(btn, text) {
   obs.observe(canvas.parentElement);
 })();
 
+// ─── RADAR + GRID ANIMATION (#stats) ───
+function initRadarAnim() {
+  var canvas = document.getElementById('radarBg');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W, H, cx, cy, cols, rows, cells;
+  var CELL = 38;
+  var GREEN = '109,186,120';
+
+  function resize() {
+    W = canvas.offsetWidth; H = canvas.offsetHeight;
+    canvas.width = W; canvas.height = H;
+    cx = W / 2; cy = H / 2;
+    cols = Math.ceil(W / CELL) + 1;
+    rows = Math.ceil(H / CELL) + 1;
+    // init cells with random flicker timers
+    cells = [];
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        cells.push({ x: c * CELL, y: r * CELL, alpha: 0, target: 0, timer: Math.random() * 200 });
+      }
+    }
+  }
+
+  // rings pool
+  var rings = [];
+  var lastRing = 0;
+  var RING_INTERVAL = 1800;
+  var RING_LIFE = 3000;
+  var MAX_RADIUS;
+
+  function spawnRing() {
+    rings.push({ born: performance.now() });
+  }
+
+  var frame = 0;
+  function draw(ts) {
+    if (!W) resize();
+    MAX_RADIUS = Math.sqrt(cx * cx + cy * cy) * 1.1;
+    ctx.clearRect(0, 0, W, H);
+
+    // ── Activity grid (subtle) ──
+    frame++;
+    cells.forEach(function(cell) {
+      cell.timer--;
+      if (cell.timer <= 0) {
+        cell.target = Math.random() < 0.15 ? (Math.random() * 0.10 + 0.03) : 0;
+        cell.timer = 60 + Math.random() * 180;
+      }
+      cell.alpha += (cell.target - cell.alpha) * 0.08;
+      if (cell.alpha > 0.005) {
+        ctx.fillStyle = 'rgba(' + GREEN + ',' + cell.alpha.toFixed(3) + ')';
+        ctx.fillRect(cell.x, cell.y, CELL - 1, CELL - 1);
+      }
+    });
+
+    // grid lines (very faint)
+    ctx.strokeStyle = 'rgba(' + GREEN + ',0.04)';
+    ctx.lineWidth = 0.5;
+    for (var c = 0; c <= cols; c++) {
+      ctx.beginPath(); ctx.moveTo(c * CELL, 0); ctx.lineTo(c * CELL, H); ctx.stroke();
+    }
+    for (var r = 0; r <= rows; r++) {
+      ctx.beginPath(); ctx.moveTo(0, r * CELL); ctx.lineTo(W, r * CELL); ctx.stroke();
+    }
+
+    // ── Radar rings ──
+    if (ts - lastRing > RING_INTERVAL) { spawnRing(); lastRing = ts; }
+
+    rings = rings.filter(function(ring) {
+      var age = ts - ring.born;
+      if (age > RING_LIFE) return false;
+      var progress = age / RING_LIFE;          // 0 → 1
+      var radius   = progress * MAX_RADIUS;
+      var alpha    = (1 - progress) * 0.55;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(' + GREEN + ',' + alpha.toFixed(3) + ')';
+      ctx.lineWidth = 1.5 + (1 - progress) * 1.5;
+      ctx.stroke();
+
+      // inner glow ring
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(' + GREEN + ',' + (alpha * 0.3).toFixed(3) + ')';
+      ctx.lineWidth = 6 + (1 - progress) * 6;
+      ctx.stroke();
+
+      return true;
+    });
+
+    // center dot
+    var pulse = 0.4 + 0.3 * Math.sin(ts / 600);
+    ctx.beginPath();
+    ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(' + GREEN + ',' + pulse.toFixed(2) + ')';
+    ctx.fill();
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  spawnRing(); spawnRing(); // pre-seed 2 rings so it's not empty on load
+  lastRing = performance.now();
+  requestAnimationFrame(draw);
+}
+
 // ─── STATS TYPEWRITER ───
 function initStatsAnim() {
   var body = document.getElementById('stats-term-body');
@@ -2267,6 +2377,7 @@ function initStatsAnim() {
 runTerminal();
 initPlanAnim();
 initMapAnim();
+initRadarAnim();
 initStatsAnim();
 
 // ─── PARTICLE BACKGROUND ───
