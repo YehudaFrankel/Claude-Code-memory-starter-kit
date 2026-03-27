@@ -11,6 +11,18 @@
     "deny": []
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python tools/memory.py --session-start",
+            "timeout": 15,
+            "statusMessage": "Loading project memory…"
+          }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "hooks": [
@@ -27,7 +39,20 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python tools/memory.py --check-drift --silent"
+            "command": "python tools/memory.py --check-drift --silent",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python tools/memory.py --precompact",
+            "timeout": 15,
+            "statusMessage": "Preserving memory through compaction…"
           }
         ]
       }
