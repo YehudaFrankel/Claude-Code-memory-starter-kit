@@ -143,7 +143,7 @@ When you outgrow Lite mode, type this in Claude Code:
 Upgrade to Full
 ```
 
-Claude runs `upgrade.py`, which downloads `tools/memory.py`, adds 3 lifecycle hooks to `.claude/settings.json`, and keeps your `@rules/` files in parallel. Restart Claude Code after running.
+Claude runs `upgrade.py`, which downloads `tools/memory.py`, adds lifecycle hooks to `.claude/settings.json`, and keeps your `@rules/` files in parallel. Restart Claude Code after running.
 
 ```bash
 python upgrade.py   ←  same thing, from terminal
@@ -508,7 +508,7 @@ Commit `.claude/memory/` and `.claude/skills/` to your repo. Memory and skills t
 
 ## Real Results
 
-Tested across **139 real development sessions** on a production codebase — legacy Java backend, 5 JS files, 100+ functions, multi-page frontend with scheduler, email system, and encrypted URL handling. Not a demo project.
+Tested across **140 real development sessions** on a production codebase — legacy Java backend, 5 JS files, 100+ functions, multi-page frontend with scheduler, email system, and encrypted URL handling. Not a demo project.
 
 - Sessions crashed mid-task — `Start Session` recovered every time, zero re-explanation needed
 - Skills patched themselves via `/evolve` — the same skill failure never happened twice
@@ -605,7 +605,7 @@ Never. It only updates the kit commands block in CLAUDE.md and the tools/ script
 Yes — every skill is a plain markdown file in `.claude/skills/`. Edit directly, or type `Generate Skills` and Claude creates new ones for your stack. Add `## Auto-Chain` to any skill to connect it into a workflow.
 
 **What's the difference between Full and Lite mode?**
-Lite mode is zero-Python: `CLAUDE.md` + `@rules/` files (static conventions) + one notes file. No scripts, no hooks, no Python required. Full mode adds `tools/memory.py` and 3 lifecycle hooks — automated drift detection, session journaling, and stop reminders. Upgrade from Lite to Full at any time: `python upgrade.py`.
+Lite mode is zero-Python: `CLAUDE.md` + `@rules/` files (static conventions) + one notes file. No scripts, no hooks, no Python required. Full mode adds `tools/memory.py` and 8 lifecycle hooks — automated drift detection, session journaling, plan verification, and stop reminders. Upgrade from Lite to Full at any time: `python upgrade.py`.
 
 ---
 
