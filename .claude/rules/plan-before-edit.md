@@ -6,15 +6,24 @@ Before making ANY edit to code files (JS, HTML, CSS, SQL, any backend language),
 
 ---
 
-## Required Plan Format
+## Step 1 — Validate Before Showing the Plan
 
-For each change, show:
+Before presenting the plan, verify every function reference:
+- Use Grep or Read to confirm each listed function exists at the stated line number
+- If a function is not found or the line is wrong, correct it before showing the plan
+- Never show a plan with unverified function references — a wrong line number means you read the wrong code
+
+Count lines from the Before/After sections directly — do not estimate. Report the exact count.
+
+---
+
+## Required Plan Format
 
 ### Problem / Feature
 One clear sentence: what is broken or what needs to be added.
 
 ### All Related Functions / Files
-List every function and file touched by this change — including callers, callees, and any frontend/backend pair.
+List every function and file touched — including callers, callees, frontend/backend pairs. Verified against codebase before showing.
 Format: `functionName` — `path/to/file.ext:LINE`
 
 Example:
@@ -35,21 +44,61 @@ Example:
 One sentence explaining the mechanism — not just "this fixes it" but WHY.
 
 ### Scope / Blast Radius
-- **Files touched:** list every file that will change
-- **Lines changed:** approximate count
+- **Files touched:** every file that will change
+- **Lines changed:** exact count from Before/After above (not estimated)
 - **Type:** Logic change | Refactor (no behavior change) | Config/data only
 - **Affected at runtime:** what breaks if this goes wrong (e.g., "all API endpoints fail", "login flow breaks", "CSS only — no runtime impact")
 
 ### Rollback
-How to undo this change if something goes wrong:
-- Git: `git restore path/to/file.ext` (if not yet committed)
-- Or: what to manually revert
+Exact command to undo — Claude will run this if you say "undo":
+```
+git restore path/to/file.ext
+```
+(If already committed: `git revert HEAD` or the specific commit hash)
+
+---
+
+## Step 2 — Wait for Approval
+
+Show the plan. Wait for "yes", "go ahead", "do it", or equivalent. Only then edit.
+
+---
+
+## Step 3 — Verify After Every Edit
+
+After applying each edit:
+1. Read back the changed lines from the file
+2. Confirm the actual content matches the After in the plan
+3. Report: `✓ Verified: [file]:[lines] matches plan` — or flag any discrepancy immediately
+
+Do not move to the next edit until the current one is verified.
+
+---
+
+## Step 4 — Confirm Actual Scope
+
+After all edits are done, run:
+```
+git diff --stat
+```
+Report the actual lines changed vs what the plan stated. If they diverge significantly, explain why.
+
+---
+
+## Undo Command
+
+If the user says **"undo"** at any point after an edit:
+1. Run the exact `git restore` command from the Rollback section — no confirmation needed
+2. Verify the file is back to its pre-edit state by reading the relevant lines
+3. Report: "Reverted. [file] restored to pre-edit state."
 
 ---
 
 ## Example
 
 **Problem:** `saveUser` inserts without checking for duplicates — duplicate emails cause a DB constraint error.
+
+**Validation:** Grepped `src/api/users.js` — `saveUser` confirmed at line 142. `retSaveUser` confirmed at `src/frontend/userFunctions.js:88`.
 
 **All Related Functions:**
 - `saveUser` — `src/api/users.js:142`
@@ -71,14 +120,8 @@ db.query('INSERT INTO users (email, name) VALUES (?, ?)', [email, name]);
 
 **Scope / Blast Radius:**
 - Files touched: `src/api/users.js`
-- Lines changed: ~4
+- Lines changed: 3 (exact — counted from Before/After)
 - Type: Logic change
 - Affected at runtime: signup flow — if the SELECT fails, users get a 500 instead of a duplicate error
 
 **Rollback:** `git restore src/api/users.js`
-
----
-
-## Rule
-
-Show the plan. Wait for "yes", "go ahead", "do it", or equivalent. Only then edit.
