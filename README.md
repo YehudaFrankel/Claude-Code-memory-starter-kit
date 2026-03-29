@@ -267,7 +267,7 @@ No human steps between. Claude reads the chain and runs it. Build your own chain
 
 ## Cross-Machine Sync (opt-in, not required)
 
-**Default setup needs no GitHub account, no repo, no configuration beyond your project name.**
+**Default setup needs no GitHub account, no repo, and no configuration — name and stack are auto-detected from your folder.**
 
 Memory lives in `.claude/memory/` on your machine. Nothing leaves unless you explicitly set this up. Skip this entire section if you work on one machine.
 
