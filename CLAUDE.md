@@ -13,7 +13,7 @@ When the user types **"Setup Memory"**, do the following:
 2. If yes — run it: `python setup.py` (or `python3 setup.py`)
 3. If no — tell the user to run this one-liner from their project root, then type Setup Memory again:
    ```
-   python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/YehudaFrankel/Claude-Code-memory-starter-kit/main/install.py').read().decode())"
+   python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/YehudaFrankel/engram/main/install.py').read().decode())"
    ```
 
 ### `Start Session`
@@ -103,7 +103,7 @@ When the user types **"Update Kit"** (or **"Update Kit from [URL]"**), do the fo
    - `Update Kit from https://github.com/user/repo` → `python update.py https://github.com/user/repo`
 3. If no — fetch and run it in one step using the Bash tool:
    ```
-   python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/YehudaFrankel/Claude-Code-memory-starter-kit/main/update.py').read().decode())"
+   python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/YehudaFrankel/engram/main/update.py').read().decode())"
    ```
 4. The script previews all changes and asks for confirmation before applying anything
 

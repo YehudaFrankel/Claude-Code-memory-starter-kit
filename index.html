@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>claude-recall — Persistent Memory for Claude Code</title>
+<title>Engram — Persistent Memory for Claude Code</title>
+<meta name="description" content="Engram (formerly engram) — persistent memory, self-improving skills, and autonomous workflows for Claude Code.">
+<!-- formerly known as engram and Claude-Code-memory-starter-kit -->
 <style>
 :root {
   --bg0:     #1c1508;
@@ -916,7 +918,7 @@ footer {
 <nav>
   <a class="nav-logo" href="#">
     <div class="yf-mark">YF</div>
-    <span class="nav-name">claude-recall</span>
+    <span class="nav-name">engram</span>
     <span class="nav-tag">// memory that compounds</span>
   </a>
   <div class="nav-links">
@@ -931,7 +933,7 @@ footer {
     <a class="nav-a" href="#commands">commands</a>
     <span class="nav-div">·</span>
     <a class="nav-a" href="#faq">faq</a>
-    <a class="nav-gh" href="https://github.com/YehudaFrankel/claude-recall" target="_blank">
+    <a class="nav-gh" href="https://github.com/YehudaFrankel/engram" target="_blank">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
       GitHub
     </a>
@@ -958,7 +960,7 @@ footer {
     </p>
     <div class="hero-btns">
       <a class="btn btn-primary" href="#install">Get started →</a>
-      <a class="btn btn-ghost" href="https://github.com/YehudaFrankel/claude-recall" target="_blank">View on GitHub</a>
+      <a class="btn btn-ghost" href="https://github.com/YehudaFrankel/engram" target="_blank">View on GitHub</a>
     </div>
   </div>
 
@@ -991,8 +993,8 @@ footer {
     <div class="install-block reveal">
       <div class="install-title">// STEP 1 — clone the kit</div>
       <div class="install-cmd">
-        <span><span class="tp">$</span> <span class="cmd-text">git clone https://github.com/YehudaFrankel/claude-recall</span></span>
-        <button class="copy-btn" onclick="copyCmd(this,'git clone https://github.com/YehudaFrankel/claude-recall')">copy</button>
+        <span><span class="tp">$</span> <span class="cmd-text">git clone https://github.com/YehudaFrankel/engram</span></span>
+        <button class="copy-btn" onclick="copyCmd(this,'git clone https://github.com/YehudaFrankel/engram')">copy</button>
       </div>
     </div>
 
@@ -1044,7 +1046,7 @@ footer {
     <div class="sec-label">why it's different</div>
     <h2>Not a config file.<br><span style="color:var(--green)">A living environment.</span></h2>
     <p class="sec-desc">
-      Most setups drop a CLAUDE.md and call it done. claude-recall ships
+      Most setups drop a CLAUDE.md and call it done. engram ships
       a <em>three-tier agentic system</em> — the environment learns your
       codebase, improves its own workflows, and operates without checkpoints.
     </p>
@@ -1292,7 +1294,7 @@ footer {
     <h2>Three tiers.<br><span class="h2-amber">Most tools ship one.</span></h2>
     <p class="sec-desc">
       Most Claude setups are Tier 1 — a CLAUDE.md file and nothing else.
-      <em>claude-recall ships all three tiers out of the box.</em>
+      <em>engram ships all three tiers out of the box.</em>
     </p>
 
     <div class="tier-rows reveal">
@@ -1547,7 +1549,7 @@ footer {
         <summary>Does a big CLAUDE.md actually help?</summary>
         <div class="faq-body">
           No — and the research backs this up. Large monolithic CLAUDE.md files increase token use by ~20% with only a 5% improvement in output quality, and sometimes a <em>negative</em> effect when the content is AI-generated.<br><br>
-          claude-recall is built the opposite way: <code>CLAUDE.md</code> stays lean — commands and project-specific gotchas only. Project knowledge lives in separate <code>.claude/memory/</code> files that load selectively based on what's relevant to the current task. That's what the research actually recommends.<br><br>
+          engram is built the opposite way: <code>CLAUDE.md</code> stays lean — commands and project-specific gotchas only. Project knowledge lives in separate <code>.claude/memory/</code> files that load selectively based on what's relevant to the current task. That's what the research actually recommends.<br><br>
           The template that ships with the kit enforces this. The project-specific section is designed to stay under 50 lines. High-level principles ("plan first", "simplicity first") are omitted entirely — Claude already knows them.
         </div>
       </details>
@@ -1652,16 +1654,16 @@ footer {
         <summary>Does this work with Anthropic's native Auto Memory?</summary>
         <div class="faq-body">
           Yes — they solve different problems. Anthropic's Auto Memory captures conversational context within a session.
-          claude-recall persists <em>project knowledge across sessions</em>: your codebase structure, architectural decisions,
+          engram persists <em>project knowledge across sessions</em>: your codebase structure, architectural decisions,
           lessons from past mistakes, and custom workflows. Auto Memory forgets when the session closes.
-          claude-recall doesn't. Run both — they complement each other.
+          engram doesn't. Run both — they complement each other.
         </div>
       </details>
       <details>
         <summary>How is this different from other Claude memory repos?</summary>
         <div class="faq-body">
           Most repos save a snapshot — a CLAUDE.md file you maintain by hand.
-          claude-recall ships: disk-backed memory that survives crashes,
+          engram ships: disk-backed memory that survives crashes,
           a compound learning loop (/learn → skill_scores → /evolve), autonomous hooks that fire without prompting,
           and skill chaining. <em>At time of writing, nothing else ships persistent living memory + compound learning together.</em>
         </div>
@@ -1675,12 +1677,12 @@ footer {
 <footer>
   <div class="footer-mark">
     <div class="yf-mark">YF</div>
-    <span>claude-recall</span>
+    <span>engram</span>
   </div>
   <div class="footer-links">
-    <a href="https://github.com/YehudaFrankel/claude-recall" target="_blank">GitHub</a>
-    <a href="https://github.com/YehudaFrankel/claude-recall/blob/main/README.md" target="_blank">README</a>
-    <a href="https://github.com/YehudaFrankel/claude-recall/issues" target="_blank">Issues</a>
+    <a href="https://github.com/YehudaFrankel/engram" target="_blank">GitHub</a>
+    <a href="https://github.com/YehudaFrankel/engram/blob/main/README.md" target="_blank">README</a>
+    <a href="https://github.com/YehudaFrankel/engram/issues" target="_blank">Issues</a>
   </div>
   <div class="footer-sig">// built by yf</div>
 </footer>

@@ -5,7 +5,7 @@ Fetches setup.py from GitHub and runs it in the current directory.
 
 Usage — run this from your project root:
 
-  python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/YehudaFrankel/Claude-Code-memory-starter-kit/main/install.py').read().decode())"
+  python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/YehudaFrankel/engram/main/install.py').read().decode())"
 
 Or with a fork / specific branch:
 
@@ -17,7 +17,7 @@ import subprocess
 import urllib.request
 from pathlib import Path
 
-GITHUB_BASE = "https://raw.githubusercontent.com/YehudaFrankel/Claude-Code-memory-starter-kit/main"
+GITHUB_BASE = "https://raw.githubusercontent.com/YehudaFrankel/engram/main"
 
 
 def main():

@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent
 
 MEMORY_PY_URL = (
     "https://raw.githubusercontent.com/"
-    "YehudaFrankel/Claude-Code-memory-starter-kit/main/tools/memory.py"
+    "YehudaFrankel/engram/main/tools/memory.py"
 )
 
 HOOKS = {

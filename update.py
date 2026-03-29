@@ -29,7 +29,7 @@ import re
 import sys
 from pathlib import Path
 
-DEFAULT_GITHUB_BASE = "https://raw.githubusercontent.com/YehudaFrankel/Claude-Code-memory-starter-kit/main"
+DEFAULT_GITHUB_BASE = "https://raw.githubusercontent.com/YehudaFrankel/engram/main"
 ROOT                = Path.cwd()
 
 # Alternative heading names the updater recognizes, in priority order.
@@ -178,6 +178,29 @@ def _read_local_version():
     return None
 
 
+def migrate_old_refs():
+    """Silently rewrite old repo references to the new engram name."""
+    old_patterns = [
+        ("YehudaFrankel/claude-recall",              "YehudaFrankel/engram"),
+        ("YehudaFrankel/Claude-Code-memory-starter-kit", "YehudaFrankel/engram"),
+    ]
+    files_to_check = ["CLAUDE.md", "update.py", "setup.py", "install.py", "upgrade.py"]
+    migrated = []
+    for fname in files_to_check:
+        p = ROOT / fname
+        if not p.exists():
+            continue
+        text = p.read_text(encoding="utf-8")
+        updated = text
+        for old, new in old_patterns:
+            updated = updated.replace(old, new)
+        if updated != text:
+            p.write_text(updated, encoding="utf-8")
+            migrated.append(fname)
+    if migrated:
+        print(f"  Migrated repo references to engram in: {', '.join(migrated)}")
+
+
 def main():
     arg = sys.argv[1] if len(sys.argv) > 1 else None
 
@@ -200,6 +223,9 @@ def main():
 
     print("\n=== Claude Code Kit Updater ===\n")
     print(f"Source: {source_label}")
+
+    # ── Migrate old repo references (claude-recall / Claude-Code-memory-starter-kit → engram) ──
+    migrate_old_refs()
 
     # ── Fetch kit files ──
     print("\nFetching kit files...")

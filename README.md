@@ -1,6 +1,6 @@
-# Claude Recall — The Living System for Claude Code
+# Engram — The Living System for Claude Code
 
-[![v2.0.0](https://img.shields.io/badge/version-2.0.0-blue?style=flat-square)](https://github.com/YehudaFrankel/claude-recall/releases) [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue?style=flat-square)](https://python.org/downloads) [![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE) [![Claude Code](https://img.shields.io/badge/Claude-Code-orange?style=flat-square)](https://claude.ai/claude-code)
+[![v2.0.0](https://img.shields.io/badge/version-2.0.0-blue?style=flat-square)](https://github.com/YehudaFrankel/engram/releases) [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue?style=flat-square)](https://python.org/downloads) [![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE) [![Claude Code](https://img.shields.io/badge/Claude-Code-orange?style=flat-square)](https://claude.ai/claude-code)
 
 ![Session demo](demo.gif)
 
@@ -8,7 +8,7 @@
 
 Claude Code is stateless. Every session starts from zero — no memory of yesterday's decisions, no record of bugs already fixed, no knowledge of the approach you rejected last week. You re-explain. Claude re-suggests the same things. The same mistake happens twice.
 
-Claude Recall is a living system on top of Claude Code. It doesn't just store context — it grows with your project, improves its own skills from failure data, and runs multi-step workflows without human checkpoints between each step.
+Engram is a living system on top of Claude Code. It doesn't just store context — it grows with your project, improves its own skills from failure data, and runs multi-step workflows without human checkpoints between each step.
 
 No API keys. No background service. No database. Plain markdown files that git already knows how to handle.
 
@@ -18,14 +18,14 @@ No API keys. No background service. No database. Plain markdown files that git a
 
 ## Before and After
 
-**Without Claude Recall:**
+**Without Engram:**
 ```
 Monday:    explain your project → work → close
 Tuesday:   explain your project again → work → close
 Wednesday: explain again → re-fix a bug you already fixed → close
 ```
 
-**With Claude Recall:**
+**With Engram:**
 ```
 Monday:    Start Session → work → End Session
 Tuesday:   Start Session → Claude remembers everything → work → End Session
@@ -36,7 +36,7 @@ Wednesday: Start Session → lessons from Monday applied automatically → bette
 
 ## Three Tiers
 
-Most Claude setups are Tier 1 — a CLAUDE.md file and nothing else. Claude Recall ships all three.
+Most Claude setups are Tier 1 — a CLAUDE.md file and nothing else. Engram ships all three.
 
 **Tier 1 — Memory Persistence**
 Persistent context across sessions. Codebase knowledge, decisions, known bugs, rejected approaches. Syncs to git. Travels with the code. Applied at every `Start Session` before any code is touched.
@@ -55,11 +55,11 @@ Skill chaining, self-healing, drift detection, and auto end-session run without 
 
 ```bash
 # 1. Clone once
-git clone https://github.com/YehudaFrankel/claude-recall.git
+git clone https://github.com/YehudaFrankel/engram.git
 
 # 2. Run setup in your project (~2 minutes)
 cd your-project
-python /path/to/claude-recall/setup.py
+python /path/to/engram/setup.py
 
 # 3. Inside Claude Code — every session from here on:
 Start Session    ←  reads memory, applies lessons, picks up where you left off
@@ -68,7 +68,7 @@ End Session      ←  extracts lessons, syncs memory, done
 
 Setup asks about your stack, configures itself, and builds everything automatically.
 
-| | Heavy tools | Claude Recall |
+| | Heavy tools | Engram |
 |---|---|---|
 | API key | required | none |
 | Background service | running | none — plain files |
@@ -212,7 +212,7 @@ Run `/learn` before `End Session`. Run `/evolve` every 3–5 sessions. The same 
 
 ## It Stays Accurate Without Effort
 
-Most memory tools go stale — you document once, code moves on. Claude Recall runs `memory.py --check-drift` after every file edit. It auto-detects all JS and CSS files, compares live code against Claude's memory, and flags undocumented changes:
+Most memory tools go stale — you document once, code moves on. Engram runs `memory.py --check-drift` after every file edit. It auto-detects all JS and CSS files, compares live code against Claude's memory, and flags undocumented changes:
 
 ```
 DRIFT DETECTED
@@ -440,16 +440,16 @@ A searchable history of every session — what files were edited, what the curre
 `python tools/memory.py --bootstrap` scans your entire project and generates `quick_index.md` — a grouped map of every source file by type (Java, JS, CSS, SQL, etc.). Gives Claude immediate codebase awareness without any manual documentation. Run it once on any new project.
 
 **Does this work with Anthropic's native Auto Memory?**
-Yes — they solve different problems. Anthropic's Auto Memory captures conversational context within a session. Claude Recall persists project knowledge across sessions: your codebase structure, architectural decisions, lessons from past mistakes, and custom workflows. Auto Memory forgets when the session closes. Claude Recall doesn't. Run both — they complement each other.
+Yes — they solve different problems. Anthropic's Auto Memory captures conversational context within a session. Engram persists project knowledge across sessions: your codebase structure, architectural decisions, lessons from past mistakes, and custom workflows. Auto Memory forgets when the session closes. Engram doesn't. Run both — they complement each other.
 
 **Why markdown files instead of a database?**
 Files you can read, diff, commit, and recover without any tooling. Memory stored in a database is opaque — you can't grep it, review it in a PR, or restore a version from last Tuesday. Markdown files travel with your repo, work on any machine with zero setup, and never require an API key or running service. The constraint is the feature.
 
 **Does a big CLAUDE.md actually help?**
-No — and the research backs this up. Large monolithic CLAUDE.md files increase token use by ~20% with only a 5% improvement in output quality, and sometimes a negative effect when the content is AI-generated. Claude Recall is built the opposite way: CLAUDE.md stays lean (commands and gotchas only), and project knowledge lives in separate `.claude/memory/` files that load selectively based on what's relevant. That's what the research actually recommends. The CLAUDE.md template that ships with the kit enforces this — the project-specific section is designed to stay under 50 lines.
+No — and the research backs this up. Large monolithic CLAUDE.md files increase token use by ~20% with only a 5% improvement in output quality, and sometimes a negative effect when the content is AI-generated. Engram is built the opposite way: CLAUDE.md stays lean (commands and gotchas only), and project knowledge lives in separate `.claude/memory/` files that load selectively based on what's relevant. That's what the research actually recommends. The CLAUDE.md template that ships with the kit enforces this — the project-specific section is designed to stay under 50 lines.
 
 **What makes it different from other Claude memory tools?**
-Most memory tools are static — you document once and things go stale. Claude Recall is a living system: memory stays accurate via drift detection, skills improve via the compound learning loop, and sessions compound instead of reset. No other tool in this space ships the self-improving skills layer.
+Most memory tools are static — you document once and things go stale. Engram is a living system: memory stays accurate via drift detection, skills improve via the compound learning loop, and sessions compound instead of reset. No other tool in this space ships the self-improving skills layer.
 
 **What if I'm on a new computer?**
 Pull your project, open Claude Code, type `Install Memory`. Claude is fully up to speed in seconds — all lessons, decisions, and skill improvements carried over.
@@ -467,4 +467,4 @@ Lite mode is zero-Python: `CLAUDE.md` + `@rules/` files (static conventions) + o
 
 **Requires:** Python 3.7+ · [Claude Code](https://claude.ai/claude-code) · No other dependencies
 
-If Claude Recall saved you from re-explaining your project one more time, **[⭐ star it on GitHub](https://github.com/YehudaFrankel/claude-recall)** — it helps others find it.
+If Engram saved you from re-explaining your project one more time, **[⭐ star it on GitHub](https://github.com/YehudaFrankel/engram)** — it helps others find it.
