@@ -27,6 +27,8 @@ Usage:
   python tools/memory.py --context-score             # Score CLAUDE.md sections by journal usage (dead weight finder)
   python tools/memory.py --velocity-estimate "task"  # Match task to past velocity entries, report honest estimate
   python tools/memory.py --mine-patterns             # Cluster lessons.md entries, surface recurring mistakes
+  python tools/memory.py --error-lookup              # UserPromptSubmit: match debug prompt vs error-lookup.md
+  python tools/memory.py --guard-check               # Scan codebase against all guards in guard-patterns.md
 """
 
 import json
@@ -1661,6 +1663,155 @@ def cmd_mine_patterns():
     print('Consider converting top patterns to permanent rules in decisions.md or CLAUDE.md.')
 
 
+# ─── ERROR LOOKUP ────────────────────────────────────────────────────────────
+# Scans error-lookup.md for known errors matching the current debug prompt.
+# Hook: UserPromptSubmit
+
+_DEBUG_PATTERNS = [
+    r'(?i)\berror\b', r'(?i)\bbug\b', r'(?i)\bbroken\b',
+    r"(?i)doesn't work", r'(?i)not working', r'(?i)\bfailing\b',
+    r'(?i)\bexception\b', r'(?i)\bcrash\b', r'(?i)\bfix\b',
+    r'(?i)\bdebug\b', r'(?i)why is\b', r'(?i)why does\b',
+    r'(?i)\b500\b', r'(?i)\b404\b', r"(?i)can't\b",
+]
+
+
+def _is_debug_prompt(prompt):
+    return any(re.search(p, prompt) for p in _DEBUG_PATTERNS)
+
+
+def cmd_error_lookup():
+    """Scan error-lookup.md for known entries matching the current debug prompt."""
+    try:
+        raw = sys.stdin.buffer.read().decode('utf-8', errors='replace')
+        data = json.loads(raw)
+        prompt = data.get('prompt', '').strip()
+    except Exception:
+        return
+
+    if len(prompt) < 10 or not _is_debug_prompt(prompt):
+        return
+
+    prompt_keywords = _extract_keywords(prompt, min_len=3)
+    if not prompt_keywords:
+        return
+
+    memory_dir = find_memory_dir()
+    lookup_path = memory_dir / 'error-lookup.md'
+    if not lookup_path.exists():
+        return
+
+    text = lookup_path.read_text(encoding='utf-8', errors='ignore')
+    matches = []
+
+    for cells in _parse_md_table_rows(text):
+        if cells[0].lower() in ('error message', 'symptom', 'error', 'issue'):
+            continue
+        entry_text = ' '.join(cells)
+        entry_keywords = _extract_keywords(entry_text, min_len=3)
+        overlap = prompt_keywords & entry_keywords
+        if len(overlap) >= 2:
+            error = cells[0][:80]
+            fix = cells[2][:120] if len(cells) > 2 else (cells[1][:120] if len(cells) > 1 else '')
+            matches.append(f'{error} \u2192 {fix}')
+
+    if not matches:
+        return
+
+    hint = (
+        '\U0001f4cb ERROR LOOKUP \u2014 Known matches for this error:\n'
+        + '\n'.join(f'  \u2022 {m}' for m in matches[:4])
+        + '\nCheck error-lookup.md for full cause + fix before investigating from scratch.'
+    )
+
+    output = {
+        'hookSpecificOutput': {
+            'hookEventName': 'UserPromptSubmit',
+            'additionalContext': hint
+        }
+    }
+    print(json.dumps(output))
+
+
+# ─── GUARD CHECK ─────────────────────────────────────────────────────────────
+# Runs all named guards from guard-patterns.md against the codebase.
+# Run: python tools/memory.py --guard-check
+
+def cmd_guard_check():
+    """Scan codebase against all named guards in .claude/rules/guard-patterns.md."""
+    guard_path = ROOT / '.claude' / 'rules' / 'guard-patterns.md'
+    if not guard_path.exists():
+        print('guard-patterns.md not found in .claude/rules/')
+        print('Run "Install Guard Patterns" or create .claude/rules/guard-patterns.md manually.')
+        return
+
+    text = guard_path.read_text(encoding='utf-8', errors='ignore')
+    guards = re.findall(r'^## (\w+)\n(.*?)(?=^## |\Z)', text, re.MULTILINE | re.DOTALL)
+
+    if not guards:
+        print('No guards found in guard-patterns.md.')
+        return
+
+    print(f'\nGuard Check \u2014 {len(guards)} guards\n')
+    violations = 0
+
+    for guard_id, body in guards:
+        grep_match = re.search(r'\*\*How to scan\*\*:\s*(.+?)(?:\n|$)', body)
+        files_match = re.search(r'\*\*Files\*\*:\s*(.+?)(?:\n|$)', body)
+        check_match = re.search(r'\*\*Check\*\*:\s*(.+?)(?:\n|$)', body)
+
+        if not grep_match:
+            print(f'  [SKIP] {guard_id} \u2014 no scan strategy defined')
+            continue
+
+        grep_desc = grep_match.group(1).strip()
+        files_scope = files_match.group(1).strip() if files_match else 'all files'
+        check_desc = check_match.group(1).strip() if check_match else guard_id
+
+        # Extract backtick-wrapped regex from the scan description
+        pattern_match = re.search(r'`([^`]+)`', grep_desc)
+        if not pattern_match:
+            print(f'  [SKIP] {guard_id} \u2014 manual check required: {check_desc}')
+            continue
+
+        grep_pattern = pattern_match.group(1)
+        exclude_tests = 'exclude test' in files_scope.lower()
+        hits = []
+
+        for path in sorted(ROOT.rglob('*')):
+            if not path.is_file():
+                continue
+            if any(ex in path.parts for ex in _EXCLUDE_DIRS):
+                continue
+            if path.suffix.lower() not in ('.js', '.ts', '.py', '.java', '.go', '.rb', '.cs', '.jsx', '.tsx', '.vue'):
+                continue
+            if exclude_tests and any(t in path.name.lower() for t in ('test', 'spec')):
+                continue
+            try:
+                content = path.read_text(encoding='utf-8', errors='ignore')
+                for lineno, line in enumerate(content.splitlines(), 1):
+                    if re.search(grep_pattern, line, re.IGNORECASE):
+                        hits.append(f'{path.relative_to(ROOT)}:{lineno}')
+                        break
+            except Exception:
+                continue
+
+        if hits:
+            violations += 1
+            print(f'  [FAIL] {guard_id}')
+            print(f'         {check_desc}')
+            for hit in hits[:5]:
+                print(f'         \u2192 {hit}')
+            if len(hits) > 5:
+                print(f'         ... and {len(hits) - 5} more')
+        else:
+            print(f'  [PASS] {guard_id}')
+
+    print(f'\n{violations} violation(s) found.')
+    if violations:
+        print('Fix before committing. Add to error-lookup.md if this was a runtime surprise.')
+
+
 # ─── DISPATCH ─────────────────────────────────────────────────────────────────
 
 def main():
@@ -1704,6 +1855,10 @@ def main():
         cmd_velocity_estimate()
     elif '--mine-patterns' in ARGS:
         cmd_mine_patterns()
+    elif '--error-lookup' in ARGS:
+        cmd_error_lookup()
+    elif '--guard-check' in ARGS:
+        cmd_guard_check()
     else:
         print(__doc__)
         sys.exit(1)

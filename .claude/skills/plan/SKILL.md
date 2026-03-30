@@ -57,12 +57,24 @@ Ask which option the user wants, or if they want to defer.
 
 **Display the full plan.**
 
-### Step 6 — Technical spec (only if Ready to Code)
+### Step 6 — Technical spec + Blast Radius (only if Ready to Code)
 Fill in the **Technical Spec** section:
 - SQL changes (ALTER TABLE, CREATE TABLE)
 - Files to change — ordered table with file + what changes
 - New endpoints / API shape
 - Any open questions that must be resolved before the first line of code
+
+Then fill in the **Blast Radius** — required before any code is touched:
+
+| Field | What to write |
+|-------|--------------|
+| **Files touched** | Every file that will change — no omissions |
+| **Lines changed** | Count from the before/after described above — not a guess |
+| **Type** | `Logic change` · `Refactor (no behavior change)` · `Config/data only` |
+| **Affected at runtime** | What breaks if this goes wrong — be specific |
+| **Rollback** | Exact steps to undo — what to do if the user says "revert this" |
+
+If any Blast Radius field is "unknown" — that is an open question. Resolve it before proceeding.
 
 **Display the full plan.**
 

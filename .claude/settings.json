@@ -39,6 +39,11 @@
             "type": "command",
             "command": "python tools/memory.py --decision-guard",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "python tools/memory.py --error-lookup",
+            "timeout": 5
           }
         ]
       }

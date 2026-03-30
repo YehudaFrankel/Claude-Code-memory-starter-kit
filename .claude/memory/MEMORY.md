@@ -8,6 +8,9 @@
 - [Lessons Learned](lessons.md) — Patterns + fixes extracted by /learn. Applied at every Start Session.
 - [Architectural Decisions](decisions.md) — Settled decisions. Claude reads before proposing solutions.
 - [Regret Log](tasks/regret.md) — Rejected approaches + why. Claude reads before proposing to avoid re-proposing discarded ideas.
+- [Error Lookup](error-lookup.md) — Known errors → exact cause → exact fix. Never debug the same error twice.
+- [Critical Notes](critical-notes.md) — Non-obvious gotchas that aren't decisions or regrets but will cost time if unknown.
+- [Agreed Flows](agreed-flow.md) — User journeys locked by explicit agreement. Do not change without discussion.
 - [Velocity Tracker](tasks/velocity.md) — Estimated vs actual sessions. Claude reads for self-calibrating estimates.
 - [Skill Scores](tasks/skill_scores.md) — Skill effectiveness log. /evolve reads to prune weak skills.
 - [Global Lessons](~/.claude/global-lessons.md) — Cross-project discoveries. Loaded at every session start across all projects.
