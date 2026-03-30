@@ -513,14 +513,18 @@ your-project/
     │       ├── skill_scores.md      ← Skill report card — /evolve reads this
     │       ├── skill_improvements.md← What /evolve patched and why
     │       ├── regret.md            ← Rejected approaches — never re-proposed
-    │       └── velocity.md          ← Estimated vs actual — self-calibrating
+    │       ├── velocity.md          ← Estimated vs actual — self-calibrating
+    │       └── todo.md              ← Current tasks in priority order — read at Start Session
     ├── rules/
     │   ├── plan-before-edit.md      ← Required plan format before any code change
     │   ├── guard-patterns.md        ← Named guards with grep strategies — run with Guard Check
-    │   └── update-code-map.md       ← Persistent rule: update memory after every code change
+    │   ├── update-code-map.md       ← Persistent rule: update memory after every code change
+    │   ├── work-rules.md            ← Behavioral guardrails: search-first, verify-before-done, stop on unexpected
+    │   └── token-rules.md           ← Context management rules: when to compact, /learn before /compact
     ├── memory/
     │   └── plans/
-    │       └── _template.md         ← Plan template — one file per feature
+    │       ├── _template.md         ← Plan template — one file per feature
+    │       └── archive/             ← Completed plans move here — keeps plans/ clean
     └── skills/
         ├── plan/                    ← Structured planning mode
         ├── learn/

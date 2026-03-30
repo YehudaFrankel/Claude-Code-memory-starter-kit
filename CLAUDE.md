@@ -406,6 +406,8 @@ When the user types **"Sync Status"**, do the following:
 @rules/plan-before-edit.md
 @rules/guard-patterns.md
 @rules/update-code-map.md
+@rules/work-rules.md
+@rules/token-rules.md
 
 ---
 
