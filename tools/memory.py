@@ -122,6 +122,26 @@ def cmd_session_start():
     except Exception:
         pass
 
+    # Auto team pull — if team sync is configured, pull silently and report new entries
+    team_config_path = ROOT / '.claude' / 'team_config.json'
+    if team_config_path.exists():
+        try:
+            team_cfg = json.loads(team_config_path.read_text(encoding='utf-8'))
+            if team_cfg.get('repo'):
+                import subprocess as _sp
+                team_script = ROOT / 'tools' / 'team_sync.py'
+                if team_script.exists():
+                    r = _sp.run(
+                        [sys.executable, str(team_script), 'pull-team'],
+                        capture_output=True, text=True, timeout=30
+                    )
+                    out = (r.stdout or '').strip()
+                    # Only surface output if there were actual new entries
+                    if out and ('+' in out or 'new entr' in out.lower()):
+                        parts.append(f'\n\n# Team Sync\n{out}')
+        except Exception:
+            pass  # Never block session start on team sync failure
+
     # Silent kit health check — only surfaces FAILs, never WARNs
     kit_fails = _kit_health_fails()
     if kit_fails:

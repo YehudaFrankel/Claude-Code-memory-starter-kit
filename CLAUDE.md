@@ -6,6 +6,14 @@
 
 ## Session Commands
 
+| Tier | Commands |
+|------|----------|
+| **Core** — every session | `Start Session` · `End Session` |
+| **On Demand** | `Plan` · `Debug Session` · `/learn` · `/evolve` · `Check Drift` · `Guard Check` · `Pre-Ship Check` · `Progress Report` · `Generate Guards` · `Code Health` · `Mode` · `Estimate` · `Handoff` · `Search Memory` · `Generate Skills` · `Update Kit` |
+| **Opt-In** | `Setup Team` / `Team Pull` / `Team Push` / `Team Status` · `Setup Sync` / `Sync Memory` / `Pull Memory` |
+
+---
+
 ### `Setup Memory`
 When the user types **"Setup Memory"**, do the following:
 
@@ -15,6 +23,9 @@ When the user types **"Setup Memory"**, do the following:
    ```
    python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/YehudaFrankel/clankbrain/main/install.py').read().decode())"
    ```
+
+---
+> **CORE — run every session**
 
 ### `Start Session`
 When the user types **"Start Session"**, do the following:
@@ -41,6 +52,9 @@ When the user types **"Start Session"**, do the following:
 6. Read `.claude/memory/tasks/regret.md` — know which approaches were rejected and why; don't re-propose them
 7. Read `.claude/memory/tasks/todo.md` — understand current state; if it doesn't exist, create it
 8. Report: "Session N ready. Last change: [X]. [N] lessons loaded. What are we working on?"
+
+---
+> **ON DEMAND — invoke when needed**
 
 ### `Analyze Codebase`
 When the user types **"Analyze Codebase"**, do the following:
@@ -332,6 +346,9 @@ Run `/learn` before `End Session`. Run `/evolve` when lessons accumulate (every 
 > **Context tip:** Long session? Run `/learn` then `/compact` — the PreCompact hook reinjects memory automatically. If a session crashes, type `Start Session` in a new session — picks up where you left off.
 
 ---
+
+---
+> **OPT-IN — configure once, works automatically after**
 
 ## Team Sync (opt-in)
 

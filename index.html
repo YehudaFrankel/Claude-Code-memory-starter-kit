@@ -1667,9 +1667,11 @@ footer {
         <div class="cr-cmd" style="font-size:.65rem; color:var(--dim);">COMMAND</div>
         <div class="cr-desc" style="font-size:.65rem; color:var(--dim);">WHAT IT DOES</div>
       </div>
+      <div class="cmd-row" style="background:var(--s2);"><div class="cr-cmd" style="color:var(--green); font-size:.65rem; letter-spacing:.06em;">CORE — every session</div><div class="cr-desc" style="color:var(--dim); font-size:.72rem;">Two commands. Everything else is automatic.</div></div>
       <div class="cmd-row"><div class="cr-cmd">Setup Memory</div><div class="cr-desc"><em>First time only</em> — runs Python setup, creates all memory files, configures hooks</div></div>
-      <div class="cmd-row"><div class="cr-cmd">Start Session</div><div class="cr-desc">Pull memory, apply lessons, surface open plans, report last session status</div></div>
+      <div class="cmd-row"><div class="cr-cmd">Start Session</div><div class="cr-desc">Pull memory, apply lessons, surface open plans, auto team pull if configured — <em>picks up exactly where you left off</em></div></div>
       <div class="cmd-row"><div class="cr-cmd">End Session</div><div class="cr-desc">Run /learn, update memory, scan plans, save everything — <em>session complete, no work lost</em></div></div>
+      <div class="cmd-row" style="background:var(--s2);"><div class="cr-cmd" style="color:var(--amber); font-size:.65rem; letter-spacing:.06em;">ON DEMAND — invoke when needed</div><div class="cr-desc" style="color:var(--dim); font-size:.72rem;"></div></div>
       <div class="cmd-row"><div class="cr-cmd">Plan [feature]</div><div class="cr-desc">Structured planning — options with ratings, decision logged live, <em>full plan auto-displayed after every update</em></div></div>
       <div class="cmd-row"><div class="cr-cmd">Show Plan</div><div class="cr-desc">Display full current plan — no summary, always the complete document</div></div>
       <div class="cmd-row"><div class="cr-cmd">/learn</div><div class="cr-desc">Extract lessons + decisions from this session, score skills Y/N, log velocity</div></div>
@@ -1693,7 +1695,8 @@ footer {
       <div class="cmd-row"><div class="cr-cmd">Update Kit</div><div class="cr-desc">Pull latest from GitHub — shows exactly what will change, <em>asks before applying</em></div></div>
       <div class="cmd-row"><div class="cr-cmd">Update Kit from [URL]</div><div class="cr-desc">Pull from a fork or branch — <em>your memory files are never touched</em></div></div>
       <div class="cmd-row"><div class="cr-cmd">/check-anthropic</div><div class="cr-desc">Fetch Claude Code releases + docs, cross-reference against hooks/features in use, report gaps rated High/Medium/Low — run every few weeks</div></div>
-      <div class="cmd-row" style="background:var(--s2);"><div class="cr-cmd" style="color:var(--muted); font-size:.65rem; letter-spacing:.06em;">SOLO SYNC (OPT-IN)</div><div class="cr-desc" style="color:var(--muted)">Memory stays local by default — sync only if you need cross-machine access. Requires git auth: <code>gh auth login</code></div></div>
+      <div class="cmd-row" style="background:var(--s2);"><div class="cr-cmd" style="color:var(--muted); font-size:.65rem; letter-spacing:.06em;">OPT-IN — configure once</div><div class="cr-desc" style="color:var(--dim); font-size:.72rem;">Memory stays local by default. Add these only when you need them.</div></div>
+      <div class="cmd-row" style="background:var(--s2);"><div class="cr-cmd" style="color:var(--muted); font-size:.65rem; letter-spacing:.06em;">SOLO SYNC</div><div class="cr-desc" style="color:var(--muted)">Memory stays local by default — sync only if you need cross-machine access. Requires git auth: <code>gh auth login</code></div></div>
       <div class="cmd-row"><div class="cr-cmd">Setup Sync: [repo URL]</div><div class="cr-desc">One-time setup — points memory at your private repo. <em>Your data, your repo, your control.</em></div></div>
       <div class="cmd-row"><div class="cr-cmd">Sync Memory</div><div class="cr-desc">Push memory to your private repo after a session</div></div>
       <div class="cmd-row"><div class="cr-cmd">Pull Memory</div><div class="cr-desc">Pull memory on a new machine</div></div>
