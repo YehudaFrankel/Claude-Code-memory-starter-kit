@@ -112,6 +112,14 @@ def cmd_session_start():
             parts.append(f'\n\n# Pending Corrections ({len(pending)} — apply this session, will persist at Stop)\n')
             parts.append('\n'.join(pending))
 
+    # Reset session edit counter
+    try:
+        counter_file = memory_dir / 'tasks' / 'session_edit_count.txt'
+        counter_file.parent.mkdir(parents=True, exist_ok=True)
+        counter_file.write_text('0', encoding='utf-8')
+    except Exception:
+        pass
+
     # Silent kit health check — only surfaces FAILs, never WARNs
     kit_fails = _kit_health_fails()
     if kit_fails:
@@ -618,6 +626,16 @@ def cmd_stop_check():
         messages.append(f'Context at {pct}% — type /compact NOW before it fills up.')
     elif pct >= 60:
         messages.append(f'Context at {pct}% — consider /compact soon.')
+    try:
+        counter_file = memory_dir / 'tasks' / 'session_edit_count.txt'
+        if counter_file.exists():
+            edit_count = int(counter_file.read_text(encoding='utf-8').strip() or '0')
+            if edit_count >= 3:
+                messages.append(f'{edit_count} file saves this session — run "Pre-Ship Check" before shipping.')
+            elif edit_count >= 1:
+                messages.append(f'{edit_count} file save(s) this session.')
+    except Exception:
+        pass
     if messages:
         print(json.dumps({'systemMessage': ' | '.join(messages)}))
 
@@ -1191,6 +1209,21 @@ def cmd_verify_edit():
         'Do not proceed to the next edit until the user has seen the quoted content.'
     )
     print(json.dumps({'callback': msg}))
+
+    # Increment session edit counter
+    try:
+        memory_dir = find_memory_dir()
+        counter_file = memory_dir / 'tasks' / 'session_edit_count.txt'
+        count = 0
+        if counter_file.exists():
+            try:
+                count = int(counter_file.read_text(encoding='utf-8').strip())
+            except Exception:
+                count = 0
+        counter_file.parent.mkdir(parents=True, exist_ok=True)
+        counter_file.write_text(str(count + 1), encoding='utf-8')
+    except Exception:
+        pass
 
 
 # ─── QUICK LEARN ──────────────────────────────────────────────────────────────

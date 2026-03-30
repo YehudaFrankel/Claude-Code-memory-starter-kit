@@ -132,6 +132,32 @@ When the user types **"Kit Health"**, do the following:
 3. If any FAILs — fix them immediately (run Setup Memory, create missing files, wire hooks)
 4. If any WARNs — ask the user if they want to address them now
 
+### `Pre-Ship Check`
+When the user types **"Pre-Ship Check"**, do the following:
+1. Run `python tools/memory.py --guard-check` (or `python3`) — scan all named guards against the codebase
+2. Run `python tools/memory.py --check-drift` — check for undocumented functions or stale entries
+3. Read `.claude/memory/tasks/session_edit_count.txt` — report how many files were edited this session
+4. **Git check (optional)** — run `git diff --stat 2>/dev/null` (or PowerShell equivalent). If git is not available or the project isn't a repo, skip silently — do not error
+5. Report: "Pre-ship complete. Guards: [N pass / N fail]. Drift: [clean / N issues]. [N] files edited this session. [git summary if available]."
+6. If any guards failed or drift was found — ask: "Fix now before shipping?"
+
+### `Guard Check`
+When the user types **"Guard Check"**, do the following:
+1. Run `python tools/memory.py --guard-check` (or `python3`)
+2. Report each guard: PASS or FAIL with file + line for violations
+3. If failures found — ask: "Fix these now?"
+
+### `Mode [develop|review|safe|deploy]`
+When the user types **"Mode develop"**, **"Mode review"**, **"Mode safe"**, or **"Mode deploy"**, do the following:
+1. Write the mode name to `.claude/memory/tasks/current_mode.txt`
+2. Announce the active constraints for the session:
+   - **develop** (default): full tool access — Read, Edit, Write, Bash, Glob, Grep, Agent
+   - **review**: read-only — only Read, Glob, Grep. No Edit, Write, or Bash for the rest of this session
+   - **safe**: no Bash — Read, Edit, Write, Glob, Grep only. No shell commands
+   - **deploy**: read + deploy scripts only — Read, Glob, Grep, Bash (deploy/start/restart scripts only)
+3. Self-enforce the constraints for the entire session — do not use restricted tools even if asked, until Mode is changed
+4. Report: "Mode set to [X]. [Constraints summary]. Say 'Mode develop' to restore full access."
+
 ### `Code Health`
 When the user types **"Code Health"**, do the following:
 1. **Scan for debug leftovers** — find any `console.log`, `print(`, `debugger`, `TODO`, `FIXME`, `HACK` across all project JS/backend files
@@ -378,6 +404,8 @@ When the user types **"Sync Status"**, do the following:
 ---
 
 @rules/plan-before-edit.md
+@rules/guard-patterns.md
+@rules/update-code-map.md
 
 ---
 
