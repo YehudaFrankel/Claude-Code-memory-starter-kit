@@ -29,6 +29,16 @@
           {
             "type": "command",
             "command": "python tools/memory.py --capture-correction"
+          },
+          {
+            "type": "command",
+            "command": "python tools/memory.py --regret-guard",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "python tools/memory.py --decision-guard",
+            "timeout": 5
           }
         ]
       }
