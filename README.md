@@ -56,6 +56,8 @@ Skill chaining, self-healing, drift detection, and auto end-session run without 
 
 ## Quick Start
 
+**Claude forgets everything when a session closes. Clankbrain fixes that — your codebase, your decisions, your past mistakes, permanent across every session and every IDE.**
+
 **Requires:** [Claude Code](https://claude.ai/claude-code) · Python 3.7+ for Full mode (Lite is zero-Python)
 
 ```bash
@@ -545,6 +547,29 @@ Clankbrain is a system, not a plugin. It compounds with use — but only if you 
 A developer who runs `Start Session` / `End Session` every session and `/evolve` every few weeks will have a Claude that gets measurably better at their specific codebase over time. Someone who uses it sporadically gets marginal gains.
 
 The habit is the product. The kit is just what makes the habit stick.
+
+---
+
+## Roadmap
+
+Five features actively in development — each one closes a gap no other memory tool addresses.
+
+### Regret Guard *(highest value)*
+Before every session, auto-scan `regret.md` + `decisions.md` and inject relevant warnings based on what you're about to work on. Not just "here's the full list" — keyword-matched to the current task. If you rejected an approach three sessions ago and are about to propose it again, Claude catches it before the plan is shown.
+
+*Institutional memory that actively changes behavior. Nobody else does this.*
+
+### Context Efficiency Score
+Track which parts of `CLAUDE.md` are actually referenced in sessions vs sitting there bloating context silently. After 10+ sessions, surface a report: "These 4 sections were never referenced — remove them or consolidate." Dead context is paid context.
+
+### Velocity-Honest Estimates
+When you start a task, pull from `velocity.md` and say: *"Last 3 similar tasks took 2–4 sessions, not 1. Adjust your plan."* Estimates stop being optimistic guesses and start reflecting your actual track record. After 20+ entries, the system has enough signal to be honest.
+
+### Cross-Session Pattern Mining
+`/evolve` currently patches individual skills. The next layer: automatically cluster `lessons.md` entries across sessions and surface recurring patterns — *"You make this type of mistake every ~15 sessions"* — and convert them into standing rules automatically. Patterns you don't notice become rules you don't have to remember.
+
+### Decision Guard
+Before any plan is shown, auto-check `decisions.md` and warn if the proposed approach contradicts a settled decision. Currently `decisions.md` is passive — you read it if you remember to. Decision Guard makes it active: Claude can't propose the rejected approach without surfacing the reason it was rejected.
 
 ---
 
