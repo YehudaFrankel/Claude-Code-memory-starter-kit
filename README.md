@@ -8,9 +8,9 @@
 
 **Your project knowledge compounds and learns across sessions.**
 
-Claude Code is stateless. Every session starts from zero — no memory of yesterday's decisions, no record of bugs already fixed, no knowledge of what you tried and rejected last week. You re-explain. Claude re-suggests the same things. The same mistake happens twice.
+Claude Code is stateless. Every session starts from zero, no memory of yesterday's decisions, no record of bugs already fixed, no knowledge of what you tried and rejected last week. You re-explain. Claude re-suggests the same things. The same mistake happens twice.
 
-Clankbrain fixes that. It gives Claude Code a living memory that grows with your project — capturing decisions, lessons, and patterns every session, so each session starts smarter than the last.
+Clankbrain fixes that. It gives Claude Code a living memory that grows with your project, capturing decisions, lessons, and patterns every session, so each session starts smarter than the last.
 
 ---
 
