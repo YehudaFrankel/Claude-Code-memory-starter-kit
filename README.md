@@ -73,6 +73,59 @@ Two commands. Everything else runs automatically.
 
 ---
 
+## What a session looks like
+
+You describe a bug. Claude presents a plan before touching anything:
+
+```
+Plan
+
+Problem
+openCoursePage nulls courseDescEditor, defeating the if (!courseDescEditor)
+guard and causing a new Quill instance (+ toolbar) to be appended to the
+DOM on every course open.
+
+All Related Functions
+- openCoursePage — mobile/js/AdminFunctions.js:1738
+
+Before:
+  courseDescEditor  = null;
+  sessionEditors    = {};
+
+After:
+  sessionEditors    = {};
+
+Why this will work
+The detailCourseDescEditor DOM element is static HTML — it persists across
+course opens. Keeping the Quill instance alive and just updating
+courseDescEditor.root.innerHTML is correct. sessionEditors / fullContentEditors
+/ reminderEditors still reset because those are tied to dynamically-rendered
+session HTML.
+
+Scope / Blast Radius
+- Files touched: mobile/js/AdminFunctions.js
+- Lines changed: 1 removed
+- Type: Bug fix
+- Affected at runtime: Course description editor only — no behavior change,
+  just stops toolbar duplication
+
+Proceed?
+```
+
+You type `yes`. Claude applies the edit, reads back the changed lines, and confirms:
+
+```
+✓ Verified AdminFunctions.js:1736-1743 — courseDescEditor = null removed.
+sessionEditors = {} is now the first reset line. All diagnostics pre-existing.
+
+Done. Opening a second or third course will reuse the existing Quill instance
+instead of creating new ones — one toolbar only.
+```
+
+No code changes happen without your approval. Every edit is verified against what was planned.
+
+---
+
 ## What you get
 
 - **Persistent memory** — decisions, bugs fixed, rejected approaches, codebase knowledge
