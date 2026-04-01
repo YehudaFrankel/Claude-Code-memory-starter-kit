@@ -32,5 +32,25 @@ Add a guard when you catch the same mistake twice.
 
 ---
 
+## SQL_CONCAT_INJECTION
+- **Check**: SQL queries must never be built by direct string concatenation with user-supplied values
+- **How to scan**: Grep for `"SELECT\|INSERT\|UPDATE\|DELETE` followed by `+` on the same line in backend files
+- **Files**: All backend files (*.java, *.js, *.py, *.ts)
+- **Why**: Raw string concatenation into SQL = SQL injection. Always use parameterized queries or a quoting helper.
+
+## MISSING_AUTH_CHECK
+- **Check**: Every endpoint that writes data or returns user-specific data must verify the caller's identity before executing
+- **How to scan**: Grep for route/endpoint definitions; for each one, confirm an auth/session check appears before any DB write
+- **Files**: All route, controller, and handler files
+- **Why**: Missing auth on a write endpoint = any caller can modify any user's data. Easy to miss when adding endpoints quickly.
+
+## SECRET_IN_SOURCE
+- **Check**: No hardcoded passwords, API keys, tokens, or secrets in source files
+- **How to scan**: Grep for `password\s*=\s*["']|api_key\s*=\s*["']|secret\s*=\s*["']|token\s*=\s*["']` (case-insensitive) in source files
+- **Files**: All source files — exclude .env, *.example, test fixtures
+- **Why**: Secrets in source get committed to git and are exposed permanently in history even after removal.
+
+---
+
 *Name guards clearly — the ID is what gets referenced when a violation is found.*
 *Grep patterns use backtick-wrapped regex: the Guard Check command extracts and runs them automatically.*

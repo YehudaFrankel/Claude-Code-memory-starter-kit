@@ -40,7 +40,7 @@ This skill converts your error history into automated prevention.
 - If greppable → candidate; mark it as `[from regret log]`
 
 **From lessons.md** (recurring patterns):
-- Read `.claude/memory/tasks/lessons.md` (or `.claude/memory/lessons.md`)
+- Read `tasks/lessons.md`
 - Look for lessons mentioning a specific code pattern to avoid
 - If a pattern appears in 2+ lessons → strong candidate
 
