@@ -201,54 +201,25 @@ Next session, Claude loads these lessons automatically — before you write a si
 
 ## Agents — multi-skill orchestrators
 
-Skills handle one step. Agents chain several skills into a full workflow, with explicit human-in-the-loop breakpoints at every decision point.
+Skills handle one step. Agents chain several skills into a complete workflow, with explicit human-in-the-loop **BREAKPOINT** markers at every decision point. Three ship out of the box: `feature-build`, `bug-fix`, `end-session`. Add your own in `.claude/agents/`.
 
-Three agents ship out of the box:
-
-| Agent | Steps |
-|-------|-------|
-| `feature-build` | search-first → plan → implement → code-reviewer → verification-loop → /learn |
-| `bug-fix` | reproduce → isolate → fix → verify → log+learn |
-| `end-session` | /learn → update memory → drift check → STATUS.md → evolve → sync |
-
-Each step has a `BREAKPOINT` marker — Claude stops and waits for your confirmation before proceeding. You can abort, adjust, or redirect at any point.
-
-Add your own in `.claude/agents/` — same markdown format, any steps you want.
+→ [Full agent reference and breakpoint patterns](docs/agents.md)
 
 ---
 
 ## Path-scoped rules
 
-Rules can declare which file types they apply to. A rule with `globs: ["**/*.java", "**/*.sql"]` only loads when you're working on Java or SQL files — it doesn't consume context on a CSS-only change.
+Rules declare which file types they apply to via `globs` frontmatter — a SQL quoting rule only loads when you open a `.java` or `.sql` file, not on a CSS change. Always-load rules (`alwaysApply: true`) stay in CLAUDE.md's `@rules/` imports; path-scoped rules rely on auto-discovery instead.
 
-```yaml
----
-description: SQL injection patterns and quoting rules
-globs:
-  - "**/*.java"
-  - "**/*.sql"
-alwaysApply: false
----
-```
-
-Rules that should always load (like `plan-before-edit`) use `alwaysApply: true` and stay in the `@rules/` imports in CLAUDE.md. Rules that are only relevant to specific file types drop out of always-load and rely on Claude Code's auto-discovery instead.
+→ [Always-load vs. path-scoped breakdown and recommended splits](docs/rules.md)
 
 ---
 
 ## Skill Map in CLAUDE.md
 
-CLAUDE.md ships with a Skill Map — a lookup table showing which skills to run for each common workflow:
+CLAUDE.md ships with a Skill Map — a lookup table showing which skills to chain for each workflow. One table replaces pages of "when to use what" prose. The full CLAUDE.md stays under 150 lines.
 
-```
-| Workflow       | Skills in Order                                          |
-|----------------|----------------------------------------------------------|
-| New Feature    | search-first → plan → (code) → code-reviewer → ...      |
-| Bug Fix        | debug-session → (fix) → verification-loop → /learn       |
-| End of Session | /learn → /evolve (every 3–5)                             |
-| Maintenance    | check-drift → guard-check → code-health                  |
-```
-
-This replaces the long command-by-command prose that previously made CLAUDE.md ~500 lines. The full CLAUDE.md is now under 150 lines.
+→ [Keeping CLAUDE.md lean](docs/extending.md#keeping-claudemd-lean)
 
 ---
 
@@ -262,43 +233,9 @@ Tested across 140 real sessions on a production codebase. Not a demo project.
 
 ## Extending Clankbrain
 
-Everything in `.claude/` is yours to modify. The three extension points:
+Everything in `.claude/` is yours to modify. Add a skill, an agent, or a path-scoped rule — each is a single markdown file.
 
-**Add a skill** — drop a `SKILL.md` in `.claude/skills/<name>/`:
-```markdown
----
-name: my-skill
-description: What triggers this skill (exact phrase Claude watches for)
-allowed-tools: Read, Grep, Edit
----
-## Steps
-1. ...
-```
-Or ask Claude: `Create a skill called [name] that [does what]` — it writes the file for you.
-
-**Add an agent** — drop a `.md` in `.claude/agents/`:
-```markdown
----
-name: my-workflow
-description: When to invoke this orchestrator
----
-## Step 1 — ...
-**BREAKPOINT — describe what to show. Wait for "continue".**
-## Step 2 — ...
-```
-
-**Add a path-scoped rule** — drop a `.md` in `.claude/rules/` with frontmatter:
-```markdown
----
-description: One-line summary for Claude Code's rule picker
-globs:
-  - "**/*.ts"
-  - "**/*.tsx"
-alwaysApply: false
----
-## Your rule content
-```
-Remove it from the `@rules/` imports in CLAUDE.md so it only loads when the globs match.
+→ [Full extension guide: skills, agents, rules, and keeping CLAUDE.md lean](docs/extending.md)
 
 ---
 
@@ -315,6 +252,9 @@ Remove it from the `@rules/` imports in CLAUDE.md so it only loads when the glob
 ## Go deeper
 
 - [Skills and the learning loop](docs/skills.md)
+- [Agents and breakpoint patterns](docs/agents.md)
+- [Rules — always-load vs. path-scoped](docs/rules.md)
+- [Extending Clankbrain — skills, agents, rules](docs/extending.md)
 - [Lifecycle hooks](docs/hooks.md)
 - [Every command](docs/commands.md)
 - [Architecture, modes, and file tree](docs/architecture.md)
