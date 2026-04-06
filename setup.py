@@ -22,6 +22,14 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = Path.cwd()
 
+# ─── Telemetry ─────────────────────────────────────────────────────────────────
+# Anonymous usage ping — no personal data. Opt out: CLANKBRAIN_NO_TELEMETRY=1
+sys.path.insert(0, str(HERE / 'tools'))
+try:
+    from telemetry import ping as _ping
+except Exception:
+    def _ping(event, properties=None): pass
+
 
 # ─── Version ──────────────────────────────────────────────────────────────────
 
@@ -922,6 +930,7 @@ Want automated drift detection and session journals?
 ⭐  If clankbrain saves you time, a star on GitHub helps others find it:
    https://github.com/YehudaFrankel/clankbrain
 """)
+    _ping('setup', {'mode': 'lite'})
 
 
 # ─── Skills Generation ────────────────────────────────────────────────────────
@@ -1674,6 +1683,7 @@ Optional — fill in before your first session:
 ⭐  If clankbrain saves you time, a star on GitHub helps others find it:
    https://github.com/YehudaFrankel/clankbrain
 """)
+    _ping('setup', {'mode': 'full'})
 
 
 if __name__ == "__main__":

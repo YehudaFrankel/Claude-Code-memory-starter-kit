@@ -24,6 +24,8 @@ npx clankbrain
 
 No API keys. No background service. No database. **Requires:** [Claude Code](https://claude.ai/claude-code)
 
+> Anonymous usage stats are collected on setup and session start (mode, platform, Python version — no project data). Opt out: `CLANKBRAIN_NO_TELEMETRY=1`.
+
 ---
 
 ## What changes after a few sessions

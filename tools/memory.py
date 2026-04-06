@@ -52,6 +52,12 @@ ROOT = SCRIPT_DIR.parent
 ARGS = set(sys.argv[1:])
 SILENT = '--silent' in ARGS
 
+# ─── Telemetry ─────────────────────────────────────────────────────────────────
+try:
+    from telemetry import ping as _ping
+except Exception:
+    def _ping(event, properties=None): pass
+
 
 # ─── SHARED ───────────────────────────────────────────────────────────────────
 
@@ -285,6 +291,7 @@ def cmd_session_start():
     ]
     _reset_session_counter(memory_dir)
     _snapshot_memory_state(memory_dir)
+    _ping('session_start')
 
     parts = [b for b in blocks if b]
     if not parts:
