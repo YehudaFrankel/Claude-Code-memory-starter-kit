@@ -97,7 +97,7 @@ Not sure? Start with Lite. `Upgrade to Full` adds everything any time.
 
 ## How automation works (Full mode)
 
-Full setup wires 4 Claude Code lifecycle hooks into `.claude/settings.json`. They fire automatically — nothing to remember, nothing to run manually.
+Full setup wires Claude Code lifecycle hooks into `.claude/settings.json`. They fire automatically — nothing to remember, nothing to run manually.
 
 | Hook | Fires when | What it does |
 |------|-----------|-------------|
@@ -187,12 +187,7 @@ Memory saved this session:
   tasks/skill_scores.md +2  ("| code-review | Y |")
   STATUS.md +1  ("Session 42 — Dashboard pagination fix")
 
-Pushing to GitHub...
-
-  4 files changed, 23 insertions(+), 1 deletion(-)
-  To https://github.com/your-username/your-memory-repo.git
-
-Session complete. Memory pushed to GitHub.
+Session complete.
 ```
 
 Next session, Claude loads these lessons automatically — before you write a single prompt.
@@ -201,13 +196,25 @@ Next session, Claude loads these lessons automatically — before you write a si
 
 ## What you get
 
-- **Persistent memory** — decisions, bugs fixed, rejected approaches, codebase knowledge
-- **Semantic memory search** — `/recall` finds related memories by meaning, not just keywords. Local model (~90MB, no API key, fully offline)
-- **Skills that self-improve** — each skill scores itself; `/evolve` patches the ones that keep failing
-- **Drift detection** — catches undocumented changes after every file edit
-- **Regret guard** — scans past rejected approaches before every prompt, blocks re-proposing them
-- **Progress reports** — real numbers built from your actual session history
+- **Skills that self-improve** — each skill scores itself on every use; `/evolve` reads the scores and patches the steps that keep failing. After 50 sessions, every skill has been refined by 50 real feedback loops. Nothing else does this.
+- **Regret guard** — every prompt is silently scanned against past rejected approaches before Claude responds. Approaches you discarded stay discarded — permanently, across every future session.
+- **Typed memory files** — decisions, errors, lessons, and rejected approaches each live in a dedicated file. Not a single dump file — purpose-built stores that load selectively and stay readable.
+- **Semantic memory search** — `/recall` finds related memories by meaning, not keywords. Local model (~90MB, no API key, fully offline).
 - **Team sync** — share what you learn with your whole team. Manager runs `Setup Team` once, teammates run `Join Team` once, every Start Session pulls the latest silently. Personal memory stays local.
+- **Drift detection** — catches undocumented changes after every file edit (Full mode).
+- **Progress reports** — real numbers built from your actual session history.
+
+---
+
+## vs. other tools
+
+Claude ships built-in Auto Memory since v2.1.59, and dozens of community tools exist — MCP servers, SQLite stores, single-file notes, cloud services.
+
+Every one of them remembers. None of them learn.
+
+Clankbrain is the only tool where skills score themselves, `/evolve` patches failing steps, and rejected approaches permanently block themselves from being re-proposed. The gap is small at session 5. By session 50 it's measurable.
+
+→ [Does this work with Auto Memory? How does it compare to other kits?](docs/faq.md)
 
 ---
 
@@ -281,7 +288,7 @@ Tested across 160 real sessions on a production codebase. Not a demo project.
 
 | Version | What changed |
 |---------|-------------|
-| v2.6 | Content-aware memory diff shows last line saved; guided first-run box; 69 automated tests |
+| v2.6 | Content-aware memory diff shows last line saved; guided first-run box; 69 automated tests; anonymous telemetry (opt-out: `CLANKBRAIN_NO_TELEMETRY=1`) |
 | v2.5 | CHANGELOG + `sync.py migrate`; starter content in Lite typed files; CI workflow; Python version check |
 | v2.4 | Dependency detection with platform hints; End Session memory diff; `upgrade.py --dry-run` |
 | v2.3 | 3 typed files in Lite mode; `sync diagnose`; memory.py refactored into single-purpose helpers |

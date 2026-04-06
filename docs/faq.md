@@ -1,5 +1,11 @@
 ## FAQ
 
+**How does this compare to other memory kits?**
+Most memory tools remember. Clankbrain learns. Every other tool — Auto Memory, MCP servers, single-file notes, SQLite stores — captures what happened. Clankbrain also improves how Claude works: skills score themselves on every use, `/evolve` patches the steps that keep failing, and `regret.md` permanently blocks approaches you've already rejected. On session 5 every tool looks similar. By session 50, Clankbrain's skills have been refined by 50 real feedback loops. Nothing else compounds that way.
+
+**Does this work with Anthropic's native Auto Memory?**
+Yes and they don't overlap. Auto Memory captures conversational context within a session. Clankbrain persists project knowledge across sessions including architecture decisions, lessons from past mistakes, and custom workflows. Auto Memory forgets when the session closes. Clankbrain doesn't. Run both.
+
 **What Claude plan do I need?**
 Any paid plan that includes Claude Code. The kit is just markdown files and Python scripts running on your machine. If your sessions are getting long, Max helps with context limits, but the PreCompact hook and Start Session recovery are specifically built to handle that gracefully on any plan.
 
@@ -20,9 +26,6 @@ A searchable history of everything you've worked on. Timestamped automatically, 
 
 **What does bootstrap do?**
 Scans your entire project and builds `quick_index.md`, a map of every source file grouped by type. Run it once on any new project and Claude has immediate codebase awareness without you documenting anything manually.
-
-**Does this work with Anthropic's native Auto Memory?**
-Yes and they don't overlap. Auto Memory captures conversational context within a session. Clankbrain persists project knowledge across sessions including architecture decisions, lessons from past mistakes, and custom workflows. Auto Memory forgets when the session closes. Clankbrain doesn't. Run both.
 
 **Why markdown files instead of a database?**
 Because you can read them, grep them, diff them, and restore any version from git history without any tooling. A database is opaque. Markdown files travel with your repo, work on any machine, and never need an API key or running service. The simplicity is the point.
