@@ -37,6 +37,8 @@ Usage:
   python tools/memory.py --search-semantic "query"   # Semantic search — finds related memories by meaning, not just keywords
   python tools/memory.py --search-semantic "query" --top 10  # Return top N semantic matches
   python tools/memory.py --memory-diff               # Show what memory files changed this session (call at End Session)
+  python tools/memory.py --permission-denied         # PermissionRequest hook: log denied tool operations
+  python tools/memory.py --file-changed              # FileChanged hook: alert when CLAUDE.md or memory files change externally
 """
 
 import json
@@ -2395,6 +2397,73 @@ def cmd_check_expiry():
         print(json.dumps({'systemMessage': msg}))
 
 
+# ─── PERMISSION DENIED ────────────────────────────────────────────────────────
+# Logs denied tool operations so they surface at End Session.
+# Hook: PermissionRequest
+
+def cmd_permission_denied():
+    memory_dir = find_memory_dir()
+    denial_log = memory_dir / 'tasks' / 'permission_denials.md'
+
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+    tool_name = ''
+    detail = ''
+    try:
+        raw = sys.stdin.read()
+        if raw:
+            payload = json.loads(raw)
+            tool_name = payload.get('tool_name', payload.get('tool', ''))
+            detail = payload.get('reason', payload.get('description', payload.get('input', {}).get('command', '')))
+    except Exception:
+        pass
+
+    entry = f'- {timestamp} | {tool_name} | {detail}\n'
+    try:
+        denial_log.parent.mkdir(parents=True, exist_ok=True)
+        if not denial_log.exists():
+            denial_log.write_text('# Permission Denials\n_Auto-logged by PermissionRequest hook. Review at End Session._\n\n', encoding='utf-8')
+        with open(denial_log, 'a', encoding='utf-8') as f:
+            f.write(entry)
+    except Exception:
+        pass
+
+    if tool_name and not SILENT:
+        print(f'[kit] Permission denied: {tool_name} — logged to tasks/permission_denials.md')
+
+
+# ─── FILE CHANGED ─────────────────────────────────────────────────────────────
+# Alerts when CLAUDE.md or memory files change outside Claude Code.
+# Hook: FileChanged
+
+def cmd_file_changed():
+    changed_file = ''
+    try:
+        raw = sys.stdin.read()
+        if raw:
+            payload = json.loads(raw)
+            changed_file = payload.get('file', payload.get('file_path', payload.get('path', '')))
+    except Exception:
+        pass
+
+    if not changed_file:
+        return
+
+    cf = changed_file.replace('\\', '/')
+    is_claude_md = cf.endswith('CLAUDE.md')
+    is_memory_file = '/memory/' in cf or cf.endswith('/MEMORY.md')
+
+    if not (is_claude_md or is_memory_file):
+        return
+
+    if is_claude_md:
+        msg = 'CLAUDE.md changed externally — run Check Drift to verify memory is current.'
+    else:
+        fname = Path(changed_file).name
+        msg = f'Memory file changed externally: {fname} — run Check Drift if unexpected.'
+
+    print(json.dumps({'systemMessage': f'[kit] {msg}'}))
+
+
 # ─── DISPATCH ─────────────────────────────────────────────────────────────────
 
 def main():
@@ -2456,6 +2525,10 @@ def main():
         cmd_search_semantic()
     elif '--memory-diff' in ARGS:
         cmd_memory_diff()
+    elif '--permission-denied' in ARGS:
+        cmd_permission_denied()
+    elif '--file-changed' in ARGS:
+        cmd_file_changed()
     else:
         print(__doc__)
         sys.exit(1)

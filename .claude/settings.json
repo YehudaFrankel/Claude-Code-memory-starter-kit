@@ -91,6 +91,29 @@
           {
             "type": "command",
             "command": "python tools/memory.py --suggest-guards",
+            "if": "Edit(*error-lookup*)|Write(*error-lookup*)",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python tools/memory.py --permission-denied",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "FileChanged": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python tools/memory.py --file-changed",
             "timeout": 5
           }
         ]

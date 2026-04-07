@@ -214,11 +214,15 @@ Full setup wires Claude Code lifecycle hooks into `.claude/settings.json`. They 
 | Hook | Fires when | What it does |
 |------|-----------|-------------|
 | `UserPromptSubmit` | Every prompt you send | Queues corrections; regret guard checks past rejected approaches |
-| `PostToolUse` | After every Edit or Write | Drift detection — flags undocumented JS/CSS changes |
+| `PostToolUse` | After every Edit or Write | Drift detection, plan verification, edit logging; suggest-guards scoped to error-lookup.md edits only |
 | `Stop` | Claude ends a response | Writes session journal; reminds you to End Session if memory has changed |
 | `SessionStart` | Session begins | Loads memory, checks for interruptions, pulls team memory if configured |
+| `PermissionRequest` | Claude requests a permission | Logs denied operations to `tasks/permission_denials.md` for review |
+| `FileChanged` | A file changes outside Claude | Alerts when `CLAUDE.md` or memory files are edited externally |
 
 Lite mode has none of these — memory updates only when you run `End Session` manually.
+
+> **`disableSkillShellExecution`** — Claude Code v2.1.91 setting that prevents skills from running inline shell commands. Add `"disableSkillShellExecution": true` to your `.claude/settings.json` if you want to restrict this.
 
 → [Full hook reference](docs/hooks.md)
 
