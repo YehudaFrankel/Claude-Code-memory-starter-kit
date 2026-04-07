@@ -4,6 +4,14 @@ You've installed Clankbrain. Here's what to do in your first three sessions to g
 
 ---
 
+## Session 1 will feel like a normal Claude session. That's expected.
+
+Memory is empty. There are no saved lessons, no rejected approaches, no known bugs. Claude has nothing to load yet — so it behaves exactly like Claude without Clankbrain.
+
+**Don't judge it on session 1.** The gap opens by session 5. By session 10 it's obvious.
+
+---
+
 ## Session 1 — Establish baseline
 
 **At the start:**
