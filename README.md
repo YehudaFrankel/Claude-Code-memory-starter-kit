@@ -292,19 +292,7 @@ Tested across 160 real sessions on a production codebase. Not a demo project.
 
 ## Blank conversation? (Start Session shows nothing)
 
-This means a hook is failing before Claude can respond. One command fixes it — this runs `Update Kit` directly from your terminal, without needing Claude at all:
-
-**Mac/Linux:**
-```bash
-python3 -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/YehudaFrankel/clankbrain/main/update.py').read().decode())"
-```
-
-**Windows:**
-```
-python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/YehudaFrankel/clankbrain/main/update.py').read().decode())"
-```
-
-After it completes, start a fresh conversation and type `Start Session`.
+Open a fresh conversation and type `Update Kit`. This re-downloads and repairs all hook files automatically. After it completes, type `Start Session`.
 
 ---
 
