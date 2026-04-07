@@ -1,6 +1,6 @@
 # Lifecycle Hooks
 
-Ten hooks run automatically — no commands needed, no configuration required after setup. All call a single script: `tools/memory.py`.
+Eleven hooks run automatically — no commands needed, no configuration required after setup. All call a single script: `tools/memory.py`.
 
 ---
 
@@ -10,6 +10,7 @@ Ten hooks run automatically — no commands needed, no configuration required af
 |------|--------------|-------------|
 | `SessionStart` | When a session begins | Loads MEMORY.md + status into context; surfaces interruption state if last session crashed |
 | `UserPromptSubmit` | Before every prompt | Detects correction language and queues it for `/learn`; scans `regret.md` for keyword matches; checks `decisions.md` for planning conflicts |
+| `PreToolUse` | Before every Edit or Write | Searches `lessons.md` + `regret.md` + `decisions.md` for entries matching the file being edited — injects relevant memory before the change happens |
 | `PostToolUse` | After every Edit or Write | Runs drift check immediately after every file change; requires Claude to quote changed lines verbatim before proceeding to the next edit |
 | `PreCompact` | Before context compaction | Surfaces memory checklist before context is compressed |
 | `PostCompact` | After context compaction | Re-injects MEMORY.md so the session resumes warm, not cold |
@@ -34,6 +35,7 @@ All hooks call `tools/memory.py` with a subcommand. You can also call these manu
 | `--regret-guard` | UserPromptSubmit | Scans `regret.md` + `decisions.md` for entries matching the current task |
 | `--decision-guard` | UserPromptSubmit | Detects planning language, warns if it contradicts a settled decision |
 | `--error-lookup` | UserPromptSubmit | Matches debug-flavored prompts against `error-lookup.md` — injects known fix before you investigate |
+| `--pre-edit` | PreToolUse | Searches memory for entries matching the filename being edited; fires before the change so Claude sees relevant warnings first |
 | `--check-drift` | PostToolUse | Catches undocumented JS functions and CSS changes immediately after every file edit |
 | `--verify-edit` | PostToolUse | Requires Claude to quote the changed lines verbatim — not a summary, the actual content |
 | `--precompact` | PreCompact | Surfaces memory checklist before compaction |

@@ -39,6 +39,7 @@ Usage:
   python tools/memory.py --memory-diff               # Show what memory files changed this session (call at End Session)
   python tools/memory.py --permission-denied         # PermissionRequest hook: log denied tool operations
   python tools/memory.py --file-changed              # FileChanged hook: alert when CLAUDE.md or memory files change externally
+  python tools/memory.py --pre-edit                  # PreToolUse hook: surface relevant lessons/regret/decisions before editing a file
 """
 
 import json
@@ -2464,6 +2465,96 @@ def cmd_file_changed():
     print(json.dumps({'systemMessage': f'[kit] {msg}'}))
 
 
+# ─── PRE-EDIT GUARD ──────────────────────────────────────────────────────────
+# Fires before any Edit/Write — surfaces lessons/regret/decisions for the file.
+# Hook: PreToolUse (matcher: Edit|Write)
+
+def _scan_sections(text, stem_lower, label, matches, seen):
+    """Scan free-text ## section format — used by lessons.md and decisions.md."""
+    current_title = None
+    current_body = []
+    for line in text.splitlines():
+        if line.startswith('## '):
+            if current_title and stem_lower in '\n'.join(current_body).lower():
+                key = current_title[:60]
+                if key not in seen:
+                    seen.add(key)
+                    matches.append(f'[{label}] {current_title[:100]}')
+            current_title = line.lstrip('#').strip()
+            current_body = []
+        else:
+            current_body.append(line)
+    # Flush last section
+    if current_title and stem_lower in '\n'.join(current_body).lower():
+        key = current_title[:60]
+        if key not in seen:
+            seen.add(key)
+            matches.append(f'[{label}] {current_title[:100]}')
+
+
+def cmd_pre_edit():
+    """PreToolUse hook: surface relevant memory before editing a file."""
+    try:
+        raw = sys.stdin.buffer.read().decode('utf-8', errors='replace')
+        data = json.loads(raw)
+        tool_input = data.get('tool_input', {})
+        file_path = tool_input.get('file_path', tool_input.get('path', ''))
+    except Exception:
+        return
+
+    if not file_path:
+        return
+
+    stem = Path(file_path).stem  # e.g. "nfpChallengeUtils" from "nfpChallengeUtils.java"
+    if len(stem) < 5:
+        return  # too short — would match too broadly
+
+    stem_lower = stem.lower()
+    memory_dir = find_memory_dir()
+    matches = []
+    seen = set()
+
+    for filename, label in [
+        ('lessons.md',       'Lesson'),
+        ('tasks/regret.md',  'Regret'),
+        ('decisions.md',     'Decision'),
+    ]:
+        md_path = memory_dir / filename
+        if not md_path.exists():
+            continue
+        text = md_path.read_text(encoding='utf-8', errors='ignore')
+
+        # Table rows (regret.md + any table-format memory files)
+        for cells in _parse_md_table_rows(text):
+            if not cells or cells[0].lower() in (
+                'approach', 'decision', 'what', 'rule', 'lesson', 'date', 'description'
+            ):
+                continue
+            entry = ' '.join(cells)
+            if stem_lower not in entry.lower():
+                continue
+            key = entry[:60]
+            if key in seen:
+                continue
+            seen.add(key)
+            snippet = cells[0][:80]
+            detail = cells[1][:90] if len(cells) > 1 else ''
+            matches.append(f'[{label}] {snippet}' + (f' — {detail}' if detail else ''))
+
+        # Free-text ## section format (lessons.md, decisions.md)
+        _scan_sections(text, stem_lower, label, matches, seen)
+
+    if not matches:
+        return
+
+    fname = Path(file_path).name
+    msg = (
+        f'Before editing {fname}:\n'
+        + '\n'.join(f'  - {m}' for m in matches[:5])
+    )
+    print(json.dumps({'systemMessage': f'[kit] {msg}'}))
+
+
 # ─── DISPATCH ─────────────────────────────────────────────────────────────────
 
 def main():
@@ -2529,6 +2620,8 @@ def main():
         cmd_permission_denied()
     elif '--file-changed' in ARGS:
         cmd_file_changed()
+    elif '--pre-edit' in ARGS:
+        cmd_pre_edit()
     else:
         print(__doc__)
         sys.exit(1)
