@@ -32,6 +32,14 @@ End Session     ->  extracts lessons, saves everything to memory
 npx clankbrain
 ```
 
+Or if you cloned the repo directly:
+
+```bash
+python tools/memory.py --init
+```
+
+Five questions. Creates your memory directory, hooks config, and starter files. Done in 30 seconds.
+
 No API keys. No background service. No database. **Requires:** [Claude Code](https://claude.ai/claude-code)
 
 > Used by 600+ developers in its first two weeks. If it helps, [star it ★](https://github.com/YehudaFrankel/clankbrain)

@@ -40,6 +40,8 @@ Usage:
   python tools/memory.py --permission-denied         # PermissionRequest hook: log denied tool operations
   python tools/memory.py --file-changed              # FileChanged hook: alert when CLAUDE.md or memory files change externally
   python tools/memory.py --pre-edit                  # PreToolUse hook: surface relevant lessons/regret/decisions before editing a file
+  python tools/memory.py --mempalace-audit           # Audit memory files for missing Source blocks and valid_until dates
+  python tools/memory.py --init                      # Interactive setup wizard — run once in a new project
 """
 
 import json
@@ -2771,6 +2773,246 @@ def cmd_mempalace_audit():
         print('MemPalace audit: all memory files pass.')
 
 
+# ─── INIT ─────────────────────────────────────────────────────────────────────
+
+def cmd_init():
+    """Interactive setup wizard. Run once in a new project directory."""
+    print('Clankbrain setup\n' + '-' * 40)
+
+    # 1. Project name
+    project_name = input('Project name (e.g. "My App"): ').strip()
+    if not project_name:
+        project_name = 'My Project'
+
+    # 2. Primary language
+    lang = input('Primary language [python/java/js/other] (default: js): ').strip().lower()
+    if lang not in ('python', 'java', 'js', 'other'):
+        lang = 'js'
+
+    # 3. Memory sync repo (optional)
+    sync_repo = input('GitHub repo for memory sync (blank to skip): ').strip()
+
+    # 4. Confirm
+    print(f'\nWill create:')
+    print(f'  .claude/memory/          memory directory')
+    print(f'  .claude/settings.json    hook configuration')
+    print(f'  .claude/memory/MEMORY.md index')
+    print(f'  .claude/memory/STATUS.md session log')
+    print(f'  .claude/memory/lessons.md, decisions.md, tasks/')
+    print(f'  CLAUDE.md                project instructions (if not present)')
+    confirm = input('\nProceed? [Y/n]: ').strip().lower()
+    if confirm == 'n':
+        print('Cancelled.')
+        return
+
+    # --- Create directories ---
+    memory_dir = ROOT / '.claude' / 'memory'
+    tasks_dir  = memory_dir / 'tasks'
+    plans_dir  = memory_dir / 'plans'
+    rules_dir  = ROOT / '.claude' / 'rules'
+    for d in (memory_dir, tasks_dir, plans_dir, rules_dir):
+        d.mkdir(parents=True, exist_ok=True)
+
+    # --- settings.json ---
+    settings_path = ROOT / '.claude' / 'settings.json'
+    if not settings_path.exists():
+        hook_prefix = 'python tools/memory.py'
+        settings = {
+            'permissions': {'allow': ['Read', 'Glob', 'Grep', 'Edit', 'Write', 'Bash'], 'deny': []},
+            'hooks': {
+                'SessionStart': [{'hooks': [
+                    {'type': 'command', 'command': f'{hook_prefix} --session-start', 'timeout': 15, 'statusMessage': 'Loading memory...'},
+                    {'type': 'command', 'command': f'{hook_prefix} --check-expiry',  'timeout': 5},
+                ]}],
+                'UserPromptSubmit': [{'hooks': [
+                    {'type': 'command', 'command': f'{hook_prefix} --session-title',      'timeout': 8, 'refreshInterval': 60},
+                    {'type': 'command', 'command': f'{hook_prefix} --capture-correction', 'timeout': 5},
+                    {'type': 'command', 'command': f'{hook_prefix} --regret-guard',       'timeout': 5},
+                    {'type': 'command', 'command': f'{hook_prefix} --decision-guard',     'timeout': 5},
+                ]}],
+                'PreToolUse': [{'matcher': 'Edit|Write', 'hooks': [
+                    {'type': 'command', 'command': f'{hook_prefix} --pre-edit', 'timeout': 5},
+                ]}],
+                'PostToolUse': [{'matcher': 'Edit|Write', 'hooks': [
+                    {'type': 'command', 'command': f'{hook_prefix} --log-edit',      'timeout': 5, 'async': True},
+                    {'type': 'command', 'command': f'{hook_prefix} --check-drift --silent', 'timeout': 15, 'async': True},
+                    {'type': 'command', 'command': f'{hook_prefix} --verify-edit',   'timeout': 5},
+                ]}],
+                'PreCompact':   [{'hooks': [{'type': 'command', 'command': f'{hook_prefix} --precompact',  'timeout': 15, 'statusMessage': 'Preserving memory...'}]}],
+                'PostCompact':  [{'hooks': [{'type': 'command', 'command': f'{hook_prefix} --postcompact', 'timeout': 15, 'statusMessage': 'Restoring memory...'}]}],
+                'StopFailure':  [{'hooks': [{'type': 'command', 'command': f'{hook_prefix} --stop-failure','timeout': 10}]}],
+                'Stop':         [{'hooks': [
+                    {'type': 'command', 'command': f'{hook_prefix} --process-corrections', 'timeout': 5},
+                    {'type': 'command', 'command': f'{hook_prefix} --journal',             'timeout': 10, 'statusMessage': 'Saving session journal...'},
+                    {'type': 'command', 'command': f'{hook_prefix} --stop-check',          'timeout': 5},
+                ]}],
+                'PermissionDenied': [{'hooks': [{'type': 'command', 'command': f'{hook_prefix} --permission-denied', 'timeout': 8, 'async': True}]}],
+            }
+        }
+        settings_path.write_text(json.dumps(settings, indent=2), encoding='utf-8')
+        print('  created .claude/settings.json')
+    else:
+        print('  skipped .claude/settings.json (already exists)')
+
+    # --- MEMORY.md ---
+    memory_md = memory_dir / 'MEMORY.md'
+    if not memory_md.exists():
+        memory_md.write_text(f'''# Memory Index — {project_name}
+
+- [Lessons learned](lessons.md) — patterns and mistakes from past sessions
+- [Decisions](decisions.md) — locked architectural choices
+- [Rejected approaches](tasks/regret.md) — what was tried and discarded
+- [Active tasks](tasks/todo.md) — current work items
+- [Plans](plans/) — feature plans with status tracking
+
+# currentDate
+Today is {datetime.now().strftime("%Y-%m-%d")}.
+''', encoding='utf-8')
+        print('  created .claude/memory/MEMORY.md')
+
+    # --- STATUS.md ---
+    status_md = memory_dir / 'STATUS.md'
+    if not status_md.exists():
+        status_md.write_text(f'''# {project_name} — Session Log
+
+## Current Phase
+Session 1 — Project initialized.
+
+## Session History
+| # | Date | Summary |
+|---|------|---------|
+| 1 | {datetime.now().strftime("%Y-%m-%d")} | Init |
+''', encoding='utf-8')
+        print('  created .claude/memory/STATUS.md')
+
+    # --- Starter memory files ---
+    starters = {
+        memory_dir / 'lessons.md':       f'# Lessons Learned\n\n_No lessons yet. Run `/learn` at the end of a session._\n',
+        memory_dir / 'decisions.md':     f'# Decisions\n\n_No decisions yet._\n',
+        tasks_dir  / 'regret.md':        f'# Rejected Approaches\n\n_Approaches tried and discarded — read before proposing solutions._\n\n| Approach | Why Rejected |\n|---|---|\n',
+        tasks_dir  / 'todo.md':          f'# Active Tasks\n\n_No active tasks._\n',
+        tasks_dir  / 'skill_scores.md':  f'# Skill Scores\n\n_Populated by /evolve after several sessions._\n',
+    }
+    for path, content in starters.items():
+        if not path.exists():
+            path.write_text(content, encoding='utf-8')
+            print(f'  created {path.relative_to(ROOT)}')
+
+    # --- CLAUDE.md at project root ---
+    claude_md = ROOT / 'CLAUDE.md'
+    kit_claude = ROOT / 'tools' / '..' / 'CLAUDE.md'  # same as ROOT/CLAUDE.md if kit is at root
+    if not claude_md.exists():
+        # Write a minimal CLAUDE.md pointing at memory
+        claude_md.write_text(f'''# {project_name} — Claude Code Project Context
+
+> Keep this file under 200 lines. Project conventions -> rules/project-context.md.
+> Memory -> .claude/memory/. Long sessions -> /learn then /compact.
+
+## Session Commands
+
+| Tier | Commands |
+|------|----------|
+| **Core** | `Start Session` - `End Session` |
+| **On Demand** | `Plan` - `Debug Session` - `/learn` - `Check Drift` - `Guard Check` - `Search Memory` |
+
+### `Start Session`
+1. Run `python tools/memory.py --session-start`
+2. Read `.claude/memory/STATUS.md` then `lessons.md` then `decisions.md` then `tasks/todo.md`
+3. Report: "Session ready. Last change: [X]. What are we working on?"
+
+### `End Session`
+1. Run `/learn` -- extract lessons and decisions from this session
+2. Update `.claude/memory/STATUS.md` -- increment session number, one-line summary
+3. Run `python tools/memory.py --check-drift`
+4. Report: "Session complete."
+
+### On-Demand Commands
+| Command | Action |
+|---------|--------|
+| `Check Drift`     | `python tools/memory.py --check-drift` |
+| `Guard Check`     | `python tools/memory.py --guard-check` |
+| `Search Memory`   | `python tools/memory.py --search "[topic]"` |
+| `Memory Audit`    | `python tools/memory.py --mempalace-audit` |
+| `Check Expiry`    | `python tools/memory.py --check-expiry` |
+| `Kit Health`      | `python tools/memory.py --kit-health` |
+| `Progress Report` | `python tools/memory.py --progress-report` |
+
+## Memory File Conventions
+
+Every memory file uses this frontmatter:
+```
+---
+name: short-id
+description: one-line hook for MEMORY.md index
+type: rule | correction | decision | state | reference | user
+valid_until: YYYY-MM-DD   # required for type: state/project
+related: [other-memory.md]
+---
+
+[Summary]
+
+**Why:** [reason]
+**How to apply:** [when]
+
+## Source
+> [Verbatim snippet from the session where this was established]
+-- Session N
+```
+''', encoding='utf-8')
+        print('  created CLAUDE.md')
+    else:
+        # Substitute [Project Name] placeholder if present
+        text = claude_md.read_text(encoding='utf-8')
+        if '[Project Name]' in text:
+            claude_md.write_text(text.replace('[Project Name]', project_name), encoding='utf-8')
+            print(f'  updated CLAUDE.md -- replaced [Project Name] with "{project_name}"')
+        else:
+            print('  skipped CLAUDE.md (already configured)')
+
+    # --- project-context.md template ---
+    ctx = rules_dir / 'project-context.md'
+    if not ctx.exists():
+        ctx.write_text(f'''# {project_name} — Project Context
+
+## What This Project Is
+[One paragraph: what it does, who uses it, why it exists]
+
+## Tech Stack
+- **Language:** {lang}
+- **Framework:** [e.g. React, Django, Spring]
+- **Database:** [e.g. PostgreSQL]
+- **Key files:**
+  - `src/` -- [purpose]
+
+## File Paths
+| File | Purpose |
+|------|---------|
+| `src/` | [description] |
+
+## Conventions
+[Coding style, naming, patterns specific to this project]
+
+## Gotchas
+[Things that caused bugs or confusion — update as discovered]
+''', encoding='utf-8')
+        print('  created .claude/rules/project-context.md')
+
+    # --- sync config (optional) ---
+    if sync_repo:
+        sync_cfg = ROOT / '.clankbrain-sync'
+        sync_cfg.write_text(f'repo={sync_repo}\n', encoding='utf-8')
+        print(f'  created .clankbrain-sync (repo: {sync_repo})')
+
+    print(f'''
+Done. {project_name} is ready.
+
+Next steps:
+  1. Edit .claude/rules/project-context.md -- add your tech stack and conventions
+  2. Run: python tools/memory.py --session-start
+  3. Tell Claude: "Start Session"
+''')
+
+
 # ─── DISPATCH ─────────────────────────────────────────────────────────────────
 
 def main():
@@ -2842,6 +3084,8 @@ def main():
         cmd_pre_edit()
     elif '--mempalace-audit' in ARGS:
         cmd_mempalace_audit()
+    elif '--init' in ARGS:
+        cmd_init()
     else:
         print(__doc__)
         sys.exit(1)
