@@ -4,7 +4,7 @@ Claude Code memory kit updater.
 Safely updates the kit portions of your project without touching your project-specific content.
 
 What it updates:
-  CLAUDE.md          — session commands block only (## Session Commands → ## If Your Session Crashes)
+  CLAUDE.md          — session commands block only (## Session Commands → ## Auto-Save Rule)
   setup.py           — full replacement
   tools/memory.py    — full replacement
 
@@ -128,7 +128,7 @@ def apply_to_project(project_text, kit_block):
     Replace the kit block in the project CLAUDE.md with the updated kit block.
 
     Supports '## Session Commands' (standard) and recognized alternatives.
-    For the end boundary, tries '## If Your Session Crashes' first, then falls
+    For the end boundary, tries '## Auto-Save Rule' first, then falls
     back to the next '---' separator — with a clear note when falling back.
 
     Preserves everything before the commands heading and after the block.
@@ -154,7 +154,7 @@ def apply_to_project(project_text, kit_block):
 
     # ── Find end boundary ──
     m_end = re.search(
-        r'^## If Your Session Crashes.*?(?=\n---)',
+        r'^## Auto-Save Rule.*?(?=\n---)',
         after_start,
         re.MULTILINE | re.DOTALL,
     )
@@ -167,12 +167,12 @@ def apply_to_project(project_text, kit_block):
         if not m_sep:
             return None, (
                 "Could not find an end boundary for the commands section in your CLAUDE.md.\n"
-                "Expected '## If Your Session Crashes' or a '---' separator after the commands block."
+                "Expected '## Auto-Save Rule' or a '---' separator after the commands block."
             )
         end_pos = m_start.start() + m_sep.start()
         if fallback_label:
             print(
-                f"  '## If Your Session Crashes' not found — replacing up to the next '---' separator."
+                f"  '## Auto-Save Rule' not found — replacing up to the next '---' separator."
             )
 
     updated = project_text[:m_start.start()] + kit_block + project_text[end_pos:]
