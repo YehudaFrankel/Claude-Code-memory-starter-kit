@@ -23,8 +23,7 @@ Quick reference for what ships, what each file does, and how the pieces connect.
 
 | | Full | Lite |
 |---|---|---|
-| Memory files | 5 files (js_functions, html_css, backend, project_status, user_preferences) | 1 notes file |
-| Conventions | Inline in CLAUDE.md | `@rules/` files (stack.md, conventions.md, decisions.md) |
+| Memory files | js_functions, html_css, backend, project_status, user_preferences + lessons + decisions + tasks/ + plans/ | 3 files (notes.md, lessons.md, decisions.md) |
 | Drift detection | Automated — `memory.py --check-drift` after every edit | None |
 | Session journal | Auto-captured on every Stop | Not included |
 | Python required | Yes | No |
