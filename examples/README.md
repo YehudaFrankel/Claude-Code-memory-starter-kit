@@ -7,6 +7,7 @@ These are realistic examples of each memory type. Copy them to `.claude/memory/`
 | `user_profile.md` | user | Developer background, communication preferences |
 | `feedback_testing.md` | feedback | A correction with the reason behind it |
 | `feedback_style.md` | feedback | A style preference Claude should apply without being asked |
+| `feedback_plan_discipline.md` | feedback | Enforcing plan-before-edit + waiting for approval |
 | `project_auth_rewrite.md` | project | An ongoing initiative with locked decisions |
 | `reference_infrastructure.md` | reference | Where to find things in external systems |
 

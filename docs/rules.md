@@ -59,7 +59,7 @@ Claude Code auto-discovers these when you open a matching file. They do not cons
 
 | Rule | Mode | Why |
 |------|------|-----|
-| `plan-before-edit` | always-load | Applies to every file type |
+| `plan-before-edit` | always-load | Applies to every file type — must include WAIT for approval |
 | `work-rules` | always-load | Behavioral — not file-specific |
 | `token-rules` | always-load | Context management — not file-specific |
 | `coding-conventions` | path-scoped (`*.java`, `*.js`) | Only relevant when writing code |
