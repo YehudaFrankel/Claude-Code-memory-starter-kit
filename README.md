@@ -2,7 +2,7 @@
 
 <p align="center"><img src="logo.jpeg" alt="Clankbrain" width="160" /></p>
 
-[![v2.7.0](https://img.shields.io/badge/version-2.7.0-blue?style=flat-square)](https://github.com/YehudaFrankel/clankbrain/releases) [![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE) [![Claude Code](https://img.shields.io/badge/Claude-Code-orange?style=flat-square)](https://claude.ai/claude-code) [![Discussions](https://img.shields.io/badge/community-discussions-purple?style=flat-square)](https://github.com/YehudaFrankel/clankbrain/discussions)
+[![v2.8.0](https://img.shields.io/badge/version-2.8.0-blue?style=flat-square)](https://github.com/YehudaFrankel/clankbrain/releases) [![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE) [![Claude Code](https://img.shields.io/badge/Claude-Code-orange?style=flat-square)](https://claude.ai/claude-code) [![Discussions](https://img.shields.io/badge/community-discussions-purple?style=flat-square)](https://github.com/YehudaFrankel/clankbrain/discussions)
 
 ![Session demo](demo.gif)
 
@@ -23,6 +23,8 @@ Start Session   ->  reads memory, applies past lessons, picks up where you left 
 [work]
 End Session     ->  extracts lessons, saves everything to memory
 ```
+
+**New here?** After install, type `tour` for a 5-minute interactive walkthrough. Or open [CHEATSHEET.md](CHEATSHEET.md) — the whole kit fits on one page.
 
 ---
 

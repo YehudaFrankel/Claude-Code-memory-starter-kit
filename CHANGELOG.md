@@ -1,5 +1,21 @@
 # Changelog
 
+## v2.8 (2026-04-16) — Onboarding Pass
+
+### Added — make the magic obvious in the first 10 minutes
+- **`skills/kit-health/`** — confirms install worked. Run after `setup.py` to see green checks for memory directory, skills loaded, hooks active, settings valid. No more silent installs.
+- **`skills/tour/`** — interactive 5-minute walkthrough that demonstrates memory, regret log, skills, and build modes by walking the user through them step-by-step. New users feel the magic instead of reading about it.
+- **`CHEATSHEET.md`** — one page, 5 daily commands. Print/screenshot/keep open. Replaces "I have to read 4 docs to remember the basics."
+
+### Changed — `setup.py` error messages are now actionable
+- Pre-flight check before main(): Python version (3.7+), writable directory, ~/.claude existence, settings.json conflict detection, OneDrive warning on Windows
+- Wrapped `__main__` in try/except — KeyboardInterrupt is graceful, unknown errors get pattern-matched to specific fixes
+- Error messages now say: what failed, likely cause, exact command to fix
+- Common errors covered: PermissionError, FileNotFoundError, JSONDecodeError, encoding (cp1252 vs UTF-8 on Windows)
+
+### Why
+8/10 install rating → 10/10. New users had no confirmation install worked, didn't know what to do first, and saw raw Python tracebacks when things failed. All three solved.
+
 ## v2.7 (2026-04-16) — Build to Learn vs Build to Earn
 
 ### Added — Cagan-inspired discovery/delivery split

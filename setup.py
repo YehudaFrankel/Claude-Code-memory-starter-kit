@@ -1353,7 +1353,102 @@ def _detect_ide_flag():
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
+def _preflight_check():
+    """Run before main(). Catches common install problems with specific fixes."""
+    import platform
+
+    # Python version
+    if sys.version_info < (3, 7):
+        print("\n[X] Setup failed: Python " + sys.version.split()[0] + " detected, need Python 3.7 or newer.")
+        print("    Fix: Install Python 3.7+ from https://python.org")
+        print("         Then run: python setup.py")
+        sys.exit(1)
+
+    # Writable working directory
+    try:
+        test_file = ROOT / ".clankbrain_write_test"
+        test_file.write_text("test")
+        test_file.unlink()
+    except Exception as e:
+        print("\n[X] Setup failed: Cannot write to current directory.")
+        print("    Path:  " + str(ROOT))
+        print("    Error: " + str(e))
+        print("    Fix:   Run setup from a directory you own (not Program Files / system folders).")
+        sys.exit(1)
+
+    # ~/.claude directory exists (Claude Code has been run at least once)
+    home_claude = Path.home() / ".claude"
+    if not home_claude.exists():
+        print("\n[!] Heads up: ~/.claude directory not found.")
+        print("    This means Claude Code may not be installed/run yet.")
+        print("    The setup will still proceed, but some hooks may not activate")
+        print("    until you run Claude Code at least once.")
+        print()
+
+    # Existing settings.json conflict check
+    settings_file = ROOT / ".claude" / "settings.json"
+    if settings_file.exists():
+        try:
+            import json
+            with open(settings_file) as f:
+                existing = json.load(f)
+            if existing.get("hooks") and "--force" not in sys.argv:
+                print("\n[!] Heads up: existing .claude/settings.json has hooks configured.")
+                print("    Setup will merge with existing settings (a backup will be created).")
+                print("    To overwrite without prompting, run: python setup.py --force")
+                print()
+        except json.JSONDecodeError as e:
+            print("\n[X] Setup failed: existing .claude/settings.json is invalid JSON.")
+            print("    Error: " + str(e))
+            print("    Fix:   Either fix the JSON manually, or delete .claude/settings.json")
+            print("           Then re-run: python setup.py")
+            sys.exit(1)
+
+    # Platform-specific notes
+    if platform.system() == "Windows":
+        # Windows-specific gotchas
+        if 'OneDrive' in str(ROOT):
+            print("\n[!] Heads up: project is in a OneDrive folder.")
+            print("    OneDrive sync can interfere with file watchers and hooks.")
+            print("    Consider moving the project outside OneDrive for best results.")
+            print()
+
+
+def _print_friendly_error(exc):
+    """Convert raw Python exceptions into actionable error messages."""
+    err_str = str(exc)
+    err_type = type(exc).__name__
+
+    print("\n[X] Setup failed: " + err_type)
+    print("    " + err_str)
+    print()
+
+    # Pattern-match common errors
+    if "Permission denied" in err_str or "PermissionError" in err_type:
+        print("    Likely cause: file/directory is read-only or owned by another user.")
+        print("    Fix: Check folder permissions, or run from a directory you own.")
+    elif "FileNotFoundError" in err_type:
+        print("    Likely cause: a required file is missing from the kit.")
+        print("    Fix: Re-clone the kit (do not use sparse checkout):")
+        print("         git clone https://github.com/YehudaFrankel/clankbrain.git")
+    elif "JSONDecodeError" in err_type or "json" in err_str.lower():
+        print("    Likely cause: a JSON file is malformed.")
+        print("    Fix: If .claude/settings.json exists, validate it or delete and re-run.")
+    elif "encoding" in err_str.lower() or "codec" in err_str.lower():
+        print("    Likely cause: Windows encoding mismatch (cp1252 vs UTF-8).")
+        print("    Fix: Set PYTHONUTF8=1 in your environment, then re-run:")
+        print("         set PYTHONUTF8=1")
+        print("         python setup.py")
+    else:
+        print("    For help: open an issue at https://github.com/YehudaFrankel/clankbrain/issues")
+        print("    Include this full error message and your Python version.")
+
+    print()
+    sys.exit(1)
+
+
 def main():
+    _preflight_check()
     version = _get_version()
     print(f"\n=== Claude Code Memory Starter Kit v{version} ===\n")
 
@@ -1768,4 +1863,12 @@ Optional — fill in before your first session:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n\nSetup cancelled. No changes were made.")
+        sys.exit(1)
+    except SystemExit:
+        raise
+    except Exception as e:
+        _print_friendly_error(e)
