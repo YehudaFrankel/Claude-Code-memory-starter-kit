@@ -469,6 +469,18 @@ The kill gate is the key: if 2+ risks are red, it refuses to build prototypes an
 
 ---
 
+## Repo layout — do not move these files
+
+The following files at repo root serve [clankbrain.com](https://clankbrain.com) directly via GitHub Pages (main branch root). **Do not move them to subfolders** — doing so breaks the live site:
+- `index.html` — site homepage
+- `googleb8fe14024404ae1c.html` — Google Search Console verification
+- `sitemap.xml`, `robots.txt` — SEO
+- `logo.jpeg`, `memory-starter-kit.png`, `demo.gif` — images referenced by site + README
+
+If you want to split the marketing site from the kit cleanly, migrate Pages to a `gh-pages` branch or a separate `clankbrain-site` repo first; then these files can move. Don't "clean them up" without doing that step.
+
+---
+
 **Built by [Yehuda Frankel](https://github.com/YehudaFrankel).** Using it on a real project? [Tell us what you're building →](https://github.com/YehudaFrankel/clankbrain/discussions)
 
 > Anonymous usage stats collected on setup (mode, platform, Python version — no project data). Opt out: `CLANKBRAIN_NO_TELEMETRY=1`
