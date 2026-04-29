@@ -11,6 +11,7 @@
 ## When to Suggest Compaction
 
 Suggest compacting when ANY of these are true:
+- **Context usage reaches 40%** — hard trigger, don't wait for slowdown
 - Session has 60+ back-and-forth messages
 - User asks about something already resolved earlier in session
 - Responses feel slow or repetitive

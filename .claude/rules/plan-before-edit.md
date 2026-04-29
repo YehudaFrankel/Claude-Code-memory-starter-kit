@@ -10,6 +10,18 @@ Before making ANY edit to code files (JS, HTML, CSS, SQL, any backend language),
 
 ---
 
+## Step 0 — If the User Provides an Example, Read It First
+
+If the user shares an example file, export, screenshot, or existing record **before proposing anything**:
+1. Read/examine it fully
+2. Extract every non-blank field value and its position
+3. Match those values exactly — blank = blank, value = that exact value
+4. Do NOT infer, improve, or guess values that differ from the example
+
+**This is not optional.** One read of the example resolves questions that would otherwise take 6+ back-and-forths.
+
+---
+
 ## Step 1 — Validate Before Showing the Plan
 
 Before presenting the plan, verify every function reference:

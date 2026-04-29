@@ -71,6 +71,15 @@ Before building any new orchestration (agent with 3+ steps, workflow with human-
 
 Trust the feeling. If a workflow feels heavy, you won't use it — which is worse than not having it.
 
+## Read the Example Before Guessing
+When the user provides an example file, export, screenshot, or existing record:
+- Read it fully before proposing anything
+- Extract exact field values and structure
+- Match them exactly — blank stays blank, values stay as shown
+- Never infer, improve, or guess values that differ from the example
+
+The example is the spec. One read resolves what 6 back-and-forths won't.
+
 ---
 
 *These rules exist because skipping them is where sessions go wrong.*
