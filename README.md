@@ -2,15 +2,15 @@
 
 <p align="center"><img src="logo.jpeg" alt="Clankbrain" width="160" /></p>
 
-[![v2.8.0](https://img.shields.io/badge/version-2.8.0-blue?style=flat-square)](https://github.com/YehudaFrankel/clankbrain/releases) [![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE) [![Claude Code + Codex](https://img.shields.io/badge/Claude-Code-orange?style=flat-square)](https://claude.ai/claude-code) [![Discussions](https://img.shields.io/badge/community-discussions-purple?style=flat-square)](https://github.com/YehudaFrankel/clankbrain/discussions)
+[![v2.9.0](https://img.shields.io/badge/version-2.9.0-blue?style=flat-square)](https://github.com/YehudaFrankel/clankbrain/releases) [![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE) [![Claude Code + Codex](https://img.shields.io/badge/Claude-Code-orange?style=flat-square)](https://claude.ai/claude-code) [![Discussions](https://img.shields.io/badge/community-discussions-purple?style=flat-square)](https://github.com/YehudaFrankel/clankbrain/discussions)
 
 ![Session demo](demo.gif)
 
 Every session, your coding agent wakes up a stranger.
 
-You re-explain the stack. Re-describe what you were building. Re-establish why certain approaches won't work here. Every day, for a tool that spent yesterday learning all of it.
+You re-explain the stack. Re-describe what you were building. Re-establish why certain approaches won't work here. Then it fumbles through the same debug flow, the same code review, the same refactor — because it has no structured way to do any of it.
 
-Clankbrain ends that. It gives Claude Code and Codex a shared memory that compounds — decisions, mistakes, patterns, lessons — loaded automatically at the start of every session, updated automatically at the end.
+Clankbrain fixes both. It gives Claude Code a **living memory** — decisions, mistakes, patterns, lessons that compound across sessions — and **20+ built-in workflows** for every development task: debugging, code review, refactoring, frontend design, security audits, and more.
 
 Session 1: the agent learns your stack.
 Session 10: it knows every mistake you've made, every approach you've rejected, every shortcut that works in your codebase.
@@ -186,6 +186,7 @@ The value compounds with consistency. The more sessions you log, the smarter Cla
 
 ## What you get
 
+### Memory layer
 - **Skills that self-improve** — each skill scores itself on every use; `/evolve` reads the scores and patches the steps that keep failing. After 50 sessions, every skill has been refined by 50 real feedback loops. Nothing else does this.
 - **Regret guard** — every prompt is silently scanned against past rejected approaches before Claude responds. Approaches you discarded stay discarded — permanently, across every future session.
 - **Typed memory files** — decisions, errors, lessons, and rejected approaches each live in a dedicated file. Not a single dump file — purpose-built stores that load selectively and stay readable.
@@ -194,6 +195,21 @@ The value compounds with consistency. The more sessions you log, the smarter Cla
 - **Team sync** — share what you learn with your whole team. Manager runs `Setup Team` once, teammates run `Join Team` once, every Start Session pulls the latest silently. Personal memory stays local.
 - **Drift detection** — catches undocumented changes after every file edit (Full mode).
 - **Progress reports** — real numbers built from your actual session history.
+
+### Workflow layer (20+ built-in skills)
+
+Every development activity has a structured skill — not just memory, but a repeatable way to do the work right:
+
+| Category | Skills |
+|---|---|
+| **Debug** | `fix-bug` — structured root-cause flow; `guard` — scans for known error patterns |
+| **Code quality** | `code-review` — antipattern checklist; `07-refactoring` — safe restructure flow; `03-security` — auth/injection/secrets audit |
+| **Frontend** | `frontend-design` — full design system from archetype; `refactoring-ui` — tactical visual fixes; `ux-heuristics` — Nielsen + Krug audit |
+| **Verification** | `06-testing` — layer-by-layer checklist; `04-environments` — env config sweep |
+| **Session** | `smart-resume` — reads STATUS + todo, proposes exact next step; `shadow-code` — you write first, Claude reviews gap |
+| **Meta** | `skill-creator` — build new skills; `product-risk` — validate before building |
+
+Skills compound with memory: `fix-bug` auto-runs `guard`, which extracts the root cause as a new permanent rule. Every bug fixed once becomes impossible to ship twice.
 
 ---
 
@@ -376,6 +392,7 @@ Open a fresh conversation and type `Update Kit`. This re-downloads and repairs a
 
 | Version | What changed |
 |---------|-------------|
+| v2.9.0 | Workflow layer: 13 generic skills added (fix-bug, guard, code-review, 07-refactoring, 03-security, 04-environments, 06-testing, frontend-design, refactoring-ui, ux-heuristics, shadow-code, skill-creator, smart-resume) + protected-files rule. New positioning: memory foundation + workflow superstructure. README and site updated to reflect expanded scope. |
 | v2.8.0 | Onboarding pass: `kit-health` skill (post-install verification), `tour` skill (5-min interactive walkthrough), `CHEATSHEET.md` (one-page reference), `setup.py` preflight checks + actionable error messages |
 | v2.7.0 | Build to Learn vs Build to Earn: `rules/build-mode.md` (declare discovery vs delivery at session start), `prototype-hypothesis` skill (4-question gate before any prototype iteration), `parallel-prototypes` skill (run 2-3 variants instead of sequential), velocity tracker split into discovery + delivery units. MemPalace-inspired memory format: `## Source` verbatim blocks (~84%→~97% recall), temporal validity (`valid_from`/`valid_until`), Tunnels (`related:` frontmatter + `--pre-edit` hook follows links), 6 precise memory types |
 | v2.6.4 | Fix blank conversation on Mac/Linux (python vs python3) + Windows (missing tools/memory.py); 22 new tests for update.py |
@@ -436,12 +453,23 @@ The kill gate is the key: if 2+ risks are red, it refuses to build prototypes an
 | I want to... | Use |
 |---|---|
 | Start working (new session) | `Start Session` |
+| Pick up where I left off | `/smart-resume` |
 | Plan a feature or change | `/plan` |
 | Find where something lives in code | `/search-first` |
-| Fix a bug | `/fix-bug` |
+| Fix a logic bug | `/fix-bug` |
+| Review code for issues | `code-review` |
+| Refactor without changing behavior | `07-refactoring` |
+| Audit for security issues | `03-security` |
+| Check environment before deploying | `04-environments` |
+| Design a UI from scratch | `frontend-design` |
+| Polish an existing UI | `refactoring-ui` |
+| Audit usability | `ux-heuristics` |
+| Verify a feature works end-to-end | `06-testing` |
 | Validate a product idea before building | `/product-risk create` |
 | Score an existing product's risks | `/product-risk evaluate` |
-| Check nothing broke after changes | run a smoke test (stack-specific) |
+| Write first, have Claude review gap | `/shadow-code` |
+| Create a new reusable skill | `/skill-creator` |
+| Check nothing broke after changes | smoke-test (stack-specific) |
 | Extract lessons from this session | `/learn` |
 | See which skills need improvement | `/evolve-check` |
 | Patch a skill based on failure data | `/evolve` |
