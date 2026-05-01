@@ -80,6 +80,35 @@ When the user provides an example file, export, screenshot, or existing record:
 
 The example is the spec. One read resolves what 6 back-and-forths won't.
 
+## Extract HTML Builders from Render Functions
+When a render or callback function grows beyond ~40 lines and most of the bulk is HTML string building:
+- Extract a pure `buildXxxHtml(data)` function that takes data and returns an HTML string
+- The render function becomes: group data → call builder → set innerHTML → wire events (~10 lines)
+- Builders are pure — they take data in, return a string out, touch no DOM
+
+```javascript
+// WRONG — mixed data logic and HTML in one long function
+function renderUserTable(users) {
+  var html = '';
+  users.forEach(function(u) {
+    // 40 lines of HTML string building...
+  });
+  tbody.innerHTML = html;
+}
+
+// RIGHT — builder is pure, render is thin
+function buildUserRowHtml(u) {
+  return '<tr>...' + escHtml(u.Name) + '...</tr>';
+}
+function renderUserTable(users) {
+  var rows = '';
+  for (var i = 0; i < users.length; i++) { rows += buildUserRowHtml(users[i]); }
+  tbody.innerHTML = rows;
+}
+```
+
+Apply when any render function is hard to scan because data logic and HTML are interleaved.
+
 ---
 
 *These rules exist because skipping them is where sessions go wrong.*

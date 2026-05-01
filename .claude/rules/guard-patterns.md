@@ -56,6 +56,12 @@ Add a guard when you catch the same mistake twice.
 - **Files**: All source files — exclude .env, *.example, test fixtures
 - **Why**: Secrets in source get committed to git and are exposed permanently in history even after removal.
 
+## NESTED_ASYNC_CALLBACKS
+- **Check**: Never fire a second async/API call inside the callback of a first one
+- **How to scan**: Grep for callback-style API calls (IGPlugin, fetch, $.ajax, axios) inside other callback functions — look for the API call pattern appearing inside a `function(dataObj` or `function(response` body
+- **Files**: All JS/TS files with API calls
+- **Why**: Nested callbacks couple two independent operations invisibly, make flow hard to trace, and violate the flat-function convention. Fix: use module-level globals to carry state across the boundary. Call 1 sets globals → retStep1 fires Call 2 → retStep2 completes. Both callbacks are top-level named functions.
+
 ---
 
 *Name guards clearly — the ID is what gets referenced when a violation is found.*
